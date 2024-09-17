@@ -1,0 +1,14 @@
+{
+  "name": "workplaceunionizer-backend",
+  "version": "1.0.0",
+  "description": "Backend meant for Unionizer Application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}
