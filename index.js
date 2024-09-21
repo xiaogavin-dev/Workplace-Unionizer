@@ -1,17 +1,48 @@
-const express = require('express')
-const app = express()
-const cors = require('cors')
+const express = require('express');
+const cors = require('cors');
+const bcrypt = require('bcrypt');
+const pool = require('./db'); // Import the db.js file
 
-app.use(express.json())
-app.use(cors())
+const app = express();
+app.use(express.json());
+app.use(cors());
 
-port = 4000
+const port = 4000;
 
-app.get('/', (req, res, next) => {
-    console.log("we hit this endpoint!")
-    res.status(200).json({ message: "request received" })
-})
+app.post('/', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    console.log("Received login request for:", username);
+
+    // Query the database for the user
+    const query = 'SELECT * FROM users WHERE email = $1';
+    const result = await pool.query(query, [username]);
+
+    // Check if the user exists
+    if (result.rowCount === 0) {
+      console.log("User not found");
+      return res.status(401).json({ error: 'User not found' });
+    }
+
+    const user = result.rows[0];
+    console.log("User found in DB:", user);
+
+    // Compare the submitted password with the hashed password in the database
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      console.log("Password mismatch");
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // If login is successful, respond with success
+    console.log("Login successful");
+    return res.json({ success: true, message: 'Login successful' });
+  } catch (error) {
+    console.error('Error logging in:', error);
+    return res.status(500).json({ error: 'An error occurred during login' });
+  }
+});
 
 app.listen(port, () => {
-    console.log(`App is listening on port ${port}`)
-})
+  console.log(`App is listening on port ${port}`);
+});
