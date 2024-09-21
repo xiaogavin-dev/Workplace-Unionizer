@@ -71,7 +71,7 @@ const login = () => {
                                     <Input placeholder="shadcn" {...field} />
                                 </FormControl>
                                 <FormDescription>
-                                    This is your public display name.
+                                    This is your email.
                                 </FormDescription>
                                 <FormMessage />
                             </FormItem>
