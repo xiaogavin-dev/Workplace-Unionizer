@@ -23,6 +23,7 @@ import { auth } from '../../../firebase/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import Link from 'next/link'
 import './signin.css'
+
 const login = () => {
     const router = useRouter()
     const [loading, setLoading] = useState<boolean>(false)
@@ -88,7 +89,7 @@ const login = () => {
                             </FormItem>
                         )}
                     />
-                    <h3><a href="" id="forgot-password">Forgot Password?</a></h3>
+                    <h3><a href="/auth/forgotpassword" id="forgot-password">Forgot Password?</a></h3>
                     <div className='flex justify-center'>
                         {loading ?
                             <PropagateLoader className='align-self-center' />
