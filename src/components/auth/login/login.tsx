@@ -21,7 +21,8 @@ import { useRouter } from 'next/navigation'
 import { setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { auth } from '../../../firebase/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth'
-
+import Link from 'next/link'
+import './signin.css'
 const login = () => {
     const router = useRouter()
     const [loading, setLoading] = useState<boolean>(false)
@@ -54,10 +55,10 @@ const login = () => {
         setLoading(false)
     }
     return (
-        <div className='max-w-96 grow '>
+        <div className='max-w-96 grow mt-60 p-4 max-h-fit border-2 shadow-lg'>
             <Form {...form}>
                 <div className='sm:w-420 flex-center flex-col py-3 '>
-                    <h2 className='h3-bold md:h2-bold font-bold text-3xl pb-1 text-center'>Unionizer</h2>
+                    <h2 className='h3-bold md:h2-bold font-bold text-4xl pb-1 text-center'>Unionizer</h2>
                     <h3 className='text-center'>Login</h3>
                 </div>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -70,9 +71,6 @@ const login = () => {
                                 <FormControl>
                                     <Input placeholder="shadcn" {...field} />
                                 </FormControl>
-                                <FormDescription>
-                                    This is your email.
-                                </FormDescription>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -86,20 +84,19 @@ const login = () => {
                                 <FormControl>
                                     <Input placeholder="shadcn" type='password' {...field} />
                                 </FormControl>
-                                <FormDescription>
-                                    This is your public display name.
-                                </FormDescription>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
+                    <h3><a href="" id="forgot-password">Forgot Password?</a></h3>
                     <div className='flex justify-center'>
                         {loading ?
                             <PropagateLoader className='align-self-center' />
                             :
-                            <Button className='w-full' type="submit">login</Button>
+                            <Button className='w-full hover:bg-blue-700' type="submit">login</Button>
                         }
                     </div>
+                    <h3 id="new-to-unionizer">New to Unionizer? <Link href="/auth/signup" id="join-now">Join now</Link></h3>
                 </form>
             </Form>
         </div>)
