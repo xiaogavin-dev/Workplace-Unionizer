@@ -118,7 +118,7 @@ const signup = () => {
                             <Button className='w-full hover:bg-blue-700' type="submit">Sign Up</Button>
                         }
                     </div>
-                    <h3 id="new-to-unionizer">Already have an account? <Link href="/auth/login" id="join-now">Login</Link></h3>
+                    <h3 id="new-to-unionizer">Already have an account? <Link href="/auth/login">Login</Link></h3>
                 </form>
             </Form>
         </div>)
