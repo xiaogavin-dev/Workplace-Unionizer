@@ -43,7 +43,7 @@ export const authSlice = createSlice({
     name: 'auth',
     initialState: {
         isAuthenticated: false,
-        isLoading: true,
+        isLoading: false,
         user: null,
     },
     reducers: {

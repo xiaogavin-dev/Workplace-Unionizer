@@ -1,0 +1,85 @@
+#logo {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    margin: 30px;
+}
+
+.about-us {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    margin: 30px;
+}
+
+.login-center-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
+    height: 100%;
+    padding: 80px;
+    background: white;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+@media (max-width: 600px) {
+    .login-center-container {
+        padding: 40px;
+        width: 90%;
+    }
+}
+
+h1 {
+    font-size: 25px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+#forgot-password {
+    text-decoration: underline;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+#forgot-password:hover {
+    color: blue;
+}
+
+#login-button {
+    width: 100%;
+    padding: 10px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#login-button:hover {
+    background-color: darkblue;
+}
+
+#new-to-unionizer {
+    color: black;
+    font-size: 15px;
+}
+
+#new-to-unionizer #join-now {
+    color: black;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+#new-to-unionizer #join-now:hover {
+    color: blue;
+}
