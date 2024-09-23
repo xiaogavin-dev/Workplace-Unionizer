@@ -56,7 +56,7 @@ const signup = () => {
 
     }
     return (
-        <div className='max-w-96 grow mt-60 p-4 max-h-fit border-2 shadow-lg '>
+        <div className='login-center-container'>
             <Form {...form}>
                 <div className='sm:w-420 flex-center flex-col py-3 '>
                     <h2 className='h3-bold md:h2-bold font-bold text-4xl pb-1 text-center'>Unionizer</h2>
@@ -72,9 +72,9 @@ const signup = () => {
                                 <FormControl>
                                     <Input placeholder="shadcn" {...field} />
                                 </FormControl>
-                                <FormDescription>
+                                {/* <FormDescription>
                                     This is your public display name.
-                                </FormDescription>
+                                </FormDescription> */}
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -88,9 +88,9 @@ const signup = () => {
                                 <FormControl>
                                     <Input placeholder="shadcn" {...field} />
                                 </FormControl>
-                                <FormDescription>
+                                {/* <FormDescription>
                                     This is your email.
-                                </FormDescription>
+                                </FormDescription> */}
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -104,9 +104,9 @@ const signup = () => {
                                 <FormControl>
                                     <Input placeholder="shadcn" type='password' {...field} />
                                 </FormControl>
-                                <FormDescription>
+                                {/* <FormDescription>
                                     Enter a strong password
-                                </FormDescription>
+                                </FormDescription> */}
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -115,7 +115,7 @@ const signup = () => {
                         {loading ?
                             <PropagateLoader className='align-self-center' />
                             :
-                            <Button className='w-full' type="submit">signup</Button>
+                            <Button className='w-full hover:bg-blue-700' type="submit">Sign Up</Button>
                         }
                     </div>
                     <h3 id="new-to-unionizer">Already have an account? <Link href="/auth/login" id="join-now">Login</Link></h3>

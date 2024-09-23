@@ -55,7 +55,7 @@ const login = () => {
         setLoading(false)
     }
     return (
-        <div className='max-w-96 grow mt-60 p-4 max-h-fit border-2 shadow-lg'>
+        <div className='login-center-container'>
             <Form {...form}>
                 <div className='sm:w-420 flex-center flex-col py-3 '>
                     <h2 className='h3-bold md:h2-bold font-bold text-4xl pb-1 text-center'>Unionizer</h2>
@@ -93,7 +93,7 @@ const login = () => {
                         {loading ?
                             <PropagateLoader className='align-self-center' />
                             :
-                            <Button className='w-full hover:bg-blue-700' type="submit">login</Button>
+                            <Button className='w-full hover:bg-blue-700' type="submit">Login</Button>
                         }
                     </div>
                     <h3 id="new-to-unionizer">New to Unionizer? <Link href="/auth/signup" id="join-now">Join now</Link></h3>

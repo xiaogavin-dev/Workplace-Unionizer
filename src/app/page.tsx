@@ -11,11 +11,16 @@ interface User {
 }
 export default function Login() {
   const router = useRouter()
-  const { isAuthenticated, isLoading, user }: {
+  const { isAuthenticated, isLoading, user }: { 
     isAuthenticated: boolean;
     isLoading: boolean;
     user: User | null;
   } = useAppSelector(state => state.auth)
+
+  // if (isAuthenticated && user) {
+  //   router.push("/community");
+  // }
+
   return (
     <main className="min-w-full flex justify-center ">
       <div className="max-w-fit content-center">
@@ -26,10 +31,10 @@ export default function Login() {
                 <h1>
                   Welcome to unionizer {user.displayName}
                 </h1>
-              ) :
-              (<h1>
-                Welcome to unionizer {user.email}
-              </h1>))
+              ) : null)
+              // (<h1>
+              //   Welcome to unionizer {user.email}
+              // </h1>))
             :
             <ul className="p-3 border-2 rounded-lg shadow-lg">
               <li>
