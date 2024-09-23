@@ -19,8 +19,8 @@ export default function Login() {
   return (
     <main className="min-w-full flex justify-center ">
       <div className="max-w-fit content-center">
-        {
-          user != null ? (
+        {isAuthenticated != null ?
+          (user ? (
             user.displayName ?
               (
                 <h1>
@@ -33,17 +33,23 @@ export default function Login() {
             :
             <ul className="p-3 border-2 rounded-lg shadow-lg">
               <li>
-                <Button className="min-w-56 m-2">
-                  <Link href={"/auth/login"}>Login</Link>
-                </Button>
+                <Link href={"/auth/login"}>
+                  <Button className="min-w-56 m-2">
+                    Login
+                  </Button>
+                </Link>
+
               </li>
               <li>
-                <Button className="min-w-56 m-2">
-                  <Link href={"/auth/signup"}>Create an account</Link>
-                </Button>
+                <Link href={"/auth/signup"}>
+                  <Button className="min-w-56 m-2">
+                    Create an account
+                  </Button>
+                </Link>
               </li>
 
-            </ul>
+            </ul>) :
+          <></>
         }
       </div>
     </main>
