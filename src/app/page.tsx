@@ -32,9 +32,6 @@ export default function Login() {
                   Welcome to unionizer {user.displayName}
                 </h1>
               ) : null)
-              // (<h1>
-              //   Welcome to unionizer {user.email}
-              // </h1>))
             :
             <ul className="p-3 border-2 rounded-lg shadow-lg">
               <li>

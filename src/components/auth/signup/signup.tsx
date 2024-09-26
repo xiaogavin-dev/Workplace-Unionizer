@@ -10,7 +10,6 @@ import PropagateLoader from "react-spinners/PropagateLoader"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -21,39 +20,71 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
 import { auth } from '@/firebase/firebase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useAppDispatch } from '@/lib/redux/hooks/redux';
+import { setAuthState } from '@/lib/redux/features/auth/authSlice';
 import "../login/signin.css"
+
+const SignUpSchema = SignUpValidation.extend({
+    username: z.string().min(1, { message: "Username is required" }),
+    email: z.string().email({ message: "Invalid email address" }),
+    password: z.string().min(8, { message: "Password must be at least 8 characters long" }),
+    confirmPassword: z.string()
+});
 const signup = () => {
-    const router = useRouter()
-    const form = useForm<z.infer<typeof SignUpValidation>>({
-        resolver: zodResolver(SignUpValidation),
+    const router = useRouter();
+    const dispatch = useAppDispatch(); 
+    const [loading, setLoading] = useState<boolean>(false);
+    const [passwordError, setPasswordError] = useState<string | null>(null); // State for password error
+
+    const form = useForm<z.infer<typeof SignUpSchema>>({
+        resolver: zodResolver(SignUpSchema),
         defaultValues: {
             username: "",
             email: "",
             password: "",
+            confirmPassword: "",
         },
-    })
-    const [loading, setLoading] = useState<boolean>(false)
-    async function onSubmit(values: z.infer<typeof SignUpValidation>) {
-        setLoading(true)
+    });
+
+    async function onSubmit(values: z.infer<typeof SignUpSchema>) {
+        // Check if password and confirmPassword match
+        if (values.password !== values.confirmPassword) {
+            setPasswordError("Passwords do not match.");
+            return;
+        }
+
+        setLoading(true);
         try {
-            await createUserWithEmailAndPassword(auth, values.email, values.password)
+            await createUserWithEmailAndPassword(auth, values.email, values.password);
             if (auth.currentUser) {
-                console.log(auth.currentUser)
+                console.log(auth.currentUser);
                 await updateProfile(auth.currentUser, {
                     displayName: values.username
-                })
+                });
+                
+                dispatch(setAuthState({
+                    isAuthenticated: true,
+                    user: {
+                        displayName: values.username,
+                        uid: auth.currentUser.uid,
+                        email: values.email,
+                    },
+                }));
+
+                router.push('/');
             }
-            else {
-                throw ("no current user found: LINE 58 ACTIONS.TS: ")
+        } catch (error: any) {
+            setLoading(false); 
+
+            // Check for email already in use error
+            if (error.code === 'auth/email-already-in-use') {
+                console.error("Email is already in use!");
+                alert("The email address is already in use by another account.");
+            } else {
+                console.error("There was an error signing up:", error.message);
+                alert(error.message);
             }
         }
-        catch (e) {
-            console.error("There was an error signing up! ")
-        }
-        router.push('/')
-        setLoading(false)
-
-
     }
     return (
         <div className='login-center-container'>
@@ -70,12 +101,8 @@ const signup = () => {
                             <FormItem>
                                 <FormLabel>Username</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="shadcn" {...field} />
+                                    <Input placeholder="Enter your username" {...field} />
                                 </FormControl>
-                                {/* <FormDescription>
-                                    This is your public display name.
-                                </FormDescription> */}
-                                <FormMessage />
                             </FormItem>
                         )}
                     />
@@ -86,12 +113,8 @@ const signup = () => {
                             <FormItem>
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="shadcn" {...field} />
+                                    <Input placeholder="Enter your email" {...field} />
                                 </FormControl>
-                                {/* <FormDescription>
-                                    This is your email.
-                                </FormDescription> */}
-                                <FormMessage />
                             </FormItem>
                         )}
                     />
@@ -102,15 +125,21 @@ const signup = () => {
                             <FormItem>
                                 <FormLabel>Password</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="shadcn" type='password' {...field} />
+                                    <Input placeholder="Enter your password" type='password' {...field} />
                                 </FormControl>
-                                {/* <FormDescription>
-                                    Enter a strong password
-                                </FormDescription> */}
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
+                    <FormItem>
+                        <FormLabel>Confirm Password</FormLabel>
+                        <FormControl>
+                            <Input placeholder="Confirm your password" type="password" {...form.register('confirmPassword')} />
+                        </FormControl>
+                        {passwordError && <p className="text-red-600">{passwordError}</p>}
+                        <FormMessage />
+                    </FormItem>
+
                     <div className='flex justify-center'>
                         {loading ?
                             <PropagateLoader className='align-self-center' />
