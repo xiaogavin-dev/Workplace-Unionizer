@@ -10,7 +10,6 @@ import PropagateLoader from "react-spinners/PropagateLoader"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -69,7 +68,7 @@ const login = () => {
                             <FormItem>
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="shadcn" {...field} />
+                                    <Input placeholder="Enter your email" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -82,7 +81,7 @@ const login = () => {
                             <FormItem>
                                 <FormLabel>Password</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="shadcn" type='password' {...field} />
+                                    <Input placeholder="Enter your password" type='password' {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
