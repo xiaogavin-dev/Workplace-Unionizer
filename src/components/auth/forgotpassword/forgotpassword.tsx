@@ -38,7 +38,7 @@ export default function ForgotPassword() {
     <div className="flex justify-center items-center min-h-screen">
       <div className="max-w-lg p-4 border-2 shadow-lg">
         <h2 className="text-2xl text-center font-bold">Forgot Password</h2>
-        <p className="text-center mb-4">Enter your email address and we will send you a link to reset your password.</p>
+        <p className="text-center mb-4">Enter your email address to recieve a link to reset your password.</p>
 
         {emailSent ? (
           <div className="text-green-600 text-center">
