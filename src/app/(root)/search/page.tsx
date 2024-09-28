@@ -14,16 +14,21 @@ import { Input } from "@/components/ui/input"
 import { useForm } from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
+import "./search.css"
 
 const search = () => {
     const formSchema = z.object({
-        _unionname: z.string(),
+        unionname: z.string(),
+        location: z.string(),
+        organization: z.string(),
     })
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            _unionname: "",
+            unionname: "",
+            location: "",
+            organization: "",
         },
     })
 
@@ -34,27 +39,50 @@ const search = () => {
     return (
         <div className='search-page-container'>
             <Form {...form}>
-
             <div className='flex-center'>
                 <h1>Find A Union</h1>
             </div>
-                <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+                <FormField
+                    control={form.control}
+                    name="unionname"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Search</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Union Name" {...field} />
+                            </FormControl>
+                        </FormItem>
+                    )}
+                    />
                     <FormField
-                        control={form.control}
-                        name="_unionname"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Search</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Union Name" {...field} />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                        />
+                    control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Location</FormLabel>
+                            <FormControl>
+                                <Input placeholder="City, State" {...field} />
+                            </FormControl>
+                        </FormItem>
+                    )}
+                    />
+                    <FormField
+                    control={form.control}
+                    name="organization"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Organization</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Organization Name" {...field} />
+                            </FormControl>
+                        </FormItem>
+                    )}
+                    />
 
-                    <Button type="submit">Submit</Button>
-                </form>
-            </Form>
+                <Button id="submit" type="submit">Submit</Button>
+            </form>
+        </Form>
         </div>
     )
 }
