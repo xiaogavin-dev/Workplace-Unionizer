@@ -10,7 +10,6 @@ import PropagateLoader from "react-spinners/PropagateLoader"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -23,6 +22,7 @@ import { auth } from '../../../firebase/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import Link from 'next/link'
 import './signin.css'
+
 const login = () => {
     const router = useRouter()
     const [loading, setLoading] = useState<boolean>(false)
@@ -69,7 +69,7 @@ const login = () => {
                             <FormItem>
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="shadcn" {...field} />
+                                    <Input placeholder="Enter your email" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -82,13 +82,13 @@ const login = () => {
                             <FormItem>
                                 <FormLabel>Password</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="shadcn" type='password' {...field} />
+                                    <Input placeholder="Enter your password" type='password' {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
-                    <h3><a href="" id="forgot-password">Forgot Password?</a></h3>
+                    <h3><a href="/auth/forgotpassword" id="forgot-password">Forgot Password?</a></h3>
                     <div className='flex justify-center'>
                         {loading ?
                             <PropagateLoader className='align-self-center' />
