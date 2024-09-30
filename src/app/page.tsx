@@ -32,14 +32,11 @@ export default function Login() {
                   Welcome to unionizer {user.displayName}
                 </h1>
               ) : null)
-              // (<h1>
-              //   Welcome to unionizer {user.email}
-              // </h1>))
             :
             <ul className="p-3 border-2 rounded-lg shadow-lg">
               <li>
                 <Link href={"/auth/login"}>
-                  <Button className="min-w-56 m-2">
+                  <Button className="min-w-56 m-2 hover:bg-blue-700">
                     Login
                   </Button>
                 </Link>
@@ -47,7 +44,7 @@ export default function Login() {
               </li>
               <li>
                 <Link href={"/auth/signup"}>
-                  <Button className="min-w-56 m-2">
+                  <Button className="min-w-56 m-2 hover:bg-blue-700">
                     Create an account
                   </Button>
                 </Link>
