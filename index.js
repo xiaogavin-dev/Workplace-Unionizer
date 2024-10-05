@@ -1,13 +1,17 @@
+require('dotenv').config({ path: `${process.cwd()}/.env` })
+
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const pool = require('./db'); // Import the db.js file
 
+const unionRouter = require('./route/unionRoute')
+
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-const port = 4000;
+const port = process.env.PORT || 5000;
 
 app.post('/', async (req, res) => {
   try {
@@ -43,6 +47,13 @@ app.post('/', async (req, res) => {
   }
 });
 
+app.use('/union', unionRouter);
+app.use('*', (req, res, next) => {
+  res.status(404).json({
+    status: "fail",
+    message: "route not found"
+  })
+})
 app.listen(port, () => {
   console.log(`App is listening on port ${port}`);
 });
