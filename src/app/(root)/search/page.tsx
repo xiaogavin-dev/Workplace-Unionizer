@@ -1,13 +1,11 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
-    FormLabel,
-    FormMessage,
+    FormLabel
 } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,30 +14,21 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import getUnions from "./actions"
 import "./search.css"
+
 interface Unions {
     id: string,
     unionName: string
 }
+
 const search = () => {
     const [allUnions, setAllUnions] = useState<Array<Unions> | undefined>([])
-    useEffect(() => {
-        const getUnionsCall = async () => {
-            try {
-                const allUnionsRes = await getUnions()
-                console.log(allUnionsRes)
-                setAllUnions(allUnionsRes)
-            }
-            catch (e: any) {
-                console.error(e.message)
-            }
-        }
-        getUnionsCall()
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
 
-    }, [])
     const formSchema = z.object({
-        unionname: z.string(),
-        location: z.string(),
-        organization: z.string(),
+        unionname: z.string().optional(),
+        location: z.string().optional(),
+        organization: z.string().optional(),
     })
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -52,9 +41,36 @@ const search = () => {
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
+        setLoading(true);
+        setError(null);
 
+        setAllUnions([]);
+
+        try {
+            const queryString = new URLSearchParams({
+                unionname: values.unionname,
+            }).toString();
+    
+            const response = await fetch(`http://localhost:5000/union/getUnions?${queryString}`);
+    
+            if (!response.ok) {
+                throw new Error('Error fetching unions');
+            }
+    
+            const data = await response.json();
+    
+            if (data.data.length === 0) {
+                setError("No unions found");
+            } else {
+                setAllUnions(data.data);
+            }
+        } catch (e: any) {
+            console.error('Error:', e.message);
+            setError("No unions found");
+        } finally {
+            setLoading(false);
+        }
     }
-
 
     return (
         <div className='search-page-container'>
@@ -100,11 +116,26 @@ const search = () => {
                         )}
                     />
 
-                    <Button id="submit" type="submit">Submit</Button>
+                    <Button id="submit" type="submit" disabled={loading}>
+                        {loading ? 'Searching...' : 'Submit'}
+                    </Button>
                 </form>
+
+                {error && <p>{error}</p>}
+
+                {allUnions?.length > 0 && (
+                    <div className='union-results'>
+                        {allUnions.map((union) => (
+                            <Button key={union.id} className='union-button'>
+                                {union.name}
+                            </Button>
+                        ))}
+                    </div>
+                )}
             </Form>
         </div>
-    )
-}
+    );
+};
+
 
 export default search
