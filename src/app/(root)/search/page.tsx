@@ -12,12 +12,13 @@ import { Input } from "@/components/ui/input"
 import { useForm } from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import getUnions from "./actions"
 import "./search.css"
 
 interface Unions {
     id: string,
-    unionName: string
+    name: string, 
+    location: string,
+    organization: string
 }
 
 const search = () => {
@@ -41,32 +42,40 @@ const search = () => {
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
+        // Check if all fields are empty
+        if (!values.unionname && !values.location && !values.organization) {
+            setError("Please provide at least one search parameter.");
+            setAllUnions([]);
+            return;
+        }
+
         setLoading(true);
         setError(null);
-
         setAllUnions([]);
 
         try {
             const queryString = new URLSearchParams({
-                unionname: values.unionname,
+                unionname: values.unionname || '',
+                location: values.location || '',
+                organization: values.organization || '',
             }).toString();
-    
+
             const response = await fetch(`http://localhost:5000/union/getUnions?${queryString}`);
-    
+
             if (!response.ok) {
                 throw new Error('Error fetching unions');
             }
-    
+
             const data = await response.json();
-    
+
             if (data.data.length === 0) {
-                setError("No unions found");
+                setError("No unions found for the specified criteria");
             } else {
                 setAllUnions(data.data);
             }
         } catch (e: any) {
             console.error('Error:', e.message);
-            setError("No unions found");
+            setError("No unions found for the specified criteria");
         } finally {
             setLoading(false);
         }
@@ -84,7 +93,7 @@ const search = () => {
                         name="unionname"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className='find-tags'>Search</FormLabel>
+                                <FormLabel className='find-tags'>Union Name</FormLabel>
                                 <FormControl>
                                     <Input placeholder="Union Name" {...field} />
                                 </FormControl>
@@ -136,6 +145,5 @@ const search = () => {
         </div>
     );
 };
-
 
 export default search
