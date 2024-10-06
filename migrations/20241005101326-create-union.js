@@ -15,6 +15,12 @@ module.exports = {
       status: {
         type: Sequelize.ENUM('union', 'pending')
       },
+      location: {
+        type: Sequelize.STRING
+      },
+      organization: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -26,6 +32,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('unions');
+    return queryInterface.bulkDelete('unions', null, {});
   }
 };

@@ -9,9 +9,9 @@
 
 const pool = require('../db');
 
-const getUnions = async (req, res, next) => {
+const getUnions = async (req, res) => {
   try {
-    const { unionname } = req.query;
+    const { unionname, location, organization } = req.query;
 
     let query = 'SELECT * FROM unions WHERE 1=1';
     const queryParams = [];
@@ -20,6 +20,18 @@ const getUnions = async (req, res, next) => {
       queryParams.push(`%${unionname}%`);
       query += ` AND name ILIKE $${queryParams.length}`; // Using ILIKE for case-insensitive search
     }
+
+    if (location) {
+      queryParams.push(`%${location}%`);
+      query += ` AND location ILIKE $${queryParams.length}`;
+    }
+
+    if (organization) {
+      queryParams.push(`%${organization}%`);
+      query += ` AND organization ILIKE $${queryParams.length}`;
+    }
+
+    console.log('Query:', query, 'Params:', queryParams);
 
     const result = await pool.query(query, queryParams);
 
