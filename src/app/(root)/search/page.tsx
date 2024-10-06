@@ -75,16 +75,16 @@ const search = () => {
     return (
         <div className='search-page-container'>
             <Form {...form}>
-                <div className='flex-center'>
+                <div className='find-a-union'>
                     <h1>Find A Union</h1>
                 </div>
-                <form onSubmit={form.handleSubmit(onSubmit)}>
+                <form id="search-form" onSubmit={form.handleSubmit(onSubmit)}>
                     <FormField
                         control={form.control}
                         name="unionname"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Search</FormLabel>
+                                <FormLabel className='find-tags'>Search</FormLabel>
                                 <FormControl>
                                     <Input placeholder="Union Name" {...field} />
                                 </FormControl>
@@ -96,7 +96,7 @@ const search = () => {
                         name="location"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Location</FormLabel>
+                                <FormLabel className='find-tags'>Location</FormLabel>
                                 <FormControl>
                                     <Input placeholder="City, State" {...field} />
                                 </FormControl>
@@ -108,7 +108,7 @@ const search = () => {
                         name="organization"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Organization</FormLabel>
+                                <FormLabel className='find-tags'>Organization</FormLabel>
                                 <FormControl>
                                     <Input placeholder="Organization Name" {...field} />
                                 </FormControl>
