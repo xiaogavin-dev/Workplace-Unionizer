@@ -4,7 +4,7 @@
     margin: 20px;
 }
 
-body > div > div > div > h1 {
+.find-a-union {
     font-weight: bold;
     font-size: x-large;
     border-width: 0 0 1px;
@@ -12,17 +12,16 @@ body > div > div > div > h1 {
     width: 110%;
     position: relative;
     right: 20px;
-
 }
 
-form {
+#search-form {
     width: 40vw;
     max-width: 400px;
     font-size: small;
     padding-top: 50px;
 }
 
-label {
+.find-tags {
     position: relative;
     top: 6px;
     color: #636663;
