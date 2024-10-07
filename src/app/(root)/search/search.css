@@ -1,0 +1,38 @@
+.search-page-container { 
+    /* display: flex; */
+    justify-content: center;
+    margin: 20px;
+}
+
+body > div > div > div > h1 {
+    font-weight: bold;
+    font-size: x-large;
+    border-width: 0 0 1px;
+    border-color: #636663;
+    width: 110%;
+    position: relative;
+    right: 20px;
+
+}
+
+form {
+    width: 40vw;
+    max-width: 400px;
+    font-size: small;
+    padding-top: 50px;
+}
+
+label {
+    position: relative;
+    top: 6px;
+    color: #636663;
+}
+
+#submit {
+    background-color: #61A653;
+    border-radius: 15px;
+    padding: 10px 50px;
+    margin: 20px 0 0 0;
+    max-width: 400px;
+    width: 40vw; 
+}
