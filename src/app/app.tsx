@@ -10,7 +10,7 @@ const app = ({ children }: Readonly<{
     return (
         <Provider store={store}>
             <Navbar />
-            <div className='min-h-screen flex justify-center '>
+            <div className='min-h-screen flex justify-center'>
                 {children}
             </div>
         </Provider>

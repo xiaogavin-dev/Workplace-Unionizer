@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Form,
     FormControl,
@@ -14,6 +14,10 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import "./search.css"
+import { useAppSelector, useAppDispatch } from '@/lib/redux/hooks/redux'
+import { useRouter } from 'next/navigation'
+import { listenToAuthChanges } from '@/lib/redux/features/auth/authSlice';
+
 
 interface Unions {
     id: string,
@@ -23,6 +27,18 @@ interface Unions {
 }
 
 const search = () => {
+    const router = useRouter();
+    const { isAuthenticated } = useAppSelector(state => state.auth);
+    const dispatch = useAppDispatch();
+
+    useEffect(() => { 
+        if (!isAuthenticated) {
+            router.push('/');
+        }
+    }, [isAuthenticated]);
+
+
+
     const [allUnions, setAllUnions] = useState<Array<Unions> | undefined>([])
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
