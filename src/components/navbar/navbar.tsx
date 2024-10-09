@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 import { useAppSelector, useAppDispatch } from '@/lib/redux/hooks/redux';
@@ -10,6 +10,8 @@ import { auth } from '../../firebase/firebase'
 const Navbar = () => {
     const { isAuthenticated, isLoading, user } = useAppSelector(state => state.auth);
     const dispatch = useAppDispatch();
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+
     useEffect(() => {
         dispatch(listenToAuthChanges());
     }, [dispatch]);
@@ -24,6 +26,11 @@ const Navbar = () => {
             console.error('Error signing out:', error);
         });
     };
+
+    const toggleDropdown = () => {
+        setDropdownOpen(!dropdownOpen);
+    };
+
     // The following navbar was modified from https://flowbite.com/
     return (
         <nav className="bg-white border-gray-200 dark:bg-gray-900">
@@ -69,15 +76,23 @@ const Navbar = () => {
                                             Search
                                         </Link>
                                     </li>
-                                    <li>
-                                        <span className="block py-2 px-3 text-gray-900 rounded md:p-0 dark:text-white">
-                                            {user?.displayName}
-                                        </span>
-                                    </li>
-                                    <li>
-                                        <button onClick={handleSignOut} className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">
-                                            Logout
+                                    <li className="relative">
+                                        <button onClick={toggleDropdown} className="block py-2 px-3 text-gray-900 rounded md:p-0 dark:text-white focus:outline-none">
+                                            {user?.displayName} ▼
                                         </button>
+                                        {dropdownOpen && (
+                                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 dark:bg-gray-700 dark:text-white">
+                                                <Link href="/profile" className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600">
+                                                    Profile
+                                                </Link>
+                                                <Link href="/settings" className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600">
+                                                    Settings
+                                                </Link>
+                                                <button onClick={handleSignOut} className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600">
+                                                    Logout
+                                                </button>
+                                            </div>
+                                        )}
                                     </li>
                                 </>
                             ) : (
