@@ -1,37 +1,66 @@
-.search-page-container { 
-    /* display: flex; */
-    justify-content: center;
-    margin: 20px;
+/* Main wrapper for the page */
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-.find-a-union {
-    font-weight: bold;
-    font-size: x-large;
-    border-width: 0 0 1px;
-    border-color: #636663;
-    width: 110%;
-    position: relative;
-    right: 20px;
+/* Content container that starts below the horizontal navbar */
+.content-container {
+    display: flex;
+    margin-top: 60px; /* Ensures that content starts below the fixed navbar */
 }
 
+/* Search page content */
+.search-page-container {
+    flex: 1;
+    padding: 20px;
+    margin: 0 auto; /* Adjusts space from the vertical navbar */
+}
+
+/* Styling for form */
 #search-form {
-    width: 40vw;
-    max-width: 400px;
-    font-size: small;
-    padding-top: 50px;
+    width: 50vw;
+    max-width: 800px;
+    font-size: 30px;
+    padding-top: 10px;
 }
 
 .find-tags {
-    position: relative;
-    top: 6px;
     color: #636663;
+    font-size: 20px;
 }
+
+.custom-input {
+    width: 100%; 
+    max-width: 790px; 
+    height: 50px; 
+    font-size: 1.2rem; 
+    padding: 15px; 
+    border: 1px solid var(--foreground); 
+    box-sizing: border-box; 
+}
+
 
 #submit {
     background-color: #61A653;
-    border-radius: 15px;
-    padding: 10px 50px;
-    margin: 20px 0 0 0;
-    max-width: 400px;
-    width: 40vw; 
+    border-radius: 30px;
+    padding: 30px 50px;
+    margin-top: 20px;
+    width: 100%;
+    font-size: 20px;
+}
+
+#submit:hover{
+    background-color: rgb(65, 97, 71);
+}
+
+/* Dropdown and results styling */
+.union-results {
+    margin-top: 20px;
+}
+
+.union-button {
+    width: 100%;
+    margin-top: 10px;
 }
