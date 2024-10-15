@@ -15,6 +15,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import "./search.css";
+import { useRouter } from 'next/navigation';
 
 interface Unions {
     id: string;
@@ -27,6 +28,11 @@ const Search = () => {
     const [allUnions, setAllUnions] = useState<Array<Unions> | undefined>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
+
+    const handleUnionClick = (unionId) => {
+        router.push(`/unions/${unionId}`);
+    };
 
     const formSchema = z.object({
         unionname: z.string().optional(),
@@ -142,7 +148,7 @@ const Search = () => {
                         {allUnions?.length > 0 && (
                             <div className='union-results'>
                                 {allUnions.map((union) => (
-                                    <Button key={union.id} className='union-button'>
+                                    <Button key={union.id} className='union-button' onClick={() => handleUnionClick(union.id)}>
                                         {union.name}
                                     </Button>
                                 ))}
