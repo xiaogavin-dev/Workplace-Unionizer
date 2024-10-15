@@ -38,7 +38,7 @@ const Search = () => {
         if (!isAuthenticated) {
             router.push('/');
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, router]);
 
     const formSchema = z.object({
         unionname: z.string().optional(),
