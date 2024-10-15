@@ -156,7 +156,7 @@ const Search = () => {
                         {allUnions?.length > 0 && (
                             <div className='union-results'>
                                 {allUnions.map((union) => (
-                                    <Button key={union.id} className='union-button'>
+                                    <Button key={union.id} className='union-button' onClick={() => handleUnionClick(union.id)}>
                                         {union.name}
                                     </Button>
                                 ))}
