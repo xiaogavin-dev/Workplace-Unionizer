@@ -15,9 +15,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import "./search.css";
-import { useAppSelector } from '@/lib/redux/hooks/redux';
 import { useRouter } from 'next/navigation';
-
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from '../../../firebase/firebase';
 
 interface Unions {
     id: string;
@@ -30,15 +30,17 @@ const Search = () => {
     const [allUnions, setAllUnions] = useState<Array<Unions> | undefined>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
     const router = useRouter();
-    const { isAuthenticated } = useAppSelector(state => state.auth);
+    
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                router.push('/');
+            }
+        });
 
-    useEffect(() => { 
-        if (!isAuthenticated) {
-            router.push('/');
-        }
-    }, [isAuthenticated]);
+        return () => unsubscribe();
+    }, [router]);
 
     const formSchema = z.object({
         unionname: z.string().optional(),
