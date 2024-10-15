@@ -8,6 +8,7 @@ import {
     FormField,
     FormItem,
     FormLabel
+
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import "./search.css";
+import { useAppSelector, useAppDispatch } from '@/lib/redux/hooks/redux'
+import { useRouter } from 'next/navigation'
+import { listenToAuthChanges } from '@/lib/redux/features/auth/authSlice';
+
 
 interface Unions {
     id: string;
@@ -27,6 +32,16 @@ const Search = () => {
     const [allUnions, setAllUnions] = useState<Array<Unions> | undefined>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const router = useRouter();
+    const { isAuthenticated } = useAppSelector(state => state.auth);
+    const dispatch = useAppDispatch();
+
+    useEffect(() => { 
+        if (!isAuthenticated) {
+            router.push('/');
+        }
+    }, [isAuthenticated]);
 
     const formSchema = z.object({
         unionname: z.string().optional(),
