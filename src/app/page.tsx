@@ -1,5 +1,5 @@
 'use client'
-
+import Navbar from '../components/navbar/navbar'
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAppSelector } from "@/lib/redux/hooks/redux";
@@ -23,6 +23,7 @@ export default function Login() {
 
   return (
     <main className="min-w-full flex justify-center ">
+      <Navbar />
       <div className="max-w-fit content-center">
         {isAuthenticated != null ?
           (user ? (
