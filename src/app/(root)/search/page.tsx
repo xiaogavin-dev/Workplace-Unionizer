@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import VerticalNavbar from '../../../components/vertical-navbar/vertical-navbar';
 import HorizontalNavbar from '../../../components/horizontal-navbar/horizontal-navbar';
 import {
@@ -8,7 +8,6 @@ import {
     FormField,
     FormItem,
     FormLabel
-
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,9 +15,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import "./search.css";
-import { useAppSelector, useAppDispatch } from '@/lib/redux/hooks/redux'
-import { useRouter } from 'next/navigation'
-import { listenToAuthChanges } from '@/lib/redux/features/auth/authSlice';
+import { useAppSelector } from '@/lib/redux/hooks/redux';
+import { useRouter } from 'next/navigation';
 
 
 interface Unions {
@@ -35,7 +33,6 @@ const Search = () => {
 
     const router = useRouter();
     const { isAuthenticated } = useAppSelector(state => state.auth);
-    const dispatch = useAppDispatch();
 
     useEffect(() => { 
         if (!isAuthenticated) {
