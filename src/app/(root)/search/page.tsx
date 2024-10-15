@@ -1,32 +1,38 @@
 "use client"
-
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react';
+import VerticalNavbar from '../../../components/vertical-navbar/vertical-navbar';
+import HorizontalNavbar from '../../../components/horizontal-navbar/horizontal-navbar';
 import {
     Form,
     FormControl,
     FormField,
     FormItem,
     FormLabel
-} from "@/components/ui/form"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useForm } from 'react-hook-form'
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import "./search.css"
+
+} from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import "./search.css";
 import { useAppSelector, useAppDispatch } from '@/lib/redux/hooks/redux'
 import { useRouter } from 'next/navigation'
 import { listenToAuthChanges } from '@/lib/redux/features/auth/authSlice';
 
 
 interface Unions {
-    id: string,
-    name: string, 
-    location: string,
-    organization: string
+    id: string;
+    name: string;
+    location: string;
+    organization: string;
 }
 
-const search = () => {
+const Search = () => {
+    const [allUnions, setAllUnions] = useState<Array<Unions> | undefined>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
     const router = useRouter();
     const { isAuthenticated } = useAppSelector(state => state.auth);
     const dispatch = useAppDispatch();
@@ -37,17 +43,11 @@ const search = () => {
         }
     }, [isAuthenticated]);
 
-
-
-    const [allUnions, setAllUnions] = useState<Array<Unions> | undefined>([])
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
-
     const formSchema = z.object({
         unionname: z.string().optional(),
         location: z.string().optional(),
         organization: z.string().optional(),
-    })
+    });
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -56,10 +56,9 @@ const search = () => {
             location: "",
             organization: "",
         },
-    })
+    });
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        // Check if all fields are empty
         if (!values.unionname && !values.location && !values.organization) {
             setError("Please provide at least one search parameter.");
             setAllUnions([]);
@@ -99,68 +98,76 @@ const search = () => {
     }
 
     return (
-        <div className='search-page-container'>
-            <Form {...form}>
-                <div className='find-a-union'>
-                    <h1>Find A Union</h1>
+        <div className="page-wrapper">
+            <div className="horizontal-navbar-container">
+                <HorizontalNavbar pageName="Find a Union" />
+            </div>
+
+            <div className="content-container">
+                <div className="vertical-navbar-container">
+                    <VerticalNavbar />
                 </div>
-                <form id="search-form" onSubmit={form.handleSubmit(onSubmit)}>
-                    <FormField
-                        control={form.control}
-                        name="unionname"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className='find-tags'>Union Name</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Union Name" {...field} />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="location"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className='find-tags'>Location</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="City, State" {...field} />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="organization"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className='find-tags'>Organization</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Organization Name" {...field} />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
 
-                    <Button id="submit" type="submit" disabled={loading}>
-                        {loading ? 'Searching...' : 'Submit'}
-                    </Button>
-                </form>
-
-                {error && <p>{error}</p>}
-
-                {allUnions?.length > 0 && (
-                    <div className='union-results'>
-                        {allUnions.map((union) => (
-                            <Button key={union.id} className='union-button'>
-                                {union.name}
+                <div className="search-page-container">
+                    <Form {...form}>
+                        <form id="search-form" onSubmit={form.handleSubmit(onSubmit)}>
+                            <FormField
+                                control={form.control}
+                                name="unionname"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className='find-tags'>Search</FormLabel>
+                                        <FormControl>
+                                            <Input className="custom-input" placeholder="Union Name" {...field} />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="location"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className='find-tags'>Location</FormLabel>
+                                        <FormControl>
+                                            <Input className="custom-input" placeholder="City, State" {...field} />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="organization"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className='find-tags'>Organization</FormLabel>
+                                        <FormControl>
+                                            <Input className="custom-input" placeholder="Organization Name" {...field} />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                            <Button id="submit" type="submit" disabled={loading}>
+                                {loading ? 'Searching...' : 'Search'}
                             </Button>
-                        ))}
-                    </div>
-                )}
-            </Form>
+                        </form>
+
+                        {error && <p>{error}</p>}
+
+                        {allUnions?.length > 0 && (
+                            <div className='union-results'>
+                                {allUnions.map((union) => (
+                                    <Button key={union.id} className='union-button'>
+                                        {union.name}
+                                    </Button>
+                                ))}
+                            </div>
+                        )}
+                    </Form>
+                </div>
+            </div>
         </div>
     );
 };
 
-export default search
+export default Search;
