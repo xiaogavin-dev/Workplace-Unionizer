@@ -5,7 +5,7 @@ import { onAuthStateChanged } from "firebase/auth"
 export const listenToAuthChanges = createAsyncThunk(
     'auth/listenToAuthChanges',
     async (_, { dispatch }) => {
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             const unsubscribe = onAuthStateChanged(auth, (user) => {
                 console.log("AUTH STATE CHANGED...");
                 console.log("_______________________________________________________________");
