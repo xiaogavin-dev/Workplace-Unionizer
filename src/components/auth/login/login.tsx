@@ -48,7 +48,7 @@ const login = () => {
         setLoading(true);
         try {
             await signInWithEmailAndPassword(auth, values.email, values.password);
-            router.push('/');
+            router.push('/search');
         } catch (e: any) {
             console.error('There was an error with sign-in:', e); // Log the entire error object
     
