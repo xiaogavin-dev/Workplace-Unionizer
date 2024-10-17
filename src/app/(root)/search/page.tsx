@@ -151,7 +151,7 @@ const Search = () => {
                             </Button>
                         </form>
 
-                        {error && <p>{error}</p>}
+                        {error && <p id="error-message">{error}</p>}
 
                         {allUnions?.length > 0 && (
                             <div className='union-results'>
