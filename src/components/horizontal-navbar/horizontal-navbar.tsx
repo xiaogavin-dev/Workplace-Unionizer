@@ -60,17 +60,17 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
                                 </span>
                             </li>
                             <li>
-                                <a href="/profile">Profile</a>
+                                <a className="dropdown-button" href="/profile">Profile</a>
                             </li>
                             <li>
-                                <a href="/settings">Settings & Privacy</a>
+                                <a className="dropdown-button" href="/settings">Settings & Privacy</a>
                             </li>
                             <li>
-                                <a href="/help">Help</a>
+                                <a className="dropdown-button" href="/help">Help</a>
                             </li>
                             <hr />
                             <li>
-                                <button onClick={handleSignOut} className="dropdown-logout-button">
+                                <button onClick={handleSignOut} className="dropdown-button">
                                     Logout
                                 </button>
                             </li>

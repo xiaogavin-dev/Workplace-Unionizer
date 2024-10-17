@@ -64,9 +64,13 @@
 }
 
 .dropdown-menu li {
-    padding: 10px 40px;
     cursor: pointer;
     color: var(--foreground);
+    padding: 10px;
+}
+
+.dropdown-button { 
+    padding: 10px 40px;
 }
 
 .dropdown-menu li:hover {
