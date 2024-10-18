@@ -54,7 +54,8 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 4px;
     z-index: 1000;
-    padding: 10px 0;
+    /* padding: 10px; */
+    
 }
 
 .dropdown-menu ul {
@@ -70,7 +71,7 @@
 }
 
 .dropdown-button { 
-    padding: 10px 40px;
+    padding: 5px 40px 0 0;
 }
 
 .dropdown-menu li:hover {
