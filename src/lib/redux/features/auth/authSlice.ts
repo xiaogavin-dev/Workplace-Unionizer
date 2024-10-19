@@ -38,6 +38,11 @@ export const listenToAuthChanges = createAsyncThunk(
         });
     }
 );
+interface User {
+    uid: string,
+    email: string,
+    displayName: string
+}
 // Auth slice definition
 export const authSlice = createSlice({
     name: 'auth',
@@ -54,6 +59,6 @@ export const authSlice = createSlice({
         },
     },
 });
-
+export type { User as userType }
 export const { setAuthState } = authSlice.actions
 export default authSlice.reducer

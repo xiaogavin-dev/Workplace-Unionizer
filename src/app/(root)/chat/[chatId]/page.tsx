@@ -22,7 +22,7 @@ const page: FC<pageProps> = ({ params }: pageProps) => {
     useEffect(() => {
         console.log(user)
         if (!user) {
-            router.push('/auth/login')
+            // router.push('/auth/login')
         }
     }, [])
     return (
