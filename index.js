@@ -1,15 +1,33 @@
 require('dotenv').config({ path: `${process.cwd()}/.env` })
-
+const { Server } = require('socket.io')
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const pool = require('./db'); // Import the db.js file
-
+const socketIo = require('socket.io');
+const http = require('http');
+const socketInit = require("./socket/index")
+// ROUTERS
 const unionRouter = require('./route/unionRoute')
 
+//MIDDLEWARE EXPRESS+CORS
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+// Chat implementation
+const server = http.createServer(app);
+// const io = new Server(server, {
+//   cors: { origin: "http://localhost:3000", methods: ["GET", "POST"] }
+// })
+
+// io.on("connection", (socket) => {
+//   console.log(`a user connected ${socket.id}`);
+//   socket.on("send_message", (data) => {
+//     socket.broadcast.emit("receive_message", data);
+//   });
+// });
+
 
 const port = process.env.PORT || 5000;
 
@@ -58,6 +76,7 @@ app.use('*', (req, res, next) => {
   });
 });
 
-app.listen(port, () => {
+server.listen(port, () => {
+  socketInit(server)
   console.log(`App is listening on port ${port}`);
 });
