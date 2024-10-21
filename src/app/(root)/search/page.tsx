@@ -18,6 +18,7 @@ import "./search.css";
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from '../../../firebase/firebase';
+import { useRouter } from 'next/navigation';
 
 interface Unions {
     id: string;
@@ -31,16 +32,10 @@ const Search = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
-    
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                router.push('/');
-            }
-        });
 
-        return () => unsubscribe();
-    }, [router]);
+    const handleUnionClick = (unionId) => {
+        router.push(`/unions/${unionId}`);
+    };
 
     const formSchema = z.object({
         unionname: z.string().optional(),
@@ -151,12 +146,12 @@ const Search = () => {
                             </Button>
                         </form>
 
-                        {error && <p>{error}</p>}
+                        {error && <p id="error-message">{error}</p>}
 
                         {allUnions?.length > 0 && (
                             <div className='union-results'>
                                 {allUnions.map((union) => (
-                                    <Button key={union.id} className='union-button'>
+                                    <Button key={union.id} className='union-button' onClick={() => handleUnionClick(union.id)}>
                                         {union.name}
                                     </Button>
                                 ))}
