@@ -20,7 +20,6 @@ const page: FC<pageProps> = ({ params }: pageProps) => {
     const { user } = useAppSelector(state => state.auth)
     const router = useRouter()
     useEffect(() => {
-        console.log(user)
         if (!user) {
             // router.push('/auth/login')
         }
