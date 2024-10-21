@@ -151,12 +151,12 @@ const Search = () => {
                             </Button>
                         </form>
 
-                        {error && <p>{error}</p>}
+                        {error && <p id="error-message">{error}</p>}
 
                         {allUnions?.length > 0 && (
                             <div className='union-results'>
                                 {allUnions.map((union) => (
-                                    <Button key={union.id} className='union-button'>
+                                    <Button key={union.id} className='union-button' onClick={() => handleUnionClick(union.id)}>
                                         {union.name}
                                     </Button>
                                 ))}

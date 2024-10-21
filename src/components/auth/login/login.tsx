@@ -1,11 +1,10 @@
 "use client"
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { SignInValidation } from '@/lib/validate'
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
 import PropagateLoader from "react-spinners/PropagateLoader"
 import {
     Form,
@@ -17,22 +16,23 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useRouter } from 'next/navigation'
-import { setPersistence, browserLocalPersistence } from 'firebase/auth';
+import { setPersistence, browserLocalPersistence, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../../firebase/firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth'
 import Link from 'next/link'
 import './signin.css'
 
 const login = () => {
-    const router = useRouter()
-    const [loading, setLoading] = useState<boolean>(false)
+    const router = useRouter();
+    const [loading, setLoading] = useState<boolean>(false);
+
     const form = useForm<z.infer<typeof SignInValidation>>({
         resolver: zodResolver(SignInValidation),
         defaultValues: {
             email: "",
             password: "",
         },
-    })
+    });
+
     // Set persistence in a client component or useEffect hook
     useEffect(() => {
         setPersistence(auth, browserLocalPersistence)
@@ -43,17 +43,28 @@ const login = () => {
                 console.error('Error setting persistence:', error);
             });
     }, []);
+
     async function onSubmit(values: z.infer<typeof SignInValidation>) {
-        setLoading(true)
+        setLoading(true);
         try {
-            await signInWithEmailAndPassword(auth, values.email, values.password)
+            await signInWithEmailAndPassword(auth, values.email, values.password);
+            router.push('/search');
+        } catch (e: any) {
+            console.error('There was an error with sign-in:', e); // Log the entire error object
+    
+            // Log the error code to check the exact value of `e.code`
+            console.log('Firebase Error Code:', e.code);
+    
+            // Handle specific Firebase authentication errors using alerts
+            if (e.code === 'auth/invalid-credential') {
+                alert("Incorrect email or password.");
+            }else {
+                alert("An unexpected error occurred. Please try again.");
+            }
         }
-        catch (e) {
-            console.error('There was an error with sign in: ', e)
-        }
-        router.push('/')
-        setLoading(false)
+        setLoading(false);
     }
+
     return (
         <div className='login-center-container'>
             <Form {...form}>
@@ -90,15 +101,16 @@ const login = () => {
                     />
                     <h3><a href="/auth/forgotpassword" id="forgot-password">Forgot Password?</a></h3>
                     <div className='flex justify-center'>
-                        {loading ?
+                        {loading ? (
                             <PropagateLoader className='align-self-center' />
-                            :
+                        ) : (
                             <Button className='w-full hover:bg-blue-700' type="submit">Login</Button>
-                        }
+                        )}
                     </div>
                     <h3 id="new-to-unionizer">New to Unionizer? <Link href="/auth/signup" id="join-now">Join now</Link></h3>
                 </form>
             </Form>
-        </div>)
+        </div>
+    )
 }
 export default login
