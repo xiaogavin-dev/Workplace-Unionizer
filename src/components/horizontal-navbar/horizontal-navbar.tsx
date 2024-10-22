@@ -28,20 +28,20 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
     }, [dispatch]);
 
 
-    const handleSignOut = () => {
-        doSignOut().then(() => {
-            // You can add any additional actions or state updates here, if needed
+    const handleSignOut = async () => {
+        try {
+            await doSignOut();
             console.log('User logged out successfully.');
             router.push('/');
-        }).catch(error => {
+        } catch (error) {
             console.error('Error signing out:', error);
-        });
+        }
     };
 
     return (
         <div className="horizontal-navbar-container">
             <div className="navbar-left">
-                <a href="/search" className="navbar-logo">
+                <a href="/" className="navbar-logo">
                     <img src="https://flowbite.com/docs/images/logo.svg" className="logo" alt="Flowbite Logo" />
                     <span className="name">Unionizer</span>
                 </a>
@@ -55,22 +55,22 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
                     <div className="dropdown-menu">
                         <ul>
                             <li>
-                                <span className="block py-2 px-3 rounded md:p-0">
+                                <span className="block py-2 px-3 text-gray-900 rounded md:p-0 dark:text-white">
                                     {user?.displayName}
                                 </span>
                             </li>
                             <li>
-                                <a className="dropdown-button" href="/profile">Profile</a>
+                                <a href="/profile">Profile</a>
                             </li>
                             <li>
-                                <a className="dropdown-button" href="/settings">Settings & Privacy</a>
+                                <a href="/settings">Settings & Privacy</a>
                             </li>
                             <li>
-                                <a className="dropdown-button" href="/help">Help</a>
+                                <a href="/help">Help</a>
                             </li>
                             <hr />
                             <li>
-                                <button onClick={handleSignOut} className="dropdown-button">
+                                <button onClick={handleSignOut} className="dropdown-logout-button">
                                     Logout
                                 </button>
                             </li>

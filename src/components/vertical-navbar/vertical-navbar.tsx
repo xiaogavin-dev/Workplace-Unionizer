@@ -19,7 +19,7 @@ const VerticalNavbar = () => {
                     <div className="navbar-item" style={{ backgroundColor: '#f39c12' }} onClick={() => handleClick(1)}></div>
                     <div className="navbar-item" style={{ backgroundColor: '#3498db' }} onClick={() => handleClick(2)}></div>
                     <div className="navbar-item" style={{ backgroundColor: '#e74c3c' }} onClick={() => handleClick(3)}></div>
-                    <a className="add-button" href="/resources/forming-a-union">+</a>
+                    <div className="add-button">+</div>
                 </div>
                 <div className={`info-panel ${activePanel ? 'active' : ''}`}>
                     {activePanel && (
@@ -29,7 +29,7 @@ const VerticalNavbar = () => {
                         </div>
                     )}
                 </div>
-                <a href="/resources"><div className="book-button">📚</div></a>
+                <a href="./resources"><div className="book-button">📚</div></a>
 
             </div>
         </div>
