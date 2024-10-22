@@ -64,6 +64,7 @@
     width: 100%;
     margin-top: 10px;
 }
+<<<<<<< HEAD
 
 #error-message {
     display: flex;
@@ -72,3 +73,5 @@
     margin: 10px;
     color: red;
 }
+=======
+>>>>>>> 2d6fa44b2cbd66788de086c0ca1fd381d085dfd5

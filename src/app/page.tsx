@@ -23,7 +23,11 @@ export default function Login() {
 
   return (
     <main className="min-w-full flex justify-center ">
+<<<<<<< HEAD
       {/* <Navbar /> */}
+=======
+      <Navbar />
+>>>>>>> 2d6fa44b2cbd66788de086c0ca1fd381d085dfd5
       <div className="max-w-fit content-center">
         {isAuthenticated != null ?
           (user ? (

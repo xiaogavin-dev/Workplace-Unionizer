@@ -33,7 +33,11 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/lib/redux/features/auth/authSlicejs"
+<<<<<<< HEAD
 , "src/app/(root)/unions/[id].tsx"  ],
+=======
+  ],
+>>>>>>> 2d6fa44b2cbd66788de086c0ca1fd381d085dfd5
   "exclude": [
     "node_modules"
   ]

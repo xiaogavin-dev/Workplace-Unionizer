@@ -151,12 +151,20 @@ const Search = () => {
                             </Button>
                         </form>
 
+<<<<<<< HEAD
                         {error && <p id="error-message">{error}</p>}
+=======
+                        {error && <p>{error}</p>}
+>>>>>>> 2d6fa44b2cbd66788de086c0ca1fd381d085dfd5
 
                         {allUnions?.length > 0 && (
                             <div className='union-results'>
                                 {allUnions.map((union) => (
+<<<<<<< HEAD
                                     <Button key={union.id} className='union-button' onClick={() => handleUnionClick(union.id)}>
+=======
+                                    <Button key={union.id} className='union-button'>
+>>>>>>> 2d6fa44b2cbd66788de086c0ca1fd381d085dfd5
                                         {union.name}
                                     </Button>
                                 ))}
