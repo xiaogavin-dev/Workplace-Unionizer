@@ -3,7 +3,7 @@ require('dotenv').config({ path: `${process.cwd()}/.env` })
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
-const pool = require('./db'); // Import the db.js file
+const pool = require('./db'); 
 
 const unionRouter = require('./route/unionRoute')
 

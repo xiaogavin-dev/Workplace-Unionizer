@@ -1,17 +1,12 @@
-// const getUnions = (req, res, next) => {
-//     console.log("we hit getUnions endpoint")
-//     return res.status(200).json({
-//         status: 'success',
-//         message: 'hit unions'
-//     })
-// }
-// module.exports = { getUnions }
-
 const pool = require('../db');
 
 const getUnions = async (req, res) => {
   try {
-    const { unionname, location, organization } = req.query;
+    const {
+      unionname,
+      location,
+      organization
+    } = req.query;
 
     let query = 'SELECT * FROM unions WHERE 1=1';
     const queryParams = [];
@@ -56,4 +51,6 @@ const getUnions = async (req, res) => {
   }
 };
 
-module.exports = { getUnions };
+module.exports = {
+  getUnions
+};
