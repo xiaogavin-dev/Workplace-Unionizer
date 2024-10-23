@@ -145,10 +145,14 @@ const Search = () => {
 
                             {error && <p>{error}</p>}
 
-                            {allUnions?.length > 0 && (
+                             {allUnions?.length > 0 && (
                                 <div className='union-results'>
                                     {allUnions.map((union) => (
-                                        <Button key={union.id} className='union-button'>
+                                        <Button 
+                                            key={union.id} 
+                                            className='union-button'
+                                            onClick={() => router.push(`/unions/${union.id}`)} // Navigate to the specific union page
+                                        >
                                             {union.name}
                                         </Button>
                                     ))}
