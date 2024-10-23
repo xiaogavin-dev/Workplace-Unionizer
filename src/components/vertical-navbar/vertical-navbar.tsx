@@ -1,40 +1,49 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import './vertical-navbar.css';
 
-const VerticalNavbar = () => {
-    const [activePanel, setActivePanel] = useState<number | null>(null);
+const VerticalNavbar = ({ togglePopup, buttonRef }: { togglePopup: () => void, buttonRef: React.RefObject<HTMLDivElement> }) => {
+    const router = useRouter();
+    const pathname = usePathname();
 
-    const handleClick = (panel: number) => {
-        setActivePanel(panel);
-    };
+    const handleBookButtonClick = (e: React.MouseEvent) => {
+        e.stopPropagation(); 
 
-    const closePanel = () => {
-        setActivePanel(null); 
+        if (pathname.startsWith('/resources')) {
+            setTimeout(() => {
+                if (typeof togglePopup === 'function') {
+                    togglePopup();
+                }
+            }, 200); 
+        } else {
+            router.push('/resources'); 
+            setTimeout(() => {
+                if (typeof togglePopup === 'function') {
+                    togglePopup(); 
+                }
+            }, 200); 
+        }
+
     };
 
     return (
         <div className="main-container">
             <div className="vertical-navbar">
                 <div className="navbar-items">
-                    <div className="navbar-item" style={{ backgroundColor: '#f39c12' }} onClick={() => handleClick(1)}></div>
-                    <div className="navbar-item" style={{ backgroundColor: '#3498db' }} onClick={() => handleClick(2)}></div>
-                    <div className="navbar-item" style={{ backgroundColor: '#e74c3c' }} onClick={() => handleClick(3)}></div>
-                    <div className="add-button">+</div>
+                    <div className="navbar-item" style={{ backgroundColor: '#f39c12' }}></div>
+                    <div className="navbar-item" style={{ backgroundColor: '#3498db' }}></div>
+                    <div className="navbar-item" style={{ backgroundColor: '#e74c3c' }}></div>
+                    <a href="/search"><div className="add-button">+</div></a>
                 </div>
-                <div className={`info-panel ${activePanel ? 'active' : ''}`}>
-                    {activePanel && (
-                        <div>
-                            <button className="close-button" onClick={closePanel}>X</button>
-                            <p>Information about panel {activePanel}</p>
-                        </div>
-                    )}
-                </div>
-                <a href="./resources"><div className="book-button">📚</div></a>
 
+                <div className="book-button" ref={buttonRef} onClick={handleBookButtonClick} style={{ cursor: 'pointer' }}>
+                    📚
+                </div>
             </div>
         </div>
     );
 };
 
 export default VerticalNavbar;
+
 

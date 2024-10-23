@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import VerticalNavbar from '../../../../components/vertical-navbar/vertical-navbar';
-import HorizontalNavbar from '../../../../components/horizontal-navbar/horizontal-navbar';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import "../resources.css"; 
@@ -29,14 +27,6 @@ const FormingUnion = () => {
 
     return (
         <div className="page-wrapper">
-            <div className="horizontal-navbar-container">
-                <HorizontalNavbar pageName="Forming a Union" />
-            </div>
-
-            <div className="content-container">
-                <div className="vertical-navbar-container">
-                    <VerticalNavbar />
-                </div>
 
                 <div className="form-container">
                     <h1>Forming a Union</h1>
@@ -91,7 +81,6 @@ const FormingUnion = () => {
                     </form>
                 </div>
             </div>
-        </div>
     );
 };
 

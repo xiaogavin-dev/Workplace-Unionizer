@@ -5,7 +5,7 @@
     position: absolute;
     top: 60px;
     left: 0;
-    width: 80px;
+    width: 90px;
     height: calc(100vh - 5px);
     background-color:  var(--navbar-background);
     display: flex;
