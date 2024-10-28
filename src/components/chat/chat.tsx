@@ -28,9 +28,11 @@ interface ServerToClientEvents {
 interface ClientToServerEvents {
     hello: () => void;
 }
+
 interface messageType {
     message: string[]
 }
+
 export interface RoomType {
     room: string | null;
     socketId: string | null
@@ -47,6 +49,7 @@ const sentMessagesSeed: messageType = {
         "I've been good"
     ]
 }
+
 const receivedMessagesSeed: messageType = {
     message: [
         "Hey, I'm doing alright, hbu?",
@@ -73,10 +76,8 @@ const Chat: FC<chatProps> = ({ }) => {
     const [receivedMessages, setReceivedMessages] = useState<messageType>(receivedMessagesSeed);
 
     const selectRoom = (item: RoomType) => {
+        console.log(item)
         setRoomData(item);
-        if (socketRef.current?.connected) {
-            socketRef.current.emit("join_room", item)
-        }
     };
 
     const form = useForm<z.infer<typeof FormSchema>>({
@@ -90,7 +91,7 @@ const Chat: FC<chatProps> = ({ }) => {
             console.log(data.message);
             setSentMessages((old: messageType) => ({
                 ...old,
-                message: old.message
+                message: [...old.message, data.message]
             }))
             socketRef.current.emit("SEND_MSG", data.message, roomData);
         }
@@ -100,7 +101,7 @@ const Chat: FC<chatProps> = ({ }) => {
     useEffect(() => {
         // if (!socketRef.current || !socketRef.current.connected) {
         socketRef.current = socket
-        console.log()
+        console.log("HELLLLLO")
         socketRef.current.on("connect", () => {
             console.log("Socket connected");
             setIsConnected(true);
@@ -108,16 +109,19 @@ const Chat: FC<chatProps> = ({ }) => {
 
         socketRef.current.on("RECEIVED_MSG", (data) => {
             console.log("Message received:", data);
-            setReceivedMessage(data.message);
+            setReceivedMessages(data.message);
         });
-        // }
-
 
     }, []);
 
     useEffect(() => {
-        console.log(user)
-        if (user && isConnected && socketRef.current && roomData.room) {
+        console.log("USER: ", user)
+        console.log("ROOM NAME: ", roomData.room)
+        console.log("SOCKET: ", socketRef.current)
+        console.log("IS CONNECTED?: ", socketRef.current?.connected)
+
+        if (user && socketRef.current && socketRef.current.connected && roomData.room) {
+
             socketRef.current.emit("join_room", user, roomData);
             socketRef.current.on("USER_ADDED", (data) => {
                 console.log("Users in room:", data);

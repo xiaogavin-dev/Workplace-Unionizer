@@ -29,14 +29,14 @@ const ChatHeader: FC<chatHeaderProps> = ({ roomName }) => {
 
 const ChatBody: FC<chatBodyProps> = ({ sentMessages, receivedMessages }) => {
     return (<>
-        {sentMessages.message.map((message, index) => (
+        {sentMessages.message.toReversed().map((message, index) => (
             <div className='flex justify-end mb-4 cursor-pointer'>
                 <div className='flex max-w-96 bg-indigo-500 text-white rounded-lg p-3 gap-3'>
                     <p key={index} >{message}</p>
                 </div>
             </div>
         ))}
-        {receivedMessages.message.map((message, index) => (
+        {receivedMessages.message.toReversed().map((message, index) => (
             <div className='flex mb-4 cursor-pointer'>
                 <div className="w-9 h-9 rounded-full flex items-center justify-center mr-2">
                 </div>
