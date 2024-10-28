@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAppSelector } from "@/lib/redux/hooks/redux";
 import { Button } from "@/components/ui/button";
+import { useEffect } from 'react';
 interface User {
   displayName?: string,
   uid: string,
@@ -20,7 +21,9 @@ export default function Login() {
   // if (isAuthenticated && user) {
   //   router.push("/community");
   // }
-
+  useEffect(() => {
+    console.log(user)
+  }, [user])
   return (
     <main className="min-w-full flex justify-center ">
       <div className="max-w-fit content-center">
