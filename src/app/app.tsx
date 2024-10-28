@@ -1,24 +1,19 @@
-"use client"
-import React from 'react'
-import HorizontalNavbar from "@/components/horizontal-navbar/horizontal-navbar";
-import VerticalNavbar from "@/components/vertical-navbar/vertical-navbar";
+"use client";
+import React from 'react';
 import { Provider } from 'react-redux';
-import { AppStore, makeStore } from '../lib/redux/store'
-const app = ({ children }: Readonly<{
-    children: React.ReactNode;
-}>) => {
+import { AppStore, makeStore } from '../lib/redux/store';
+
+const App = ({ children }: { children: React.ReactNode }) => {
     const store: AppStore = makeStore();
+
     return (
         <Provider store={store}>
-            <div className='min-h-screen flex justify-center '>
-                <HorizontalNavbar />
-                <div className='mt-16'>
-                    <VerticalNavbar />
-                    {children}
-                </div>
+            <div className='min-h-screen flex justify-center'>
+                {children}
             </div>
         </Provider>
-    )
+    );
 }
 
-export default app
+export default App;
+

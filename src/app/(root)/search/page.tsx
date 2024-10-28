@@ -1,7 +1,6 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from 'react';
-import VerticalNavbar from '../../../components/vertical-navbar/vertical-navbar';
-import HorizontalNavbar from '../../../components/horizontal-navbar/horizontal-navbar';
+import Layout from '@/components/Layout';
 import {
     Form,
     FormControl,
@@ -31,11 +30,11 @@ const Search = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
-    
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (!user) {
-                router.push('/');
+                router.push('/');  // Redirect to the homepage if user is not authenticated
             }
         });
 
@@ -97,75 +96,73 @@ const Search = () => {
     }
 
     return (
-        <div className="page-wrapper">
-            <div className="horizontal-navbar-container">
-                <HorizontalNavbar pageName="Find a Union" />
-            </div>
+        <Layout>
+            <div className="page-wrapper">
+                <div className="content-container">
+                    <div className="search-page-container">
+                        <Form {...form}>
+                            <form id="search-form" onSubmit={form.handleSubmit(onSubmit)}>
+                                <FormField
+                                    control={form.control}
+                                    name="unionname"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className='find-tags'>Search</FormLabel>
+                                            <FormControl>
+                                                <Input className="custom-input" placeholder="Union Name" {...field} />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="location"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className='find-tags'>Location</FormLabel>
+                                            <FormControl>
+                                                <Input className="custom-input" placeholder="City, State" {...field} />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="organization"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className='find-tags'>Organization</FormLabel>
+                                            <FormControl>
+                                                <Input className="custom-input" placeholder="Organization Name" {...field} />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+                                <Button id="submit" type="submit" disabled={loading}>
+                                    {loading ? 'Searching...' : 'Search'}
+                                </Button>
+                            </form>
 
-            <div className="content-container">
-                <div className="vertical-navbar-container">
-                    <VerticalNavbar />
-                </div>
+                            {error && <p>{error}</p>}
 
-                <div className="search-page-container">
-                    <Form {...form}>
-                        <form id="search-form" onSubmit={form.handleSubmit(onSubmit)}>
-                            <FormField
-                                control={form.control}
-                                name="unionname"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className='find-tags'>Search</FormLabel>
-                                        <FormControl>
-                                            <Input className="custom-input" placeholder="Union Name" {...field} />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="location"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className='find-tags'>Location</FormLabel>
-                                        <FormControl>
-                                            <Input className="custom-input" placeholder="City, State" {...field} />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="organization"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className='find-tags'>Organization</FormLabel>
-                                        <FormControl>
-                                            <Input className="custom-input" placeholder="Organization Name" {...field} />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                            <Button id="submit" type="submit" disabled={loading}>
-                                {loading ? 'Searching...' : 'Search'}
-                            </Button>
-                        </form>
-
-                        {error && <p>{error}</p>}
-
-                        {allUnions?.length > 0 && (
-                            <div className='union-results'>
-                                {allUnions.map((union) => (
-                                    <Button key={union.id} className='union-button'>
-                                        {union.name}
-                                    </Button>
-                                ))}
-                            </div>
-                        )}
-                    </Form>
+                             {allUnions?.length > 0 && (
+                                <div className='union-results'>
+                                    {allUnions.map((union) => (
+                                        <Button 
+                                            key={union.id} 
+                                            className='union-button'
+                                            onClick={() => router.push(`/unions/${union.id}`)} // Navigate to the specific union page
+                                        >
+                                            {union.name}
+                                        </Button>
+                                    ))}
+                                </div>
+                            )}
+                        </Form>
+                    </div>
                 </div>
             </div>
-        </div>
+        </Layout>
     );
 };
 

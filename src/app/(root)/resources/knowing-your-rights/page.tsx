@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import "../resources.css";
 
-const Strike = () => {
+const Rights = () => {
 
     return (
         <div className="page-wrapper">
@@ -12,4 +12,4 @@ const Strike = () => {
     );
 };
 
-export default Strike;
+export default Rights;
