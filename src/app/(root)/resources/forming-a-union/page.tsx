@@ -1,87 +1,80 @@
 "use client";
-
 import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import "../resources.css"; 
+import { useRouter } from 'next/navigation';
+import './formUnion.css';
 
-const FormingUnion = () => {
-    const [formData, setFormData] = useState({
-        name: '',
-        status: '',
-        location: '',
-        organization: ''
-    });
+const AddUnionForm = () => {
+  const [name, setName] = useState('');
+  const [location, setLocation] = useState('');
+  const [status, setStatus] = useState('union');
+  const [organization, setOrganization] = useState('');
+  const [message, setMessage] = useState('');
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage(''); // Clear previous message
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Form Data:', formData);
-    };
+    // Check for empty fields
+    if (!name || !location || !status || !organization) {
+      setMessage('Please fill in all fields.');
+      return;
+    }
 
-    return (
-        <div className="page-wrapper">
+    try {
+      const response = await fetch('http://localhost:5000/union/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, location, status, organization }),
+      });
 
-                <div className="form-container">
-                    <h1>Forming a Union</h1>
-                    <form onSubmit={handleSubmit}>
-                        <div className="form-field">
-                            <label>Name:</label>
-                            <Input 
-                                type="text" 
-                                name="name" 
-                                value={formData.name} 
-                                onChange={handleChange} 
-                                placeholder="Enter name" 
-                            />
-                        </div>
+      const data = await response.json();
+      if (response.ok) {
+        setMessage('Union successfully added to the database!');
+        setName('');
+        setLocation('');
+        setStatus('union');
+        setOrganization('');
+      } else {
+        setMessage(`Error: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('An error occurred:', error);
+      setMessage('An error occurred while submitting the form.');
+    }
+  };
 
-                        <div className="form-field">
-                            <label>Status:</label>
-                            <Input 
-                                type="text" 
-                                name="status" 
-                                value={formData.status} 
-                                onChange={handleChange} 
-                                placeholder="Enter status" 
-                            />
-                        </div>
-
-                        <div className="form-field">
-                            <label>Location:</label>
-                            <Input 
-                                type="text" 
-                                name="location" 
-                                value={formData.location} 
-                                onChange={handleChange} 
-                                placeholder="Enter location" 
-                            />
-                        </div>
-
-                        <div className="form-field">
-                            <label>Organization:</label>
-                            <Input 
-                                type="text" 
-                                name="organization" 
-                                value={formData.organization} 
-                                onChange={handleChange} 
-                                placeholder="Enter organization" 
-                            />
-                        </div>
-
-                        <Button type="submit" className="submit-button">
-                            Submit
-                        </Button>
-                    </form>
-                </div>
-            </div>
-    );
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Name"
+        />
+        <input
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          placeholder="Location"
+        />
+        <select
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+        >
+          <option value="union">Union</option>
+          <option value="pending">Pending</option>
+        </select>
+        <input
+          value={organization}
+          onChange={(e) => setOrganization(e.target.value)}
+          placeholder="Organization"
+        />
+        <button type="submit">Add Union</button>
+        {message && <p>{message}</p>}
+      </form>
+    </div>
+  );
 };
 
-export default FormingUnion;
+export default AddUnionForm;
