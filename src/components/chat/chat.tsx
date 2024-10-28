@@ -28,7 +28,9 @@ interface ServerToClientEvents {
 interface ClientToServerEvents {
     hello: () => void;
 }
-
+interface messageType {
+    message: string[]
+}
 export interface RoomType {
     room: string | null;
     socketId: string | null
@@ -38,6 +40,20 @@ const chatRoomsTest: Array<RoomType> = [
     { room: "general chat 1", socketId: null },
     { room: "general chat 2", socketId: null },
 ];
+
+const sentMessagesSeed: messageType = {
+    message: [
+        "hello, how are you doing",
+        "I've been good"
+    ]
+}
+const receivedMessagesSeed: messageType = {
+    message: [
+        "Hey, I'm doing alright, hbu?",
+        "thats nice to hear"
+    ]
+}
+
 const socket = io(PATH, {
     reconnection: true,
     reconnectionAttempts: 5,
@@ -53,9 +69,14 @@ const Chat: FC<chatProps> = ({ }) => {
     const [isConnected, setIsConnected] = useState<boolean>(false);
     const [roomData, setRoomData] = useState<RoomType>({ room: null, socketId: null });
     const [chatRooms, setChatRooms] = useState<Array<RoomType>>(chatRoomsTest);
+    const [sentMessages, setSentMessages] = useState<messageType>(sentMessagesSeed);
+    const [receivedMessages, setReceivedMessages] = useState<messageType>(receivedMessagesSeed);
 
     const selectRoom = (item: RoomType) => {
         setRoomData(item);
+        if (socketRef.current?.connected) {
+            socketRef.current.emit("join_room", item)
+        }
     };
 
     const form = useForm<z.infer<typeof FormSchema>>({
@@ -67,6 +88,10 @@ const Chat: FC<chatProps> = ({ }) => {
         if (socketRef.current?.connected) {
             const msg_details = { msg: data.message, receiver: roomData };
             console.log(data.message);
+            setSentMessages((old: messageType) => ({
+                ...old,
+                message: old.message
+            }))
             socketRef.current.emit("SEND_MSG", data.message, roomData);
         }
     };
@@ -75,7 +100,7 @@ const Chat: FC<chatProps> = ({ }) => {
     useEffect(() => {
         // if (!socketRef.current || !socketRef.current.connected) {
         socketRef.current = socket
-        console.log("hello")
+        console.log()
         socketRef.current.on("connect", () => {
             console.log("Socket connected");
             setIsConnected(true);
@@ -91,6 +116,7 @@ const Chat: FC<chatProps> = ({ }) => {
     }, []);
 
     useEffect(() => {
+        console.log(user)
         if (user && isConnected && socketRef.current && roomData.room) {
             socketRef.current.emit("join_room", user, roomData);
             socketRef.current.on("USER_ADDED", (data) => {
@@ -109,7 +135,7 @@ const Chat: FC<chatProps> = ({ }) => {
                         <CardDescription>Card Description</CardDescription>
                     </CardHeader>
                     <CardContent className='flex-grow flex flex-col-reverse overflow-y overflow-y-auto p-4'>
-                        <ChatBody messages={roomData} />
+                        <ChatBody sentMessages={sentMessages} receivedMessages={receivedMessages} />
                     </CardContent>
                     <CardFooter className='flex-none space-y-4'>
                         <ChatInput form={form} onSubmit={onSubmit} />

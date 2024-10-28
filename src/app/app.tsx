@@ -1,5 +1,7 @@
 "use client"
 import React from 'react'
+import HorizontalNavbar from "@/components/horizontal-navbar/horizontal-navbar";
+import VerticalNavbar from "@/components/vertical-navbar/vertical-navbar";
 import { Provider } from 'react-redux';
 import { AppStore, makeStore } from '../lib/redux/store'
 const app = ({ children }: Readonly<{
@@ -9,7 +11,11 @@ const app = ({ children }: Readonly<{
     return (
         <Provider store={store}>
             <div className='min-h-screen flex justify-center '>
-                {children}
+                <HorizontalNavbar />
+                <div className='mt-16'>
+                    <VerticalNavbar />
+                    {children}
+                </div>
             </div>
         </Provider>
     )

@@ -11,7 +11,7 @@ interface User {
 }
 export default function Login() {
   const router = useRouter()
-  const { isAuthenticated, isLoading, user }: { 
+  const { isAuthenticated, isLoading, user }: {
     isAuthenticated: boolean;
     isLoading: boolean;
     user: User | null;
@@ -23,7 +23,6 @@ export default function Login() {
 
   return (
     <main className="min-w-full flex justify-center ">
-      <Navbar />
       <div className="max-w-fit content-center">
         {isAuthenticated != null ?
           (user ? (

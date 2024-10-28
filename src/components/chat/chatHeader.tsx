@@ -13,7 +13,8 @@ interface chatHeaderProps {
     roomName: string | null
 }
 interface chatBodyProps {
-    messages: object
+    sentMessages: { message: string[] },
+    receivedMessages: { message: string[] }
 }
 interface chatInputProps {
     form: any,
@@ -26,10 +27,38 @@ const ChatHeader: FC<chatHeaderProps> = ({ roomName }) => {
     </>)
 }
 
-const ChatBody: FC<chatBodyProps> = ({ messages }) => {
-    return <div>{ }</div>
-}
-
+const ChatBody: FC<chatBodyProps> = ({ sentMessages, receivedMessages }) => {
+    return (<>
+        {sentMessages.message.map((message, index) => (
+            <div className='flex justify-end mb-4 cursor-pointer'>
+                <div className='flex max-w-96 bg-indigo-500 text-white rounded-lg p-3 gap-3'>
+                    <p key={index} >{message}</p>
+                </div>
+            </div>
+        ))}
+        {receivedMessages.message.map((message, index) => (
+            <div className='flex mb-4 cursor-pointer'>
+                <div className="w-9 h-9 rounded-full flex items-center justify-center mr-2">
+                </div>
+                <div className='flex max-w-96 bg-white rounded-lg p-3 gap-3'>
+                    <p key={index} className='text-gray-700'>{message}</p>
+                </div>
+            </div>
+        ))}
+    </>
+    );
+};
+/*
+`           <div class="flex justify-end mb-4 cursor-pointer">
+                 <div class="flex max-w-96 bg-indigo-500 text-white rounded-lg p-3 gap-3">
+                   <p>Hi Alice! I'm good, just finished a great book. How about you?</p>
+                 </div>
+                 <div class="w-9 h-9 rounded-full flex items-center justify-center ml-2">
+                   <img src="https://placehold.co/200x/b7a8ff/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato" alt="My Avatar" class="w-8 h-8 rounded-full">
+                 </div>
+            </div>
+};
+*/
 const ChatInput: FC<chatInputProps> = ({ form, onSubmit }) => {
     return (
         <>

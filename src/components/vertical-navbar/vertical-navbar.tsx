@@ -9,7 +9,7 @@ const VerticalNavbar = () => {
     };
 
     const closePanel = () => {
-        setActivePanel(null); 
+        setActivePanel(null);
     };
 
     return (
