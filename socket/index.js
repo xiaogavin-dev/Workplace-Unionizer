@@ -28,11 +28,12 @@ const socketInit = (server) => {
         socket.on("join_room", (user, room) => {
             addUser(user, room.room, socket.id)
             console.log("user was connected", user.displayName)
-            io.in(room).emit("USER_ADDED", onlineUsers)
+            socket.join(room.room)
+            io.in(room.room).emit("USER_ADDED", onlineUsers)
         });
         socket.on("SEND_MSG", (msg, room) => {
-            console.log(msg)
-            socket.to(msg.receiver.socketId).emit("RECEIVED_MSG", msg)
+            console.log("Message received: ", msg)
+            io.in(room.room).emit("RECEIVED_MSG", msg)
         })
         socket.on('disconnect', () => {
             console.log('A user disconnected:', socket.id);
