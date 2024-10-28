@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAppSelector } from "@/lib/redux/hooks/redux";
 import { Button } from "@/components/ui/button";
+import useSeconds from "../hooks/redirectSeconds"
+
 interface User {
   displayName?: string,
   uid: string,
@@ -11,6 +13,7 @@ interface User {
 }
 export default function Login() {
   const router = useRouter()
+  const {secondsRemaining} = useSeconds('/search', 5);
   const { isAuthenticated, isLoading, user }: { 
     isAuthenticated: boolean;
     isLoading: boolean;
@@ -23,15 +26,16 @@ export default function Login() {
 
   return (
     <main className="min-w-full flex justify-center ">
-      <Navbar />
       <div className="max-w-fit content-center">
         {isAuthenticated != null ?
           (user ? (
             user.displayName ?
               (
-                <h1>
+                <div>
                   Welcome to unionizer {user.displayName}
-                </h1>
+                  <br></br>
+                  Redirecting in {secondsRemaining} {secondsRemaining > 1 ? 'seconds' : 'second'}...
+                </div>
               ) : null)
             :
             <ul className="p-3 border-2 rounded-lg shadow-lg">
