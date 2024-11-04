@@ -3,17 +3,17 @@ import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 import VerticalNavbar from '@/components/vertical-navbar/vertical-navbar';
 import HorizontalNavbar from '@/components/horizontal-navbar/horizontal-navbar';
-import './resource-popup.css'; 
+import './resource-popup.css';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-    const pathname = usePathname(); 
-    const router = useRouter(); 
-    const [isPopupOpen, setIsPopupOpen] = useState(false); 
-    const popupRef = useRef<HTMLDivElement>(null); 
-    const buttonRef = useRef<HTMLDivElement>(null); 
+    const pathname = usePathname();
+    const router = useRouter();
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const popupRef = useRef<HTMLDivElement>(null);
+    const buttonRef = useRef<HTMLDivElement>(null);
 
     const togglePopup = () => {
-        setIsPopupOpen((prev) => !prev); 
+        setIsPopupOpen((prev) => !prev);
     };
 
     const [openDropdowns, setOpenDropdowns] = useState<number[]>([]);
@@ -21,8 +21,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     const toggleDropdown = (dropdownIndex: number) => {
         setOpenDropdowns((prev) =>
             prev.includes(dropdownIndex)
-                ? prev.filter((index) => index !== dropdownIndex) 
-                : [...prev, dropdownIndex] 
+                ? prev.filter((index) => index !== dropdownIndex)
+                : [...prev, dropdownIndex]
         );
     };
 
@@ -32,6 +32,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 return "Home";
             case "/search":
                 return "Find a Union";
+            case "/chat":
+                return "Chat"
             case "/resources":
                 return "Resource Guide";
             case "/resources/forming-a-union":
@@ -43,13 +45,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             case "/resources/negotiating-a-contract":
                 return "Negotiating a Contract";
             default:
-                return "Unionizer"; 
+                return "Unionizer";
         }
     };
 
     useEffect(() => {
         if (pathname === '/resources') {
-            setIsPopupOpen(true); 
+            setIsPopupOpen(true);
         }
     }, [pathname]);
 
@@ -72,8 +74,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         };
     }, [isPopupOpen]);
     const navigateToPage = (url: string, dropdownIndex: number) => {
-        router.push(url); 
-        toggleDropdown(dropdownIndex); 
+        router.push(url);
+        toggleDropdown(dropdownIndex);
     };
 
     return (

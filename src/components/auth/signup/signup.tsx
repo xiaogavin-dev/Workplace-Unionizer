@@ -32,7 +32,7 @@ const SignUpSchema = SignUpValidation.extend({
 });
 const signup = () => {
     const router = useRouter();
-    const dispatch = useAppDispatch(); 
+    const dispatch = useAppDispatch();
     const [loading, setLoading] = useState<boolean>(false);
     const [passwordError, setPasswordError] = useState<string | null>(null); // State for password error
 
@@ -61,7 +61,7 @@ const signup = () => {
                 await updateProfile(auth.currentUser, {
                     displayName: values.username
                 });
-                
+
                 dispatch(setAuthState({
                     isAuthenticated: true,
                     user: {
@@ -70,11 +70,23 @@ const signup = () => {
                         email: values.email,
                     },
                 }));
-
+                try {
+                    const token = await auth.currentUser.getIdToken();
+                    const res = await fetch('http://localhost:5000/users/verify-token', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ token })
+                    })
+                    console.log(res)
+                } catch (error) {
+                    console.log(error)
+                }
                 router.push('/');
             }
         } catch (error: any) {
-            setLoading(false); 
+            setLoading(false);
 
             // Check for email already in use error
             if (error.code === 'auth/email-already-in-use') {

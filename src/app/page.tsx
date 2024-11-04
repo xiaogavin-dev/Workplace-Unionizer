@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useAppSelector } from "@/lib/redux/hooks/redux";
 import { Button } from "@/components/ui/button";
 import { useEffect } from 'react';
+import HorizontalNavbar from '@/components/horizontal-navbar/horizontal-navbar';
+
 interface User {
   displayName?: string,
   uid: string,
@@ -24,7 +26,8 @@ export default function Login() {
   useEffect(() => {
     console.log(user)
   }, [user])
-  return (
+  return (<>
+    <HorizontalNavbar pageName="/" />
     <main className="min-w-full flex justify-center ">
       <div className="max-w-fit content-center">
         {isAuthenticated != null ?
@@ -58,5 +61,6 @@ export default function Login() {
         }
       </div>
     </main>
+  </>
   );
 }

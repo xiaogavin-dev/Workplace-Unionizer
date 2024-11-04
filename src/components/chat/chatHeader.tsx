@@ -48,17 +48,7 @@ const ChatBody: FC<chatBodyProps> = ({ sentMessages, receivedMessages }) => {
     </>
     );
 };
-/*
-`           <div class="flex justify-end mb-4 cursor-pointer">
-                 <div class="flex max-w-96 bg-indigo-500 text-white rounded-lg p-3 gap-3">
-                   <p>Hi Alice! I'm good, just finished a great book. How about you?</p>
-                 </div>
-                 <div class="w-9 h-9 rounded-full flex items-center justify-center ml-2">
-                   <img src="https://placehold.co/200x/b7a8ff/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato" alt="My Avatar" class="w-8 h-8 rounded-full">
-                 </div>
-            </div>
-};
-*/
+
 const ChatInput: FC<chatInputProps> = ({ form, onSubmit }) => {
     return (
         <>

@@ -5,6 +5,7 @@ import { useAppSelector } from '@/lib/redux/hooks/redux'
 import { useRouter } from 'next/navigation'
 import { notFound } from 'next/navigation'
 import Chat from '@/components/chat/chat'
+import Layout from '@/components/Layout'
 
 
 
@@ -25,9 +26,9 @@ const page: FC<pageProps> = ({ params }: pageProps) => {
         }
     }, [])
     return (
-        <>
+        <Layout>
             <Chat />
-        </>
+        </Layout>
     )
 }
 

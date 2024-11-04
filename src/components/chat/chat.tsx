@@ -109,11 +109,17 @@ const Chat: FC<chatProps> = ({ }) => {
 
         socketRef.current.on("RECEIVED_MSG", (data) => {
             console.log("Message received:", data);
-            setReceivedMessages(data.message);
+
+            setReceivedMessages((old: messageType) => ({
+                ...old,
+                message: [...old.message, data]
+            }));
         });
 
     }, []);
-
+    // useEffect(() => {
+    //     console.log(receivedMessage)
+    // }, [receivedMessage])
     useEffect(() => {
         console.log("USER: ", user)
         console.log("ROOM NAME: ", roomData.room)
