@@ -11,6 +11,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      union.hasMany(models.chat, { foreignKey: 'unionId' })
+      union.belongsToMany(models.user, {
+        through: 'user_unions',
+        foreignKey: 'unionId',
+        otherKey: 'userId'
+      })
     }
   }
   union.init({
@@ -20,5 +26,19 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'union',
   });
+  union.addHook('afterCreate', async (union, options) => {
+    const Chat = sequelize.models.chat
+    try {
+      await Chat.create({
+        name: `${union.name} General Chat`,
+        unionId: union.id,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+    }
+    catch (error) {
+      console.log(error)
+    }
+  })
   return union;
 };

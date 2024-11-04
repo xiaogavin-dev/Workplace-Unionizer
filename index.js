@@ -3,33 +3,23 @@ const { Server } = require('socket.io')
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
-const pool = require('./db'); // Import the db.js file
+const pool = require('./db');
 const socketIo = require('socket.io');
 const http = require('http');
 const socketInit = require("./socket/index")
+
 // ROUTERS
 const unionRouter = require('./route/unionRoute')
+const userRouter = require('./route/userRoute')
 
-//MIDDLEWARE EXPRESS+CORS
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Chat implementation
 const server = http.createServer(app);
-// const io = new Server(server, {
-//   cors: { origin: "http://localhost:3000", methods: ["GET", "POST"] }
-// })
-
-// io.on("connection", (socket) => {
-//   console.log(`a user connected ${socket.id}`);
-//   socket.on("send_message", (data) => {
-//     socket.broadcast.emit("receive_message", data);
-//   });
-// });
-
 
 const port = process.env.PORT || 5000;
+
 
 app.post('/', async (req, res) => {
   try {
@@ -67,6 +57,8 @@ app.post('/', async (req, res) => {
 
 // Use the unionRouter for all routes starting with /union
 app.use('/union', unionRouter);
+app.use('/users', userRouter);
+
 
 // Catch-all 404 route
 app.use('*', (req, res, next) => {

@@ -2,28 +2,36 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('unions', {
+    await queryInterface.createTable('messages', {
       id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      name: {
+      content: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      status: {
-        type: Sequelize.ENUM('union', 'pending'),
-        allowNull: false
-      },
-      location: {
+      userId: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'uid'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
       },
-      organization: {
-        type: Sequelize.STRING,
-        allowNull: false
+      chatId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: 'chats',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
       },
       createdAt: {
         allowNull: false,
@@ -36,6 +44,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    return queryInterface.bulkDelete('unions', null, {});
+    await queryInterface.dropTable('messages');
   }
 };

@@ -3,6 +3,7 @@ const http = require('http')
 const { server } = require('socket.io')
 const onlineUsers = [];
 const rooms = {};
+
 const addUser = (user, room, socketId) => {
     if (!user || !room) return { error: "User and room are required" };
     const exists = onlineUsers.findIndex((item) => item.uid === user.uid);
@@ -13,7 +14,7 @@ const addUser = (user, room, socketId) => {
     }
     user.socketId = socketId;
     if (!rooms[room]) {
-        rooms[room] = [];  // Initialize the room array properly
+        rooms[room] = [];
     }
     rooms[room].push(user);
     user.room = room;
@@ -42,5 +43,3 @@ const socketInit = (server) => {
 }
 
 module.exports = socketInit
-// const server = http.createServer(app);
-// const io = new Server()

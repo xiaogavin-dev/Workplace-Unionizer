@@ -2,28 +2,20 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('unions', {
-      id: {
+    await queryInterface.createTable('users', {
+      uid: {
         allowNull: false,
         primaryKey: true,
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
+        type: Sequelize.STRING
       },
-      name: {
+      email: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
       },
-      status: {
-        type: Sequelize.ENUM('union', 'pending'),
-        allowNull: false
-      },
-      location: {
+      displayName: {
         type: Sequelize.STRING,
-        allowNull: false
-      },
-      organization: {
-        type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
@@ -36,6 +28,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    return queryInterface.bulkDelete('unions', null, {});
+    await queryInterface.dropTable('users');
   }
 };
