@@ -1,0 +1,32 @@
+.page-wrapper { 
+    margin: 0 auto;
+}
+
+.display-name {
+    margin: 30px 0 0;
+    font-size: 20px;
+}
+
+#username-box {
+    min-width: 400px;
+    font-size: 24px;
+    padding: 10px;
+    border: 1px;
+    border-color: white;
+    border-style: solid;
+    border-radius: 7px;
+}
+
+.about-me { 
+    margin: 30px 0 0 0;
+    font-size: 20px;
+}
+
+#aboutme-box { 
+    padding: 10px;
+    border: 1px;
+    border-color: white;
+    border-style: solid;
+    height: 100px;
+    border-radius: 7px;
+}
