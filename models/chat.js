@@ -19,6 +19,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   chat.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      allowNull: false,
+      primaryKey: true
+    },
     name: DataTypes.STRING,
     unionId: {
       type: DataTypes.UUID, // Ensure this matches your UUID type in the migration

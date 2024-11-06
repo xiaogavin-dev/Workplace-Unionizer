@@ -19,7 +19,6 @@ module.exports = {
           model: "unions",
           key: 'id'
         },
-
       },
       createdAt: {
         allowNull: false,

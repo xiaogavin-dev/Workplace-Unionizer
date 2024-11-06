@@ -22,10 +22,14 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
       })
-
     }
   }
   user.init({
+    uid: {
+      allowNull: false,
+      primaryKey: true,
+      type: DataTypes.STRING
+    },
     email: DataTypes.STRING,
     displayName: DataTypes.STRING
   }, {

@@ -26,6 +26,10 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
       },
+      role: {
+        type: Sequelize.ENUM("admin", "general"),
+        defaultValue: "general"
+      },
       unionId: {
         type: Sequelize.UUID,
         allowNull: false,
