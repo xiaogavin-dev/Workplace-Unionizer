@@ -18,6 +18,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
+import { SignUpValidation } from '@/lib/validate';
 
 
 
@@ -39,12 +40,32 @@ const Settings = () => {
         aboutme: z.string().optional(),
     });
 
-    const form = useForm<z.infer<typeof formSchemaAboutMe>>({
+    const formSchemaChangePassword = SignUpValidation.extend({
+        currentPassword: z.string(),
+        newPassword: z.string().min(8, { message: "Password must be atleast 8 characters long. "}), 
+        confirmNewPassword: z.string()
+    })
+
+
+    const aboutMeForm = useForm<z.infer<typeof formSchemaAboutMe>>({
         resolver: zodResolver(formSchemaAboutMe),
         defaultValues: {
             aboutme: "",
         },
     });
+
+    const changePasswordForm = useForm<z.infer<typeof formSchemaChangePassword>>({
+        resolver: zodResolver(formSchemaChangePassword),
+        defaultValues: { 
+            currentPassword: "",
+            newPassword: "",
+            confirmNewPassword: ""
+        },
+    });
+
+    async function onSubmit(aboutme: z.infer<typeof formSchemaAboutMe>, changepassword: z.infer<typeof formSchemaChangePassword>) { 
+
+    }
 
     return (
         <Layout>
@@ -53,28 +74,64 @@ const Settings = () => {
                     <div id="username-box">{user?.displayName}</div>
                 </div>
                 <div className='about-me'>About Me
-                    <Form {...form}>
+                    <Form {...aboutMeForm}>
                         <form id="about-me">
                             <FormField
-                                    control={form.control}
-                                    name="aboutme"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <Input placeholder="About Me" {...field} />
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
+                                control={aboutMeForm.control}
+                                name="aboutme"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                            <Input placeholder="About Me" {...field} />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
                         </form>
                     </Form>
                 </div>
                 <div className='change-password'>
-                    {/* <Form {...form}>
-                        <form id="change-password-form" onSubmit={Form.handleSubmit(onSubmit)}>
-
+                    <Form {...changePasswordForm}>
+                        <FormLabel id="change-password-title">Change Password</FormLabel>
+                        <form id="change-password-form">
+                            <FormField
+                                control={changePasswordForm.control}
+                                name="currentPassword"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        {/* <FormLabel>Current Password</FormLabel> */}
+                                        <FormControl>
+                                            <Input placeholder='Current Password' type='password' {...field} />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={changePasswordForm.control}
+                                name="newPassword"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        {/* <FormLabel>New Password</FormLabel> */}
+                                        <FormControl>
+                                            <Input placeholder='New Password' type='password' {...field} />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={changePasswordForm.control}
+                                name="confirmNewPassword"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        {/* <FormLabel>Confirm New Password</FormLabel> */}
+                                        <FormControl>
+                                            <Input placeholder='Confirm New Password' type='password' {...field} />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
                         </form>
-                    </Form> */}
+                    </Form>
                 </div>
             </div>
         </Layout>
