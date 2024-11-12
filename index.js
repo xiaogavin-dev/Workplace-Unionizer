@@ -1,17 +1,26 @@
 require('dotenv').config({ path: `${process.cwd()}/.env` })
-
+const { Server } = require('socket.io')
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
-const pool = require('./db'); 
+const pool = require('./db');
+const socketIo = require('socket.io');
+const http = require('http');
+const socketInit = require("./socket/index")
 
+// ROUTERS
 const unionRouter = require('./route/unionRoute')
-
+const userRouter = require('./route/userRoute')
+const messageRouter = require('./route/messageRoute')
+const chatRouter = require('./route/chatRoute')
 const app = express();
 app.use(express.json());
 app.use(cors());
 
+const server = http.createServer(app);
+
 const port = process.env.PORT || 5000;
+
 
 app.post('/', async (req, res) => {
   try {
@@ -49,6 +58,9 @@ app.post('/', async (req, res) => {
 
 // Use the unionRouter for all routes starting with /union
 app.use('/union', unionRouter);
+app.use('/users', userRouter);
+app.use('/messages', messageRouter)
+app.use('/chat', chatRouter)
 
 // Catch-all 404 route
 app.use('*', (req, res, next) => {
@@ -58,6 +70,7 @@ app.use('*', (req, res, next) => {
   });
 });
 
-app.listen(port, () => {
+server.listen(port, () => {
+  socketInit(server)
   console.log(`App is listening on port ${port}`);
 });

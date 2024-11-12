@@ -1,5 +1,7 @@
 const pool = require('../db');
-
+const { user_union, union, chat } = require('../models');
+const userUnion = require('../models/user-union');
+const { v4: uuidv4 } = require('uuid')
 const getUnions = async (req, res) => {
   try {
     const {
@@ -50,7 +52,46 @@ const getUnions = async (req, res) => {
     });
   }
 };
+const getUserUnions = async (req, res) => {
+  const { userId } = req.query
+  const userUnions = await user_union.findAll({
+    where: {
+      userId: `${userId}`
+    }
+  })
+  const unions = []
+  for (const userUnion of userUnions) {
+    const curr = await union.findByPk(userUnion.dataValues.unionId);
+    const chats = await chat.findAll({
+      where: {
+        unionId: userUnion.dataValues.unionId
+      }
+    })
+    curr.dataValues.chats = chats.map((chat) => chat.dataValues)
+    if (curr) {
+      unions.push(curr.dataValues);
+    }
+  }
 
+  res.status(200).json({ message: `unions for ${userId} received`, data: unions })
+}
+const joinUnion = async (req, res) => {
+  const { userUnionInfo } = req.body
+  console.log(userUnionInfo)
+  try {
+    const joined = await user_union.create({
+      id: uuidv4(),
+      userId: userUnionInfo.userId,
+      role: userUnionInfo.role,
+      unionId: userUnionInfo.unionId
+    })
+    res.status(200).json({ message: "joined successfully", data: joined.dataValues })
+  } catch (error) {
+    console.error(error)
+  }
+}
 module.exports = {
-  getUnions
+  getUnions,
+  getUserUnions,
+  joinUnion
 };

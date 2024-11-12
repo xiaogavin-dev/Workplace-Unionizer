@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('unions', {
+    await queryInterface.createTable('chats', {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -10,20 +10,15 @@ module.exports = {
         defaultValue: Sequelize.UUIDV4,
       },
       name: {
-        type: Sequelize.STRING,
-        allowNull: false
+        type: Sequelize.STRING
       },
-      status: {
-        type: Sequelize.ENUM('union', 'pending'),
-        allowNull: false
-      },
-      location: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      organization: {
-        type: Sequelize.STRING,
-        allowNull: false
+      unionId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: "unions",
+          key: 'id'
+        },
       },
       createdAt: {
         allowNull: false,
@@ -32,10 +27,10 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
-      }
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    return queryInterface.bulkDelete('unions', null, {});
+    await queryInterface.dropTable('chats');
   }
 };
