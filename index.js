@@ -11,7 +11,8 @@ const socketInit = require("./socket/index")
 // ROUTERS
 const unionRouter = require('./route/unionRoute')
 const userRouter = require('./route/userRoute')
-
+const messageRouter = require('./route/messageRoute')
+const chatRouter = require('./route/chatRoute')
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -58,7 +59,8 @@ app.post('/', async (req, res) => {
 // Use the unionRouter for all routes starting with /union
 app.use('/union', unionRouter);
 app.use('/users', userRouter);
-
+app.use('/messages', messageRouter)
+app.use('/chat', chatRouter)
 
 // Catch-all 404 route
 app.use('*', (req, res, next) => {

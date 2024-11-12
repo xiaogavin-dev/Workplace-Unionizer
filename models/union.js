@@ -52,7 +52,6 @@ module.exports = (sequelize, DataTypes) => {
             { transaction }
           );
           console.log(`Hook triggered: Chat for ${union.name} created`);
-          console.log(newChat.dataValues);
 
           if (!options.userId) {
             throw new Error("User ID not provided in afterCreate hook options");
@@ -68,7 +67,6 @@ module.exports = (sequelize, DataTypes) => {
             { transaction }
           );
           console.log(`User ${options.userId} added to union ${union.id}`);
-          console.log(newUserUnion.dataValues);
 
           await transaction.commit();
         } catch (e) {
