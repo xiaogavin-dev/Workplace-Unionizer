@@ -82,7 +82,7 @@ const Settings = () => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormControl>
-                                            <Input placeholder="About Me" {...field} />
+                                            <Input id="about-me-text-box" placeholder="About Me" {...field} />
                                         </FormControl>
                                     </FormItem>
                                 )}
@@ -132,6 +132,8 @@ const Settings = () => {
                             />
                         </form>
                     </Form>
+                    <button id="submit-button" type="submit">Apply</button>
+                    {/* {message && <p>{message}</p>} */}
                 </div>
             </div>
         </Layout>

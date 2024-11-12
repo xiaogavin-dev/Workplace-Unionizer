@@ -19,7 +19,7 @@
 
 .about-me { 
     margin: 10px 0 0 0;
-    font-size: 20px;
+    font-size: 20px; 
 }
 
 #aboutme-box { 
@@ -27,8 +27,11 @@
     border: 1px;
     border-color: white;
     border-style: solid;
-    height: 100px;
     border-radius: 7px;
+}
+
+#about-me-text-box { 
+    min-height: 200px;
 }
 
 #change-password-title {
@@ -37,4 +40,17 @@
 
 .change-password {
     margin: 10px 0 0 0;
+}
+
+#submit-button {
+    background-color: #61A653;
+    border-radius: 20px;
+    padding: 5px;
+    margin-top: 20px;
+    width: 20%;
+    font-size: 16px;
+}
+
+#submit-button:hover { 
+    background-color: #145c3b;
 }
