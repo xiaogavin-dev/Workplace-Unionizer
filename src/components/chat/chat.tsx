@@ -164,7 +164,7 @@ const Chat: FC = () => {
 
     return (
         <div className="flex grow">
-            {!user ?
+            {user ?
                 <Card className='h-[calc(100vh-80px)]  flex flex-col w-full grow'>
                     <CardHeader className='flex-none' >
                         <CardTitle><ChatHeader roomName={roomData.room?.name ?? ""} /></CardTitle>
