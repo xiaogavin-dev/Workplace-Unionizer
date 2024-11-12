@@ -50,7 +50,7 @@ const Settings = () => {
         <Layout>
             <div className='page-wrapper'>
                 <div className='display-name'>Display Name
-                    <div id="username-box">{user?.displayName}</div>
+                    <div id="username-box">{user?.email}</div>
                 </div>
                 <div className='about-me'>About Me
                     <Form {...form}>
