@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react';
+import { useAppSelector } from '@/lib/redux/hooks/redux';
 import { useRouter } from 'next/navigation';
 import './formUnion.css';
 
@@ -9,6 +10,7 @@ const AddUnionForm = () => {
   const [status, setStatus] = useState('union');
   const [organization, setOrganization] = useState('');
   const [message, setMessage] = useState('');
+  const { user } = useAppSelector(state => state.auth)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,12 +23,14 @@ const AddUnionForm = () => {
     }
 
     try {
+
+      let userId = user?.uid
       const response = await fetch('http://localhost:5000/union/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, location, status, organization }),
+        body: JSON.stringify({ name, location, status, organization, userId }),
       });
 
       const data = await response.json();

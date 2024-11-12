@@ -1,9 +1,11 @@
-import React from 'react'
+import { FC } from 'react'
 
-const page = () => {
-    return (
-        <div>about...</div>
-    )
+interface pageProps {
+
+}
+
+const page: FC<pageProps> = ({ }) => {
+    return <div>page</div>
 }
 
 export default page

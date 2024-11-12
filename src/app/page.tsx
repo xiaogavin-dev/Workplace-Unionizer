@@ -4,6 +4,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAppSelector } from "@/lib/redux/hooks/redux";
 import { Button } from "@/components/ui/button";
+import { useEffect } from 'react';
+import HorizontalNavbar from '@/components/horizontal-navbar/horizontal-navbar';
+
 import useSeconds from "../hooks/redirectSeconds"
 
 interface User {
@@ -13,8 +16,8 @@ interface User {
 }
 export default function Login() {
   const router = useRouter()
-  const {secondsRemaining} = useSeconds('/search', 5);
-  const { isAuthenticated, isLoading, user }: { 
+  const { secondsRemaining } = useSeconds('/search', 5);
+  const { isAuthenticated, isLoading, user }: {
     isAuthenticated: boolean;
     isLoading: boolean;
     user: User | null;
@@ -23,8 +26,11 @@ export default function Login() {
   // if (isAuthenticated && user) {
   //   router.push("/community");
   // }
-
-  return (
+  useEffect(() => {
+    console.log(user)
+  }, [user])
+  return (<>
+    <HorizontalNavbar pageName="/" />
     <main className="min-w-full flex justify-center ">
       <div className="max-w-fit content-center">
         {isAuthenticated != null ?
@@ -60,5 +66,6 @@ export default function Login() {
         }
       </div>
     </main>
+  </>
   );
 }

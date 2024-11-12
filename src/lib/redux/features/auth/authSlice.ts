@@ -5,7 +5,7 @@ import { onAuthStateChanged } from "firebase/auth"
 export const listenToAuthChanges = createAsyncThunk(
     'auth/listenToAuthChanges',
     async (_, { dispatch }) => {
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             const unsubscribe = onAuthStateChanged(auth, (user) => {
                 console.log("AUTH STATE CHANGED...");
                 console.log("_______________________________________________________________");
@@ -38,6 +38,11 @@ export const listenToAuthChanges = createAsyncThunk(
         });
     }
 );
+interface User {
+    uid: string,
+    email: string,
+    displayName: string
+}
 // Auth slice definition
 export const authSlice = createSlice({
     name: 'auth',
@@ -54,6 +59,6 @@ export const authSlice = createSlice({
         },
     },
 });
-
+export type { User as userType }
 export const { setAuthState } = authSlice.actions
 export default authSlice.reducer
