@@ -2,10 +2,9 @@ import React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import './vertical-navbar.css';
 
-const VerticalNavbar = ({ togglePopup, buttonRef }: { togglePopup: () => void, buttonRef: React.RefObject<HTMLDivElement> }) => {
+const VerticalNavbar = ({ togglePopup, buttonRef, unions, handleUnionClick }: { togglePopup: () => void, buttonRef: React.RefObject<HTMLDivElement>, unions: object[] | null, handleUnionClick: (e: React.MouseEvent, union: object) => void }) => {
     const router = useRouter();
     const pathname = usePathname();
-
     const handleBookButtonClick = (e: React.MouseEvent) => {
         e.stopPropagation();
 
@@ -23,16 +22,20 @@ const VerticalNavbar = ({ togglePopup, buttonRef }: { togglePopup: () => void, b
                 }
             }, 200);
         }
-
     };
+
 
     return (
         <div className="main-container">
             <div className="vertical-navbar">
                 <div className="navbar-items">
-                    <div className="navbar-item" style={{ backgroundColor: '#f39c12' }}></div>
-                    <div className="navbar-item" style={{ backgroundColor: '#3498db' }}></div>
-                    <div className="navbar-item" style={{ backgroundColor: '#e74c3c' }}></div>
+                    {
+                        unions?.length ?
+                            unions.map((union, ind) => {
+                                return <div key={ind} className="navbar-item " onClick={(e: React.MouseEvent) => { handleUnionClick(e, union) }} style={{ backgroundColor: '#f39c12' }}>{union.name[0]}</div>
+                            }) : <></>
+                    }
+
                     <a href="/search"><div className="add-button">+</div></a>
                 </div>
 

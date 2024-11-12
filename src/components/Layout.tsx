@@ -1,14 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
+import { useAppSelector, useAppDispatch } from '@/lib/redux/hooks/redux';
+import { setUserUnions } from '@/lib/redux/features/user_unions/userUnionsSlice';
 import VerticalNavbar from '@/components/vertical-navbar/vertical-navbar';
 import HorizontalNavbar from '@/components/horizontal-navbar/horizontal-navbar';
 import './resource-popup.css';
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/app-sidebar"
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname();
     const router = useRouter();
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const { user } = useAppSelector(state => state.auth)
+    const { unions } = useAppSelector(state => state.userUnion)
+    const [currUnion, setCurrUnion] = useState<object | null>(null)
+    const dispatch = useAppDispatch()
     const popupRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLDivElement>(null);
 
@@ -25,7 +33,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 : [...prev, dropdownIndex]
         );
     };
-
+    const handleUnionClick = (e: React.MouseEvent, union: object) => {
+        e.stopPropagation();
+        console.log(union.chats)
+        setCurrUnion(union)
+    };
     const getDynamicPageName = () => {
         switch (pathname) {
             case "/":
@@ -47,8 +59,32 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             default:
                 return "Unionizer";
         }
-    };
-
+    }
+    useEffect(() => {
+        if (pathname === '/resources') {
+            setIsPopupOpen(true);
+        }
+        const getUserUnions = async () => {
+            try {
+                const userUnionsRes = await fetch(`http://localhost:5000/union/getUserUnions?userId=${user?.uid}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                if (!userUnionsRes.ok) {
+                    throw new Error('Response error')
+                }
+                const data = await userUnionsRes.json()
+                dispatch(setUserUnions({
+                    unions: data.data
+                }))
+            } catch (e) {
+                console.error('There was an error receiving user unions', e)
+            }
+        }
+        getUserUnions()
+    }, [user])
     useEffect(() => {
         if (pathname === '/resources') {
             setIsPopupOpen(true);
@@ -79,19 +115,24 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     };
 
     return (
-        <div className="page-wrapper">
+        <div className="h-[calc(100vh-80px)] page-wrapper grow mt-[80px] ml-[90px]">
             <div className="horizontal-navbar-container">
                 <HorizontalNavbar pageName={getDynamicPageName()} />
             </div>
 
-            <div className="content-container">
+            <div className="h-[calc(100vh-80px)] grow">
                 <div className="vertical-navbar-container">
-                    <VerticalNavbar togglePopup={togglePopup} buttonRef={buttonRef} />
+                    <VerticalNavbar togglePopup={togglePopup} buttonRef={buttonRef} unions={unions} handleUnionClick={handleUnionClick} />
                 </div>
 
-                <div className="page-content">
-                    {children}
-                </div>
+                {currUnion ?
+                    <SidebarProvider>
+                        <AppSidebar chats={currUnion?.chats} />
+                        <div className="page-content grow">
+                            {children}
+                        </div>
+                    </SidebarProvider> : <div>{children}</div>}
+
             </div>
 
             {/* Resource Guide Pop-up */}
@@ -151,6 +192,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     </ul>
                 </div>
             )}
+
         </div>
     );
 };

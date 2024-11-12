@@ -8,7 +8,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
 
     return (
         <Provider store={store}>
-            <div className='min-h-screen flex justify-center'>
+            <div className='h-[calc(100vh-80px)] flex justify-center'>
                 {children}
             </div>
         </Provider>

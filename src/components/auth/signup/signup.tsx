@@ -83,7 +83,7 @@ const signup = () => {
                 } catch (error) {
                     console.log(error)
                 }
-                router.push('/');
+                router.push('/search');
             }
         } catch (error: any) {
             setLoading(false);

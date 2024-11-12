@@ -1,16 +1,17 @@
 .main-container {
     display: flex;
 }
+
 .vertical-navbar {
-    position: absolute;
+    position: fixed;
     top: 60px;
     left: 0;
     width: 90px;
     height: calc(100vh - 5px);
-    background-color:  var(--navbar-background);
+    background-color: var(--navbar-background);
     display: flex;
     flex-direction: column;
-    justify-content: space-between; 
+    justify-content: space-between;
     align-items: center;
     padding-top: 50px;
     padding-bottom: 10px;
@@ -70,7 +71,7 @@
     font-size: 40px;
     color: white;
     cursor: pointer;
-    margin-bottom: 140px; 
+    margin-bottom: 140px;
 }
 
 .info-panel {
@@ -86,7 +87,7 @@
 }
 
 .info-panel.active {
-    transform: translateX(0); 
+    transform: translateX(0);
 }
 
 .close-button {
@@ -101,7 +102,7 @@
 }
 
 .close-button:hover {
-    color: #e74c3c; 
+    color: #e74c3c;
 }
 
 

@@ -76,7 +76,7 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
     };
 
     return (
-        <div className="horizontal-navbar-container mb-16">
+        <div className="horizontal-navbar-container">
             <div className="navbar-left">
                 <a href="/" className="navbar-logo">
                     <img src="/images/Unionizer_Logo.png" className="logo" alt="Flowbite Logo" />

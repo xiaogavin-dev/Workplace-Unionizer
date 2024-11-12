@@ -2,150 +2,175 @@
 import { FC, useRef, useState, useEffect } from "react";
 import PropagateLoader from "react-spinners/PropagateLoader";
 import { userType } from "../../lib/redux/features/auth/authSlice";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChatHeader, ChatBody, ChatInput } from "./chatHeader";
 import { io, Socket } from "socket.io-client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAppSelector } from "@/lib/redux/hooks/redux";
-import Rooms from "./rooms";
+import { usePathname } from "next/navigation";
+import { error } from "console";
 
 const PATH = "http://localhost:5000";
-
-interface chatProps { }
 
 const FormSchema = z.object({
     message: z.string(),
 });
 
-interface ServerToClientEvents {
-    noArg: () => void;
-    basicEmit: (a: number, b: string, c: Buffer) => void;
-    withAck: (d: string, callback: (e: number) => void) => void;
-}
-
-interface ClientToServerEvents {
-    hello: () => void;
+interface messageInfo {
+    id: string;
+    content: string;
+    userId: string;
+    userDN: string;
+    chatId: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 interface messageType {
-    message: string[]
+    messages: messageInfo[] | null;
+}
+
+interface roomInfoType {
+    createdAt: string | null;
+    id: string | null;
+    name: string | null;
+    unionId: string | null;
+    updatedAt: string | null;
 }
 
 export interface RoomType {
-    room: string | null;
-    socketId: string | null
+    room: roomInfoType | null;
 }
 
-const chatRoomsTest: Array<RoomType> = [
-    { room: "general chat 1", socketId: null },
-    { room: "general chat 2", socketId: null },
-];
 
-const sentMessagesSeed: messageType = {
-    message: [
-        "hello, how are you doing",
-        "I've been good"
-    ]
-}
 
-const receivedMessagesSeed: messageType = {
-    message: [
-        "Hey, I'm doing alright, hbu?",
-        "thats nice to hear"
-    ]
-}
-
-const socket = io(PATH, {
-    reconnection: true,
-    reconnectionAttempts: 5,
-    reconnectionDelay: 1000,
-});
-const Chat: FC<chatProps> = ({ }) => {
-    const { isAuthenticated, isLoading, user } = useAppSelector(
-        (state): { isAuthenticated: boolean; isLoading: boolean; user: userType | null } => state.auth
-    );
-
+const Chat: FC = () => {
+    const { user } = useAppSelector((state): { user: userType | null } => state.auth);
+    const pathname = usePathname();
+    const chunks = pathname.split("/");
     const socketRef = useRef<Socket | null>(null);
-    const [receivedMessage, setReceivedMessage] = useState<string>("");
-    const [isConnected, setIsConnected] = useState<boolean>(false);
-    const [roomData, setRoomData] = useState<RoomType>({ room: null, socketId: null });
-    const [chatRooms, setChatRooms] = useState<Array<RoomType>>(chatRoomsTest);
-    const [sentMessages, setSentMessages] = useState<messageType>(sentMessagesSeed);
-    const [receivedMessages, setReceivedMessages] = useState<messageType>(receivedMessagesSeed);
-
-    const selectRoom = (item: RoomType) => {
-        console.log(item)
-        setRoomData(item);
-    };
+    const [isConnected, setIsConnected] = useState<boolean>(false)
+    const [roomData, setRoomData] = useState<RoomType>({ room: null });
+    const [messages, setMessages] = useState<messageType>({ messages: [] });
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
     });
 
     const onSubmit = (data: z.infer<typeof FormSchema>) => {
-        console.log(socketRef.current)
         if (socketRef.current?.connected) {
-            const msg_details = { msg: data.message, receiver: roomData };
-            console.log(data.message);
-            setSentMessages((old: messageType) => ({
-                ...old,
-                message: [...old.message, data.message]
-            }))
-            socketRef.current.emit("SEND_MSG", data.message, roomData);
+            const msg_details: messageInfo = {
+                id: crypto.randomUUID(),
+                content: data.message,
+                userId: user?.uid ?? "",
+                userDN: user?.displayName ?? "",
+                chatId: chunks[chunks.length - 1],
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            };
+            console.log(msg_details)
+            const createMessage = async (msg_details: messageInfo) => {
+                try {
+                    const response = await fetch(`${PATH}/messages/createChatMessage`, {
+                        method: 'POST',
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ msg_details })
+                    })
+                    if (!response.ok) {
+                        throw new Error("Error with response")
+                    }
+                    const data = await response.json()
+                    console.log(data.data)
+                    setMessages((old) => ({
+                        messages: [msg_details, ...(old.messages ?? [])],
+                    }));
+                } catch (error) {
+                    console.error("error creating message", error)
+                }
+            }
+            createMessage(msg_details)
+            socketRef.current.emit("SEND_MSG", msg_details, roomData);
         }
     };
-
     // Initialize the socket connectiond
     useEffect(() => {
-        // if (!socketRef.current || !socketRef.current.connected) {
-        socketRef.current = socket
-        console.log("HELLLLLO")
-        socketRef.current.on("connect", () => {
-            console.log("Socket connected");
-            setIsConnected(true);
-        });
+        const fetchChatInfo = async () => {
+            try {
+                const response = await fetch(`${PATH}/chat/getChatInfo?chatId=${chunks[chunks.length - 1]}`);
+                if (!response.ok) throw new Error("Error with chatInfo response");
+                const data = await response.json();
+                setRoomData({ room: data.data });
+            } catch (error) {
+                console.error(error);
+            }
+        };
 
-        socketRef.current.on("RECEIVED_MSG", (data) => {
-            console.log("Message received:", data);
+        const fetchMessages = async () => {
+            try {
+                const response = await fetch(`${PATH}/messages/getChatMessages?chatId=${chunks[chunks.length - 1]}`);
+                if (!response.ok) throw new Error("Error with message response");
+                const data = await response.json();
+                console.log(data.data)
+                setMessages({ messages: data.data });
+            } catch (error) {
+                console.error(error);
+            }
+        };
 
-            setReceivedMessages((old: messageType) => ({
-                ...old,
-                message: [...old.message, data]
-            }));
-        });
+        fetchChatInfo()
+        fetchMessages()
+
+
 
     }, []);
-    // useEffect(() => {
-    //     console.log(receivedMessage)
-    // }, [receivedMessage])
     useEffect(() => {
-        console.log("USER: ", user)
-        console.log("ROOM NAME: ", roomData.room)
-        console.log("SOCKET: ", socketRef.current)
-        console.log("IS CONNECTED?: ", socketRef.current?.connected)
-
-        if (user && socketRef.current && socketRef.current.connected && roomData.room) {
-
-            socketRef.current.emit("join_room", user, roomData);
-            socketRef.current.on("USER_ADDED", (data) => {
-                console.log("Users in room:", data);
+        if (user) {
+            socketRef.current = io(PATH, {
+                reconnection: true,
+                reconnectionAttempts: 5,
+                reconnectionDelay: 1000,
+            });
+            socketRef.current.on("connect", () => {
+                console.log("Socket connected");
+                setIsConnected(true);
+            });
+            socketRef.current.on("RECEIVED_MSG", (data: messageInfo) => {
+                if (data.userId != user.uid) {
+                    setMessages((old) => ({
+                        messages: [data, ...(old.messages ?? [])],
+                    }));
+                }
             });
         }
-    }, [isConnected, user, roomData]);
+    }, [user])
+    useEffect(() => {
+        if (!user || !isConnected || !roomData.room) return;
+        console.log(roomData.room)
+        socketRef.current?.emit("join_room", user, roomData);
+
+        socketRef.current?.on("USER_ADDED", (data) => {
+            console.log("Users in room:", data);
+        });
+
+        // Cleanup
+        return () => {
+            socketRef.current?.off("USER_ADDED");
+        };
+    }, [isConnected, user, roomData.room]);
 
     return (
         <div className="flex grow">
-            <Rooms chatRooms={chatRooms} selectRoom={selectRoom} />
-            {user ?
-                <Card className='h-screen flex flex-col w-full'>
+            {!user ?
+                <Card className='h-[calc(100vh-80px)]  flex flex-col w-full grow'>
                     <CardHeader className='flex-none' >
-                        <CardTitle><ChatHeader roomName={roomData.room} /></CardTitle>
-                        <CardDescription>Card Description</CardDescription>
+                        <CardTitle><ChatHeader roomName={roomData.room?.name ?? ""} /></CardTitle>
                     </CardHeader>
                     <CardContent className='flex-grow flex flex-col-reverse overflow-y overflow-y-auto p-4'>
-                        <ChatBody sentMessages={sentMessages} receivedMessages={receivedMessages} />
+                        <ChatBody messages={messages.messages ?? []} currentUserId={user?.uid} />
                     </CardContent>
                     <CardFooter className='flex-none space-y-4'>
                         <ChatInput form={form} onSubmit={onSubmit} />
