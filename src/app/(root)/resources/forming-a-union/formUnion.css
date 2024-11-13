@@ -1,46 +1,46 @@
-/* body {
-    font-family: Arial, sans-serif;
-    color: #e0e0e0;
-  }
-  
-  form {
-    padding: 20px;
-    border-radius: 10px;
-    min-width: 350px;
-    margin: auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-  }
-  
-  input,
-  select,
-  button {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    font-size: 16px;
-    border-radius: 5px;
-    border: 1px solid #3a3a3a;
-    color: #000000;
-  }
-  
-  input::placeholder,
-  select {
-    color: #1c7c54;
-  }
-  
-  button {
-    background-color: #1c7c54;
-    border: none;
-    cursor: pointer;
-    color: #ffffff;
-  }
-  
-  button:hover {
-    background-color: #145c3b;
-  }
-  
-  p {
-    text-align: center;
-    color: black;
-  } */
+body {
+  font-family: Arial, sans-serif;
+  color: #e0e0e0;
+}
+
+form {
+  padding: 20px;
+  border-radius: 10px;
+  min-width: 350px;
+  margin: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+input,
+select,
+button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #3a3a3a;
+  color: #000000;
+}
+
+input::placeholder,
+select {
+  color: #1c7c54;
+}
+
+button {
+  background-color: #1c7c54;
+  border: none;
+  cursor: pointer;
+  color: #ffffff;
+}
+
+button:hover {
+  background-color: #145c3b;
+}
+
+p {
+  text-align: center;
+  color: black;
+}

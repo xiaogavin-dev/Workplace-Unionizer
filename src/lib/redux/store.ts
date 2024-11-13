@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
 import authReducer from './features/auth/authSlice'
-
+import userUnionReducer from './features/user_unions/userUnionsSlice'
 
 // //redux store:
 // //redux is how we will implement gloabal state management to our application
@@ -8,7 +8,8 @@ import authReducer from './features/auth/authSlice'
 export const makeStore = () => {
     return configureStore({
         reducer: {
-            auth: authReducer
+            auth: authReducer,
+            userUnion: userUnionReducer
         }
     })
 }

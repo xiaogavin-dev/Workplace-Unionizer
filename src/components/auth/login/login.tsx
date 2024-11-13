@@ -21,10 +21,15 @@ import { setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { auth } from '../../../firebase/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import Link from 'next/link'
+import { useAppDispatch } from '@/lib/redux/hooks/redux';
+import { setAuthState } from '@/lib/redux/features/auth/authSlice';
+import { setUserUnions } from '@/lib/redux/features/user_unions/userUnionsSlice';
 import './signin.css'
+import { useDispatch } from 'react-redux'
 
 const login = () => {
     const router = useRouter()
+    const dispatch = useAppDispatch();
     const [loading, setLoading] = useState<boolean>(false)
     const form = useForm<z.infer<typeof SignInValidation>>({
         resolver: zodResolver(SignInValidation),
@@ -47,11 +52,57 @@ const login = () => {
         setLoading(true)
         try {
             await signInWithEmailAndPassword(auth, values.email, values.password)
+            if (auth.currentUser) {
+                console.log(auth.currentUser);
+
+
+
+                try {
+                    const token = await auth.currentUser.getIdToken();
+                    const verifyRes = await fetch('http://localhost:5000/users/verify-token', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ token })
+                    })
+                    console.log(verifyRes)
+                    dispatch(setAuthState({
+                        isAuthenticated: true,
+                        user: {
+                            displayName: auth.currentUser.displayName,
+                            uid: auth.currentUser.uid,
+                            email: values.email,
+                        },
+                    }));
+                } catch (error) {
+                    console.log("error logging in", error)
+                }
+                try {
+                    const userUnionsRes = await fetch(`http://localhost:5000/union/getUserUnions?userId=${auth.currentUser.uid}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    if (!userUnionsRes.ok) {
+                        throw new Error('Response error')
+                    }
+                    const data = await userUnionsRes.json()
+                    dispatch(setUserUnions({
+                        unions: data.data
+                    }))
+                } catch (e) {
+                    console.error('There was an error receiving user unions', e)
+                }
+                // router.push('/search');
+            }
         }
         catch (e) {
-            console.error('There was an error with sign in: ', e)
+            console.error('There was an error with logging in: ', e)
         }
-        router.push('/')
+
+        router.push('/search')
         setLoading(false)
     }
     return (
