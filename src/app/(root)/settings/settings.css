@@ -1,20 +1,17 @@
-.page-wrapper { 
-    margin: auto;
-}
-
 .display-name {
     margin: 30px auto 0;
     font-size: 20px;
 }
 
 #username-box {
-    min-width: 400px;
     /* font-size: 24px; */
     padding: 5px;
     border: 1px;
-    /* border-color: white; */
+    border-color: #666b62;
     border-style: solid;
     border-radius: 7px;
+    width: 500px;
+    overflow: hidden;
 }
 
 .about-me { 
@@ -22,16 +19,9 @@
     font-size: 20px; 
 }
 
-#aboutme-box { 
-    padding: 10px;
-    border: 1px;
-    border-color: white;
-    border-style: solid;
-    border-radius: 7px;
-}
-
 #about-me-text-box { 
     min-height: 200px;
+    border-color: #666b62;
 }
 
 #change-password-title {
@@ -42,15 +32,59 @@
     margin: 10px 0 0 0;
 }
 
+#change-password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
 #submit-button {
     background-color: #61A653;
-    border-radius: 20px;
+    border-radius: 10px;
     padding: 5px;
     margin-top: 20px;
     width: 20%;
     font-size: 16px;
+    color: white;
 }
 
 #submit-button:hover { 
     background-color: #145c3b;
+}
+
+#drop-area-settings {
+    display: flex;
+    width: 300px;
+    height: 300px;
+    padding: 30px;
+    border-radius: 10px;
+    border-color: black;
+    border-width: 1px;
+    bottom: 300px;
+    position: relative;
+}
+
+#left-container-settings {
+    flex-direction: column;
+}
+
+#left-container-settings, #right-container-settings { 
+    display: flex;
+    display: inline-block;
+    margin: 0 40px;
+}
+
+#img-view {
+    display: flex;
+    align-items: center;
+    justify-items: center;
+}
+
+#upload-text-settings {
+    background-color: #61A653;
+    position: relative;
+    left: 35px;
+    padding: 7px;
+    border-radius: 10px;
+    color: white;
 }

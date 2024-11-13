@@ -115,12 +115,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     };
 
     return (
-        <div className="h-[calc(100vh-80px)] page-wrapper grow mt-[80px] ml-[90px]">
+        <div className="h-[calc(100vh-80px)] page-wrapper mt-[80px] ml-[90px]">
             <div className="horizontal-navbar-container">
                 <HorizontalNavbar pageName={getDynamicPageName()} />
             </div>
 
-            <div className="h-[calc(100vh-80px)] grow">
+            <div className="h-[calc(100vh-80px)]">
                 <div className="vertical-navbar-container">
                     <VerticalNavbar togglePopup={togglePopup} buttonRef={buttonRef} unions={unions} handleUnionClick={handleUnionClick} />
                 </div>
@@ -128,7 +128,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 {currUnion ?
                     <SidebarProvider>
                         <AppSidebar chats={currUnion?.chats} />
-                        <div className="page-content grow">
+                        <div className="page-content">
                             {children}
                         </div>
                     </SidebarProvider> : <div>{children}</div>}

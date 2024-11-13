@@ -19,6 +19,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
 import { SignUpValidation } from '@/lib/validate';
+import { Textarea } from '@/components/ui/textarea';
 
 
 
@@ -69,7 +70,7 @@ const Settings = () => {
 
     return (
         <Layout>
-            <div className='page-wrapper'>
+            <div id='left-container-settings'>
                 <div className='display-name'>Display Name
                     <div id="username-box">{user?.email}</div>
                 </div>
@@ -82,7 +83,10 @@ const Settings = () => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormControl>
-                                            <Input id="about-me-text-box" placeholder="About Me" {...field} />
+                                            <Textarea id="about-me-text-box"
+                                                placeholder="About Me"
+                                                {...field} 
+                                            />
                                         </FormControl>
                                     </FormItem>
                                 )}
@@ -101,7 +105,7 @@ const Settings = () => {
                                     <FormItem>
                                         {/* <FormLabel>Current Password</FormLabel> */}
                                         <FormControl>
-                                            <Input placeholder='Current Password' type='password' {...field} />
+                                            <Input className='border-black' placeholder='Current Password' type='password' {...field} />
                                         </FormControl>
                                     </FormItem>
                                 )}
@@ -113,7 +117,7 @@ const Settings = () => {
                                     <FormItem>
                                         {/* <FormLabel>New Password</FormLabel> */}
                                         <FormControl>
-                                            <Input placeholder='New Password' type='password' {...field} />
+                                            <Input className='border-black' placeholder='New Password' type='password' {...field} />
                                         </FormControl>
                                     </FormItem>
                                 )}
@@ -125,16 +129,24 @@ const Settings = () => {
                                     <FormItem>
                                         {/* <FormLabel>Confirm New Password</FormLabel> */}
                                         <FormControl>
-                                            <Input placeholder='Confirm New Password' type='password' {...field} />
+                                            <Input className='border-black' placeholder='Confirm New Password' type='password' {...field} />
                                         </FormControl>
                                     </FormItem>
                                 )}
                             />
                         </form>
                     </Form>
-                    <button id="submit-button" type="submit">Apply</button>
+                    <button id="submit-button" type="submit">Submit</button>
                     {/* {message && <p>{message}</p>} */}
                 </div>
+            </div>
+            <div id='right-container-settings'>
+                <label htmlFor="input-file" id='drop-area-settings'>
+                    <input type="file" accept='image/*' id='input-file' hidden/>
+                    <div id="img-view">
+                        <p id='upload-text-settings'>Upload Profile Image</p>
+                    </div>
+                </label>
             </div>
         </Layout>
     );
