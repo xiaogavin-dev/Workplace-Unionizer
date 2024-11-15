@@ -3,18 +3,12 @@ const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class Workplace extends Model {
-    /**
-     * Define associations here.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // Define association with the Union model
       Workplace.belongsTo(models.union, {
         foreignKey: 'unionId',
         as: 'union',
         onDelete: 'CASCADE',
-        onUpdate: "CASCADE",
+        onUpdate: 'CASCADE',
       });
     }
   }
@@ -28,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     workplaceName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     organization: {
       type: DataTypes.STRING,
@@ -36,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     city: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     street: {
       type: DataTypes.STRING,
@@ -48,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     state: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     zip: {
       type: DataTypes.STRING,
@@ -66,6 +60,6 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'workplace',
   });
-  
+
   return Workplace;
 };
