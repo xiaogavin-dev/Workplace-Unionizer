@@ -13,9 +13,11 @@ const unionRouter = require('./route/unionRoute')
 const userRouter = require('./route/userRoute')
 const messageRouter = require('./route/messageRoute')
 const chatRouter = require('./route/chatRoute')
+const searchRoute = require('./route/searchRoute');
 const app = express();
 app.use(express.json());
 app.use(cors());
+
 
 const server = http.createServer(app);
 
@@ -61,6 +63,7 @@ app.use('/union', unionRouter);
 app.use('/users', userRouter);
 app.use('/messages', messageRouter)
 app.use('/chat', chatRouter)
+app.use('/api', searchRoute);
 
 // Catch-all 404 route
 app.use('*', (req, res, next) => {
