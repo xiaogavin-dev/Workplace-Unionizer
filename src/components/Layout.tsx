@@ -39,6 +39,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         setCurrUnion(union)
     };
     const getDynamicPageName = () => {
+        if (pathname.startsWith("/joinunion")) {
+            return "Join a Union";
+        }
         switch (pathname) {
             case "/":
                 return "Home";
@@ -46,8 +49,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 return "Find a Union";
             case "/results":
                 return "Find a Union";
-            case "/joinunion":
-                return "Join a Union";
             case "/createunion":
                 return "Create a Union";
             case "/joinunionform":
