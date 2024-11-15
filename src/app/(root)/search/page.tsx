@@ -34,7 +34,7 @@ const Search = () => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (!user) {
-                router.push('/');  
+                router.push('/');
             }
         });
 
@@ -62,7 +62,7 @@ const Search = () => {
             setAllUnions([]);
             return;
         }
-    
+
         const query = {
             unionname: values.unionname || '',
             location: values.location || '',
@@ -70,9 +70,9 @@ const Search = () => {
         };
         const queryString = new URLSearchParams(query).toString();
         router.push(`/results?${queryString}`);
-        
+
     }
-    
+
 
     return (
         <Layout>
@@ -130,7 +130,7 @@ const Search = () => {
                                         <Button
                                             key={union.id}
                                             className='union-button'
-                                            onClick={() => router.push(`/unions/${union.id}`)} 
+                                            onClick={() => router.push(`/unions/${union.id}`)}
                                         >
                                             {union.name}
                                         </Button>
@@ -138,17 +138,17 @@ const Search = () => {
                                 </div>
                             )}
                         </Form>
-                    </div>
-                    <div className="create-page-container">
-                        <h2>New Union?</h2>
-                        <Button
-                            id="submit"
-                            type="button"
-                            className="create-union-button"
-                            onClick={() => router.push('/createunion')}
-                        >
-                            Create a Union
-                        </Button>
+                        <div className="create-page-container">
+                            <h2>New Union?</h2>
+                            <Button
+                                id="submit"
+                                type="button"
+                                className="create-union-button"
+                                onClick={() => router.push('/createunion')}
+                            >
+                                Create a Union
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
