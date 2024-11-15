@@ -1,22 +1,16 @@
 /* Main wrapper for the page */
-.page-wrapper {
+.find-page-wrapper {
     display: flex;
     flex-direction: column;
-    /* min-height: 100vh; */
+    margin-left: 350px;
 }
 
-/* Content container that starts below the horizontal navbar */
-.content-container {}
-
-/* Search page content */
 .search-page-container {
     flex: 1;
     padding: 20px;
     margin: 0 auto;
-    /* Adjusts space from the vertical navbar */
 }
 
-/* Styling for form */
 #search-form {
     width: 50vw;
     max-width: 800px;
@@ -43,17 +37,16 @@
 #submit {
     background-color: #61A653;
     border-radius: 30px;
-    padding: 30px 50px;
+    padding: 25px 50px;
     margin-top: 20px;
     width: 100%;
     font-size: 20px;
 }
 
 #submit:hover {
-    background-color: rgb(65, 97, 71);
+    background-color: #294224;
 }
 
-/* Dropdown and results styling */
 .union-results {
     margin-top: 20px;
 }
@@ -61,4 +54,28 @@
 .union-button {
     width: 100%;
     margin-top: 10px;
+}
+/*----------------------------------------------------------------------------------*/
+.create-page-container{
+    margin-top: 50px;
+    margin-left: 5px;
+}
+.create-page-container h2{
+    font-size: 25px;
+    font-weight: bold;
+}
+.create-page-container .create-union-button {
+    width: auto !important;
+    padding: 25px 340px !important;
+    font-size: 20px !important;
+    background-color: #ececec !important;
+    border: 2px solid rgb(199, 199, 199);
+    border-radius: 30px !important;
+    margin-top: 10px !important;
+    color: rgb(77, 77, 77);
+}
+
+.create-page-container .create-union-button:hover {
+    background-color: rgb(177, 177, 177) !important;
+    color: white;
 }

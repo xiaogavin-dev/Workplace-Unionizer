@@ -34,7 +34,7 @@ const Search = () => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (!user) {
-                router.push('/');  // Redirect to the homepage if user is not authenticated
+                router.push('/');  
             }
         });
 
@@ -62,42 +62,21 @@ const Search = () => {
             setAllUnions([]);
             return;
         }
-
-        setLoading(true);
-        setError(null);
-        setAllUnions([]);
-
-        try {
-            const queryString = new URLSearchParams({
-                unionname: values.unionname || '',
-                location: values.location || '',
-                organization: values.organization || '',
-            }).toString();
-
-            const response = await fetch(`http://localhost:5000/union/getUnions?${queryString}`);
-
-            if (!response.ok) {
-                throw new Error('Error fetching unions');
-            }
-
-            const data = await response.json();
-
-            if (data.data.length === 0) {
-                setError("No unions found for the specified criteria");
-            } else {
-                setAllUnions(data.data);
-            }
-        } catch (e: any) {
-            console.error('Error:', e.message);
-            setError("No unions found for the specified criteria");
-        } finally {
-            setLoading(false);
-        }
+    
+        const query = {
+            unionname: values.unionname || '',
+            location: values.location || '',
+            organization: values.organization || '',
+        };
+        const queryString = new URLSearchParams(query).toString();
+        router.push(`/results?${queryString}`);
+        
     }
+    
 
     return (
         <Layout>
-            <div className="page-wrapper">
+            <div className="find-page-wrapper">
                 <div className="content-container">
                     <div className="search-page-container">
                         <Form {...form}>
@@ -139,19 +118,19 @@ const Search = () => {
                                     )}
                                 />
                                 <Button id="submit" type="submit" disabled={loading}>
-                                    {loading ? 'Searching...' : 'Search'}
+                                    {loading ? 'Searching...' : 'Find a Union'}
                                 </Button>
                             </form>
 
                             {error && <p>{error}</p>}
 
-                             {allUnions?.length > 0 && (
+                            {allUnions?.length > 0 && (
                                 <div className='union-results'>
                                     {allUnions.map((union) => (
-                                        <Button 
-                                            key={union.id} 
+                                        <Button
+                                            key={union.id}
                                             className='union-button'
-                                            onClick={() => router.push(`/unions/${union.id}`)} // Navigate to the specific union page
+                                            onClick={() => router.push(`/unions/${union.id}`)} 
                                         >
                                             {union.name}
                                         </Button>
@@ -159,6 +138,17 @@ const Search = () => {
                                 </div>
                             )}
                         </Form>
+                    </div>
+                    <div className="create-page-container">
+                        <h2>New Union?</h2>
+                        <Button
+                            id="submit"
+                            type="button"
+                            className="create-union-button"
+                            onClick={() => router.push('/createunion')}
+                        >
+                            Create a Union
+                        </Button>
                     </div>
                 </div>
             </div>
