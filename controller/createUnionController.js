@@ -1,17 +1,34 @@
-const { v4: uuidv4 } = require('uuid');
-const { union, user_union, workplace } = require('../models/index'); // Ensure Workplace model is imported
+const {
+  v4: uuidv4
+} = require('uuid');
+const {
+  union,
+  user_union,
+  workplace
+} = require('../models/index'); // Ensure Workplace model is imported
 
 const createUnion = async (req, res) => {
   try {
-    const { name, description, visibility, workplaces, image, userId } = req.body;
+    const {
+      name,
+      description,
+      visibility,
+      workplaces,
+      image,
+      userId
+    } = req.body;
 
     // Validate required fields
     if (!userId) {
       console.warn("Warning: User ID not provided in request body.");
-      return res.status(400).json({ message: "User ID is required." });
+      return res.status(400).json({
+        message: "User ID is required."
+      });
     }
     if (!name || !description || !visibility) {
-      return res.status(400).json({ message: "Please fill in all required fields." });
+      return res.status(400).json({
+        message: "Please fill in all required fields."
+      });
     }
 
     // Parse workplaces if it's a JSON string
@@ -21,7 +38,9 @@ const createUnion = async (req, res) => {
         parsedWorkplaces = JSON.parse(workplaces);
       } catch (error) {
         console.error("Error parsing workplaces JSON:", error);
-        return res.status(400).json({ message: "Invalid workplaces format." });
+        return res.status(400).json({
+          message: "Invalid workplaces format."
+        });
       }
     } else {
       parsedWorkplaces = workplaces;
@@ -34,7 +53,9 @@ const createUnion = async (req, res) => {
       name,
       description,
       visibility,
-      image: image || null, 
+      image: image || null,
+    }, {
+      userId
     });
 
     // Add the user as an admin to the union
