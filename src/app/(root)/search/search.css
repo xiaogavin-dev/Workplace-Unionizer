@@ -25,7 +25,6 @@
 
 .custom-input {
     width: 100%;
-    max-width: 790px;
     height: 50px;
     font-size: 1.2rem;
     padding: 15px;
@@ -37,8 +36,8 @@
 #submit {
     background-color: #61A653;
     border-radius: 30px;
-    padding: 25px 50px;
-    margin-top: 20px;
+    padding: 28px 50px;
+    margin-top: 30px;
     width: 100%;
     font-size: 20px;
 }
@@ -59,20 +58,25 @@
 .create-page-container{
     margin-top: 50px;
     margin-left: 5px;
+    width: 50vw;
+    max-width: 800px;
+    font-size: 30px;
 }
 .create-page-container h2{
     font-size: 25px;
     font-weight: bold;
 }
 .create-page-container .create-union-button {
-    width: auto !important;
-    padding: 25px 340px !important;
-    font-size: 20px !important;
     background-color: #ececec !important;
     border: 2px solid rgb(199, 199, 199);
-    border-radius: 30px !important;
-    margin-top: 10px !important;
     color: rgb(77, 77, 77);
+    transition: background-color 0.3s ease;
+    text-align: center;
+    border-radius: 30px;
+    padding: 25px 50px !important;
+    margin-top: 20px;
+    width: 100%;
+    font-size: 20px;
 }
 
 .create-page-container .create-union-button:hover {
