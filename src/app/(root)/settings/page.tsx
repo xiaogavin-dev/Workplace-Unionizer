@@ -20,6 +20,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
 import { SignUpValidation } from '@/lib/validate';
 import { Textarea } from '@/components/ui/textarea';
+import DynamicSidebar from '@/components/dynamic-navbar';
 
 
 
@@ -70,83 +71,9 @@ const Settings = () => {
 
     return (
         <Layout>
-            <div id='left-container-settings'>
-                <div className='display-name'>Display Name
-                    <div id="username-box">{user?.email}</div>
-                </div>
-                <div className='about-me'>About Me
-                    <Form {...aboutMeForm}>
-                        <form id="about-me">
-                            <FormField
-                                control={aboutMeForm.control}
-                                name="aboutme"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormControl>
-                                            <Textarea id="about-me-text-box"
-                                                placeholder="About Me"
-                                                {...field} 
-                                            />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                        </form>
-                    </Form>
-                </div>
-                <div className='change-password'>
-                    <Form {...changePasswordForm}>
-                        <FormLabel id="change-password-title">Change Password</FormLabel>
-                        <form id="change-password-form">
-                            <FormField
-                                control={changePasswordForm.control}
-                                name="currentPassword"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        {/* <FormLabel>Current Password</FormLabel> */}
-                                        <FormControl>
-                                            <Input className='border-black' placeholder='Current Password' type='password' {...field} />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={changePasswordForm.control}
-                                name="newPassword"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        {/* <FormLabel>New Password</FormLabel> */}
-                                        <FormControl>
-                                            <Input className='border-black' placeholder='New Password' type='password' {...field} />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={changePasswordForm.control}
-                                name="confirmNewPassword"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        {/* <FormLabel>Confirm New Password</FormLabel> */}
-                                        <FormControl>
-                                            <Input className='border-black' placeholder='Confirm New Password' type='password' {...field} />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                        </form>
-                    </Form>
-                    <button id="submit-button" type="submit">Submit</button>
-                    {/* {message && <p>{message}</p>} */}
-                </div>
-            </div>
-            <div id='right-container-settings'>
-                <label htmlFor="input-file" id='drop-area-settings'>
-                    <input type="file" accept='image/*' id='input-file' hidden/>
-                    <div id="img-view">
-                        <p id='upload-text-settings'>Upload Profile Image</p>
-                    </div>
-                </label>
+            <div
+            className='flex flex-col w-full h-full ml-64 p-4'>
+                Settings
             </div>
         </Layout>
     );

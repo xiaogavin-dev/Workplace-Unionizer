@@ -31,7 +31,7 @@ export default function Login() {
   }, [user])
   return (<>
     <HorizontalNavbar pageName="/" />
-    <main className="min-w-full flex justify-center ">
+    <main className="min-w-full flex">
       <div className="max-w-fit content-center">
         {isAuthenticated != null ?
           (user ? (
