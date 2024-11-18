@@ -20,7 +20,9 @@ const SideBarItem = ({ item }: { item: ISideBarItem }) => {
             <p className="font-semibold text-xl">{name}</p>
 
             {items && items.length>0 && 
-            (<div className="flex flex-col space-y-1 ml-5">{items.map(item => <SubMenuItem key={item.path} item={item}/>)}</div>)}
+            (<div className="flex flex-col space-y-1 ml-5">
+                {items.map(item => <SubMenuItem key={item.path} item={item}/>)}
+            </div>)}
         </div>
     );
 }

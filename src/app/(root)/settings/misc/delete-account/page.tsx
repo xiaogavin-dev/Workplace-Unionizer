@@ -8,7 +8,7 @@ const DeleteAccount = () => {
     return (
         <Layout>
             <div
-            className='flex flex-col w-full h-full ml-64 p-4'>
+            className='flex flex-col w-full h-full ml-64 p-4 left-20 fixed'>
                 Delete Account
             </div>
         </Layout>

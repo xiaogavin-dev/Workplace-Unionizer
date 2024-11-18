@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect } from 'react';
 import HorizontalNavbar from '@/components/horizontal-navbar/horizontal-navbar';
 
-import useSeconds from "../hooks/redirectSeconds"
+// import useSeconds from "../hooks/redirectSeconds"
 
 interface User {
   displayName?: string,
@@ -16,7 +16,7 @@ interface User {
 }
 export default function Login() {
   const router = useRouter()
-  const { secondsRemaining } = useSeconds('/search', 5);
+  // const { secondsRemaining } = useSeconds('/search', 5);
   const { isAuthenticated, isLoading, user }: {
     isAuthenticated: boolean;
     isLoading: boolean;
@@ -29,18 +29,17 @@ export default function Login() {
   useEffect(() => {
     console.log(user)
   }, [user])
-  return (<>
+  return (
+  <>
     <HorizontalNavbar pageName="/" />
-    <main className="min-w-full flex">
-      <div className="max-w-fit content-center">
+    <main className="min-w-full flex justify-center">
+      <div className="max-w-fit content-center ">
         {isAuthenticated != null ?
           (user ? (
             user.displayName ?
               (
                 <div>
                   Welcome to unionizer {user.displayName}
-                  <br></br>
-                  Redirecting in {secondsRemaining} {secondsRemaining > 1 ? 'seconds' : 'second'}...
                 </div>
               ) : null)
             :
