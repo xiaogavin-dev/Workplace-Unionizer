@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useAppSelector } from '@/lib/redux/hooks/redux';
 import { useRouter } from 'next/navigation';
-// import './formUnion.css';
+import './formUnion.css';
 
 const AddUnionForm = () => {
   const [name, setName] = useState('');
@@ -51,31 +51,31 @@ const AddUnionForm = () => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <input
+      <form onSubmit={handleSubmit} id='forming-a-union-form'>
+        <input className='forming-union-input'
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Name"
         />
-        <input
+        <input className='forming-union-input'
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           placeholder="Location"
         />
-        <select
+        <select className='forming-union-select'
           value={status}
           onChange={(e) => setStatus(e.target.value)}
         >
           <option value="union">Union</option>
           <option value="pending">Pending</option>
         </select>
-        <input
+        <input className='forming-union-input'
           value={organization}
           onChange={(e) => setOrganization(e.target.value)}
           placeholder="Organization"
         />
-        <button type="submit">Add Union</button>
-        {message && <p>{message}</p>}
+        <button id='forming-a-union-submit' type="submit">Add Union</button>
+        {message && <p id='forming-a-union-message'>{message}</p>}
       </form>
     </div>
   );
