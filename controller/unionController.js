@@ -60,6 +60,7 @@ const getUserUnions = async (req, res) => {
     }
   })
   const unions = []
+  console.log(userUnions)
   for (const userUnion of userUnions) {
     const curr = await union.findByPk(userUnion.dataValues.unionId);
     const chats = await chat.findAll({
@@ -72,6 +73,7 @@ const getUserUnions = async (req, res) => {
       unions.push(curr.dataValues);
     }
   }
+
 
   res.status(200).json({ message: `unions for ${userId} received`, data: unions })
 }

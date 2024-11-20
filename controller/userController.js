@@ -1,7 +1,7 @@
 const admin = require('../firebaseAdmin.js')
 const pool = require('../db.js')
 const verifyUser = async (req, res) => {
-    const { token } = req.body
+    const { token, publicKey } = req.body
     try {
         const decodedToken = await admin.auth().verifyIdToken(token)
         const uid = decodedToken.uid
