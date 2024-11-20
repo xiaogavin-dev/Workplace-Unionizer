@@ -8,7 +8,7 @@ import "./createunion.css";
 
 const CreateUnion = () => {
     const router = useRouter();
-    const [name, setName] = useState(''); 
+    const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [workplaces, setWorkplaces] = useState([
         { workplaceName: '', organization: '', city: '', street: '', addressLine2: '', state: '', zip: '', country: '' }

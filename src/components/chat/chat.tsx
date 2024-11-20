@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAppSelector } from "@/lib/redux/hooks/redux";
 import { usePathname } from "next/navigation";
+import { encryptMessage, generateKeyPair } from "../../lib/util/encryptionCalls"
 import { error } from "console";
 
 const PATH = "http://localhost:5000";
@@ -70,7 +71,12 @@ const Chat: FC = () => {
                 createdAt: new Date(),
                 updatedAt: new Date(),
             };
-            console.log(msg_details)
+            const generateKeys = async () => {
+
+                const encrypt_data = encryptMessage(msg_details.content, publicKey)
+                console.log(encrypt_data)
+            }
+            generateKeys()
             const createMessage = async (msg_details: messageInfo) => {
                 try {
                     const response = await fetch(`${PATH}/messages/createChatMessage`, {
@@ -80,6 +86,7 @@ const Chat: FC = () => {
                         },
                         body: JSON.stringify({ msg_details })
                     })
+
                     if (!response.ok) {
                         throw new Error("Error with response")
                     }
@@ -92,8 +99,8 @@ const Chat: FC = () => {
                     console.error("error creating message", error)
                 }
             }
-            createMessage(msg_details)
-            socketRef.current.emit("SEND_MSG", msg_details, roomData);
+            // createMessage(msg_details)
+            // socketRef.current.emit("SEND_MSG", msg_details, roomData);
         }
     };
     // Initialize the socket connectiond
