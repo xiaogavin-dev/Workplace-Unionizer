@@ -69,6 +69,13 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
                 return "Forming a Union";
             case "/resources/organizing-a-strike":
                 return "Organizing a Strike";
+            case "/settings/basic/email":
+            case "/settings/basic/password":
+            case "/settings/basic/profile":
+            case "/settings/contact/notifications":
+            case "/settings/misc/delete-account":
+            case "/settings":
+                return "Account Settings";
             // Add more cases for other routes as needed
             default:
                 return pageName || "Unionizer"; // Default page name or passed prop
@@ -98,7 +105,7 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
                                 <Link href="/profile">Profile</Link>
                             </li>
                             <li>
-                                <Link href="/settings">Settings & Privacy</Link>
+                                <Link href="/settings/basic/profile">Settings & Privacy</Link>
                             </li>
                             <li>
                                 <Link href="/help">Help</Link>
