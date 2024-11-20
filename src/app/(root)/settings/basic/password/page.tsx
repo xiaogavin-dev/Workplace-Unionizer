@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react";
+import React, { useState } from "react";
 import Layout from '@/components/Layout';
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -9,8 +9,15 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import "./password.css"
+import { getAuth, updatePassword } from "firebase/auth";
 
 const Password = () => {
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [password, setPassword] = useState<string | null>(null);
+    
+    const auth = getAuth();
+
     const formSchemaChangePassword = SignUpValidation.extend({
         currentPassword: z.string(),
         newPassword: z.string().min(8, { message: "Password must be atleast 8 characters long. "}), 
@@ -25,6 +32,35 @@ const Password = () => {
             confirmNewPassword: ""
         },
     });
+
+    async function onSubmit(values: z.infer<typeof formSchemaChangePassword>) {
+        setError(null);
+        
+        if(!values.currentPassword && !values.newPassword && !values.confirmNewPassword) {
+            setError("Please provide all given fields.");
+            return;
+        }
+        
+        setLoading(true);
+
+        if(values.newPassword !== values.confirmNewPassword) {
+            setError("Passwords do not match.");
+            setLoading(false);
+            return;
+        }
+
+        await updatePassword(auth.currentUser, values.newPassword).then(() => {
+            setPassword("Password successfully changed.");
+            console.log("Password successfully changed.");
+        }).catch((error) => {
+            console.log("Error: ", error);
+            setError("Error in changing password."); 
+        }).finally(() => {
+            setLoading(false);
+        });
+
+        setLoading(false);
+    }
 
     return (
         <Layout>
@@ -72,7 +108,9 @@ const Password = () => {
                         </form>
                     </Form>
                 </div>
-                <button type="submit" id="submit-button-password">Submit</button>
+                <button onClick={onSubmit} type="submit" id="submit-button-password" disabled={loading}>{loading ? "Submitting" : "Submit"}</button>
+                {error && <p>{error}</p>}
+                {password && <p>{password}</p>}
             </div>
         </Layout>
     );
