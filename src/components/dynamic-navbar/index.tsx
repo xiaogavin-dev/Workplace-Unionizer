@@ -30,27 +30,27 @@ const items: ISideBarItem[] = [
                 path: "/settings/basic/password"
             }
         ]
-    },
-    {
-        name: "Contact",
-        path: "/settings/contact",
-        items: [
-            {
-                name: "Notifications",
-                path: "/settings/contact/notifications"
-            }
-        ]
-    },
-    {
-        name: "Misc",
-        path: "/settings/misc",
-        items: [
-            {
-                name: "Delete Account",
-                path: "/settings/misc/delete-account"
-            }
-        ]
     }
+    // {
+    //     name: "Contact",
+    //     path: "/settings/contact",
+    //     items: [
+    //         {
+    //             name: "Notifications",
+    //             path: "/settings/contact/notifications"
+    //         }
+    //     ]
+    // },
+    // {
+    //     name: "Misc",
+    //     path: "/settings/misc",
+    //     items: [
+    //         {
+    //             name: "Delete Account",
+    //             path: "/settings/misc/delete-account"
+    //         }
+    //     ]
+    // }
 ]
 
 const DynamicSidebar = () => {
