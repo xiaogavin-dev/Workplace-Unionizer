@@ -150,6 +150,8 @@ const login = () => {
                     <h3 id="new-to-unionizer">New to Unionizer? <Link href="/auth/signup" id="join-now">Join now</Link></h3>
                 </form>
             </Form>
-        </div>)
+        </div>
+        );
+        
 }
 export default login

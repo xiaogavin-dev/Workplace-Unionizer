@@ -1,19 +1,28 @@
-body {
+/* body {
   font-family: Arial, sans-serif;
   color: #e0e0e0;
 }
+*/
 
-form {
-  padding: 20px;
-  border-radius: 10px;
-  min-width: 350px;
-  margin: auto;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+.forming-union-input::placeholder,
+.forming-union-select {
+  color: #1c7c54;
 }
 
-input,
-select,
-button {
+#forming-a-union-submit {
+  background-color: #1c7c54;
+  border: none;
+  cursor: pointer;
+  color: #ffffff;
+}
+
+#forming-a-union-submit:hover {
+  background-color: #145c3b;
+}
+
+.forming-union-input,
+.forming-union-select,
+#forming-a-union-submit {
   display: block;
   width: 100%;
   padding: 10px;
@@ -24,23 +33,15 @@ button {
   color: #000000;
 }
 
-input::placeholder,
-select {
-  color: #1c7c54;
+#forming-a-union-form {
+  padding: 20px;
+  border-radius: 10px;
+  min-width: 350px;
+  margin: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
-button {
-  background-color: #1c7c54;
-  border: none;
-  cursor: pointer;
-  color: #ffffff;
-}
-
-button:hover {
-  background-color: #145c3b;
-}
-
-p {
+#forming-a-union-message {
   text-align: center;
   color: black;
-}
+} 

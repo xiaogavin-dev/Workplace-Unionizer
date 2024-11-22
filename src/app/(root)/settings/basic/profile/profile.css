@@ -1,0 +1,51 @@
+#username-box-settings { 
+    border: 1px;
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
+    max-width: 512px;
+    overflow: hidden;
+    padding: 4px;
+}
+
+#img-view {
+    display: flex;
+    align-items: center;
+    justify-items: center;
+}
+
+#upload-text-settings {
+    background-color: #61A653;
+    position: relative;
+    left: 35px;
+    padding: 7px;
+    border-radius: 10px;
+    color: white;
+}
+
+#drop-area-settings {
+    display: flex;
+    width: 300px;
+    height: 300px;
+    padding: 30px;
+    border-radius: 5px;
+    border-color: black;
+    border-width: 1px;
+    cursor: pointer;
+}
+
+#about-me-text-box { 
+    min-height: 200px;
+    border-color: #666b62;
+    max-width: 512px;
+}
+
+#save-button-settings { 
+    background-color: #61A653;
+    border-radius: 5px;
+    padding: 5px;
+    margin-top: 10px;
+    max-width: 80px;
+    font-size: 16px;
+    color: white;
+}

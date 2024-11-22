@@ -5,7 +5,6 @@ import { useAppSelector } from "@/lib/redux/hooks/redux";
 import { Button } from "@/components/ui/button";
 import { useEffect } from 'react';
 import HorizontalNavbar from '@/components/horizontal-navbar/horizontal-navbar';
-import Layout from "@/components/Layout";
 import useSeconds from "../hooks/redirectSeconds"
 
 interface User {
@@ -15,8 +14,7 @@ interface User {
 }
 export default function Login() {
   const router = useRouter();
-  const { secondsRemaining } = useSeconds('/search', 5);
-  
+  //const { secondsRemaining } = useSeconds('/search', 5);
   const { isAuthenticated, isLoading, user }: {
     isAuthenticated: boolean;
     isLoading: boolean;
@@ -30,10 +28,9 @@ export default function Login() {
     console.log(user)
   }, [user])
   return (<>
-  <Layout>
     <HorizontalNavbar pageName="/" />
-    <main className="min-w-full flex justify-center ">
-      <div className="max-w-fit content-center">
+    <main className="min-w-full flex justify-center">
+      <div className="max-w-fit content-center ">
         {isAuthenticated != null ?
           (user ? (
             user.displayName ?
@@ -67,7 +64,6 @@ export default function Login() {
         }
       </div>
     </main>
-    </Layout>
   </>
   );
 }
