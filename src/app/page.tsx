@@ -1,13 +1,11 @@
 'use client'
-import Navbar from '../components/navbar/navbar'
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAppSelector } from "@/lib/redux/hooks/redux";
 import { Button } from "@/components/ui/button";
 import { useEffect } from 'react';
 import HorizontalNavbar from '@/components/horizontal-navbar/horizontal-navbar';
-
-// import useSeconds from "../hooks/redirectSeconds"
+import useSeconds from "../hooks/redirectSeconds"
 
 interface User {
   displayName?: string,
@@ -15,8 +13,8 @@ interface User {
   email: string
 }
 export default function Login() {
-  const router = useRouter()
-  // const { secondsRemaining } = useSeconds('/search', 5);
+  const router = useRouter();
+  //const { secondsRemaining } = useSeconds('/search', 5);
   const { isAuthenticated, isLoading, user }: {
     isAuthenticated: boolean;
     isLoading: boolean;
@@ -29,8 +27,7 @@ export default function Login() {
   useEffect(() => {
     console.log(user)
   }, [user])
-  return (
-  <>
+  return (<>
     <HorizontalNavbar pageName="/" />
     <main className="min-w-full flex justify-center">
       <div className="max-w-fit content-center ">
@@ -40,6 +37,8 @@ export default function Login() {
               (
                 <div>
                   Welcome to unionizer {user.displayName}
+                  <br/>
+                  Redirecting in {secondsRemaining} {secondsRemaining > 1 ? 'seconds' : 'second'}...
                 </div>
               ) : null)
             :

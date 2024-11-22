@@ -1,22 +1,19 @@
-/* Main wrapper for the page */
-.page-wrapper {
+.find-page-wrapper {
     display: flex;
     flex-direction: column;
-    /* min-height: 100vh; */
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
-/* Content container that starts below the horizontal navbar */
-.content-container {}
-
-/* Search page content */
 .search-page-container {
     flex: 1;
     padding: 20px;
     margin: 0 auto;
-    /* Adjusts space from the vertical navbar */
 }
 
-/* Styling for form */
 #search-form {
     width: 50vw;
     max-width: 800px;
@@ -31,7 +28,6 @@
 
 .custom-input {
     width: 100%;
-    max-width: 790px;
     height: 50px;
     font-size: 1.2rem;
     padding: 15px;
@@ -43,17 +39,16 @@
 #submit {
     background-color: #61A653;
     border-radius: 30px;
-    padding: 30px 50px;
-    margin-top: 20px;
+    padding: 28px 50px;
+    margin-top: 30px;
     width: 100%;
     font-size: 20px;
 }
 
 #submit:hover {
-    background-color: rgb(65, 97, 71);
+    background-color: #294224;
 }
 
-/* Dropdown and results styling */
 .union-results {
     margin-top: 20px;
 }
@@ -61,4 +56,48 @@
 .union-button {
     width: 100%;
     margin-top: 10px;
+}
+
+/*----------------------------------------------------------------------------------*/
+.create-page-container {
+    margin-top: 50px;
+    margin-left: 5px;
+    width: 50vw;
+    max-width: 800px;
+    font-size: 30px;
+}
+
+.create-page-container h2 {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.create-page-container .create-union-button {
+    background-color: #ececec !important;
+    border: 2px solid rgb(199, 199, 199);
+    color: rgb(77, 77, 77);
+    transition: background-color 0.3s ease;
+    text-align: center;
+    border-radius: 30px;
+    padding: 25px 50px !important;
+    margin-top: 20px;
+    width: 100%;
+    font-size: 20px;
+}
+
+.create-page-container .create-union-button:hover {
+    background-color: rgb(177, 177, 177) !important;
+    color: white;
+}
+
+/*---------------------------------------------------------------*/
+@media screen and (max-width: 768px) {
+    .custom-input {
+        width: 100%;
+        height: 50px;
+        font-size: 1.0rem;
+        padding: 15px;
+        border: 1px solid var(--foreground);
+        box-sizing: border-box;
+    }
 }
