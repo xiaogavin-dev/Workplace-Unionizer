@@ -36,26 +36,39 @@ module.exports = (sequelize, DataTypes) => {
       afterCreate: async (union, options) => {
         const Chat = sequelize.models.chat;
         const UserUnion = sequelize.models.user_union;
-
+        const pubkey = sequelize.models.pubkey
+        const keyVersion = sequelize.models.keyVersion
         // Start a transaction to ensure both actions succeed together
         const transaction = await sequelize.transaction();
         try {
+          if (!options.userId) {
+            throw new Error("User ID not provided in afterCreate hook options");
+          }
+          const userId = options.userId
+          const adminPubkey = pubkey.findAll({
+            where: {
+              userId
+            }
+          })
+          const pubkeyValue = adminPubkey[0].dataValues.value
+          const newKeyVersion = keyVersion.create({
+            vCount: 1
+          })
           // Create the chat associated with the union
           const newChat = await Chat.create(
             {
               id: uuidv4(),
               name: `${union.name} general chat`,
               unionId: union.id,
+              chatkeyVersion: newKeyVersion.id,
               createdAt: new Date(),
               updatedAt: new Date()
             },
-            { transaction }
+            { transaction, userId, pubkeyValue, newKeyVersion }
           );
           console.log(`Hook triggered: Chat for ${union.name} created`);
 
-          if (!options.userId) {
-            throw new Error("User ID not provided in afterCreate hook options");
-          }
+
 
           const newUserUnion = await UserUnion.create(
             {

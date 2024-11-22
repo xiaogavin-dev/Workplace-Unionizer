@@ -1,7 +1,9 @@
 'use strict';
 const {
-  Model
+  Model,
+  Sequelize
 } = require('sequelize');
+const user = require('./user');
 module.exports = (sequelize, DataTypes) => {
   class chat extends Model {
     /**
@@ -15,6 +17,16 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'unionId',
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE'
+      })
+      chat.belongsToMany(models.pubkey, {
+        through: 'userChats',
+        foreignKey: 'chatId',
+        otherKey: 'pubkeyValue'
+      })
+      chat.hasOne(models.keyVersion, {
+        foreignKey: 'chatKeyVersion',
+        onDelete: "SET NULL",
+        onUpdate: "CASCADE"
       })
     }
   }
@@ -30,7 +42,28 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID, // Ensure this matches your UUID type in the migration
       allowNull: false,
     },
+    chatKeyVersion: {
+      type: DataTypes.UUID,
+      allowNull: false
+    }
   }, {
+    hooks: {
+      afterCreate: async (chat, options) => {
+        const user_chat = Sequelize.models.user_chat
+        try {
+          const newUserChat = user_chat.create({
+            userId: options.userId,
+            chatId: chat.id,
+            pubkeyValue: options.pubkeyValue
+          })
+          console.log(`new user union chat created`)
+          console.log(newUserChat)
+        } catch (error) {
+          console.log(error)
+
+        }
+      }
+    },
     sequelize,
     modelName: 'chat',
   });

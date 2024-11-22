@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class userChat extends Model {
+  class pubkey extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,39 +11,36 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      userChat.belongsTo(models.user, {
-        foreignKey: 'userId',
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      });
-      userChat.belongsTo(models.chat, {
-        foreignKey: 'unionId',
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      });
-      userChat.belongsTo(models.pubkey, {
+      pubkey.belongsTo(models.user, {
+        foreignKey: "userId",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE"
+      })
+      pubkey.belongsToMany(models.chat, {
+        through: 'user_chats',
+        foreignKey: 'pubkeyValue',
+        otherKey: 'chatId'
+      })
+      pubkey.hasMany(models.encryptedKey, {
         foreignKey: 'pubkeyValue',
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
       })
     }
   }
-  userChat.init({
-    userId: {
+  pubkey.init({
+    value: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true
     },
-    chatId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-    },
-    pubkeyValue: {
+    userId: {
       type: DataTypes.UUID,
       allowNull: false
     }
   }, {
     sequelize,
-    modelName: 'user_chat',
+    modelName: 'pubkey',
   });
-  return userChat;
+  return pubkey;
 };

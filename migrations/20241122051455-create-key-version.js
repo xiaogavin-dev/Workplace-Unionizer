@@ -2,16 +2,16 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Keys', {
+    await queryInterface.createTable('keyVersions', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
       },
-      encryptedKey: {
-        type: Sequelize.STRING,
-        allowNull: false
+      vCount: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -24,6 +24,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Keys');
+    await queryInterface.dropTable('keyVersions');
   }
 };

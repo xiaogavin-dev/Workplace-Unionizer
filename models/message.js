@@ -21,6 +21,11 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       })
+      message.belongsTo(models.keyVersion, {
+        foreignKey: 'keyVersionId',
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
+      })
     }
   }
   message.init({
@@ -41,6 +46,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     userDN: {
       type: DataTypes.STRING,
+      allowNull: false
+    },
+    keyVersionId: {
+      type: DataTypes.UUID,
       allowNull: false
     },
     createdAt: {
