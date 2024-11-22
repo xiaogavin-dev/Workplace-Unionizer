@@ -1,41 +1,90 @@
-const pool = require('../db');
-const validStatuses = ['union', 'pending']; // Define valid status values
-const { v4: uuidv4 } = require('uuid')
-const { union, user_union } = require('../models/index');
+const {
+  v4: uuidv4
+} = require('uuid');
+const {
+  union,
+  user_union,
+  workplace
+} = require('../models/index'); // Ensure Workplace model is imported
+
 const createUnion = async (req, res) => {
   try {
     const {
       name,
-      location,
-      status,
-      organization,
+      description,
+      visibility,
+      workplaces,
+      image,
       userId
     } = req.body;
-    const unionId = uuidv4()
-    // Check if the status is valid
-    if (!validStatuses.includes(status)) {
+
+    // Validate required fields
+    if (!userId) {
+      console.warn("Warning: User ID not provided in request body.");
       return res.status(400).json({
-        message: 'Invalid status value'
+        message: "User ID is required."
       });
     }
-    // const query = `
-    // INSERT INTO unions (id, name, location, status, organization, "createdAt", "updatedAt")
-    // VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
-    // RETURNING *;
-    // `;
+    if (!name || !description || !visibility) {
+      return res.status(400).json({
+        message: "Please fill in all required fields."
+      });
+    }
 
-    // const values = [id, name, location, status, organization];
+    // Parse workplaces if it's a JSON string
+    let parsedWorkplaces;
+    if (typeof workplaces === 'string') {
+      try {
+        parsedWorkplaces = JSON.parse(workplaces);
+      } catch (error) {
+        console.error("Error parsing workplaces JSON:", error);
+        return res.status(400).json({
+          message: "Invalid workplaces format."
+        });
+      }
+    } else {
+      parsedWorkplaces = workplaces;
+    }
 
-    // const result = await pool.query(query, values);
-    const newUnion = await union.create({ unionId, name, status, location, organization }, { userId })
-    // const newUserUnion = await user_union.create({
-    //   id: uuidv4(),
-    //   userId: userId,
-    //   role: 'admin',
-    //   unionId: unionId,
-    // })
+    const unionId = uuidv4();
+
+    const newUnion = await union.create({
+      id: unionId,
+      name,
+      description,
+      visibility,
+      image: image || null,
+    }, {
+      userId
+    });
+
+    // Add the user as an admin to the union
+    await user_union.create({
+      id: uuidv4(),
+      userId,
+      role: 'admin',
+      unionId: unionId,
+    });
+
+    console.log("Union created successfully with ID:", newUnion.id);
+
+    // Loop through each workplace and insert individually
+    for (const wp of parsedWorkplaces) {
+      const workplaceData = {
+        ...wp,
+        id: uuidv4(), // Generate a unique ID for each workplace
+        unionId: newUnion.id, // Associate with the new union
+      };
+
+      // Insert the workplace record into the database
+      await workplace.create(workplaceData);
+      console.log("Inserted workplace:", workplaceData);
+    }
+
+    // Respond with success
     res.status(201).json({
       status: "success",
+      id: newUnion.id,
       data: newUnion,
     });
   } catch (error) {
@@ -48,5 +97,5 @@ const createUnion = async (req, res) => {
 };
 
 module.exports = {
-  createUnion
+  createUnion,
 };

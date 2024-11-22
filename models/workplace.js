@@ -1,39 +1,65 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
-  class workplace extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+  class Workplace extends Model {
     static associate(models) {
-      // define association here
-      workplace.belongsTo(models.union, {
+      Workplace.belongsTo(models.union, {
         foreignKey: 'unionId',
+        as: 'union',
         onDelete: 'CASCADE',
-        onUpdate: "CASCADE"
-      })
+        onUpdate: 'CASCADE',
+      });
     }
   }
-  workplace.init({
+
+  Workplace.init({
     id: {
       allowNull: false,
       primaryKey: true,
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
     },
-    name: DataTypes.STRING,
-    location: DataTypes.STRING,
+    workplaceName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    organization: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    city: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    street: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    addressLine2: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    state: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    zip: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    country: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     unionId: {
       type: DataTypes.UUID,
-      allowNull: false
+      allowNull: false,
     }
   }, {
     sequelize,
     modelName: 'workplace',
   });
-  return workplace;
+
+  return Workplace;
 };

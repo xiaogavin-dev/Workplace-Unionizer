@@ -51,7 +51,7 @@ module.exports = (sequelize, DataTypes) => {
       afterCreate: async (chat, options) => {
         const user_chat = Sequelize.models.user_chat
         try {
-          const newUserChat = user_chat.create({
+          const newUserChat = await user_chat.create({
             userId: options.userId,
             chatId: chat.id,
             pubkeyValue: options.pubkeyValue

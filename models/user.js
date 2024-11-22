@@ -51,7 +51,7 @@ module.exports = (sequelize, DataTypes) => {
           if (!options.pubkey) {
             throw new Error("public key was never provided")
           }
-          const newPubkey = Pubkey.create({
+          const newPubkey = await Pubkey.create({
             value: options.pubkey,
             userId: user.id
           })
