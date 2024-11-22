@@ -1,8 +1,11 @@
-/* Main wrapper for the page */
 .find-page-wrapper {
     display: flex;
     flex-direction: column;
-    margin-left: 350px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .search-page-container {
@@ -54,18 +57,21 @@
     width: 100%;
     margin-top: 10px;
 }
+
 /*----------------------------------------------------------------------------------*/
-.create-page-container{
+.create-page-container {
     margin-top: 50px;
     margin-left: 5px;
     width: 50vw;
     max-width: 800px;
     font-size: 30px;
 }
-.create-page-container h2{
+
+.create-page-container h2 {
     font-size: 25px;
     font-weight: bold;
 }
+
 .create-page-container .create-union-button {
     background-color: #ececec !important;
     border: 2px solid rgb(199, 199, 199);
@@ -82,4 +88,16 @@
 .create-page-container .create-union-button:hover {
     background-color: rgb(177, 177, 177) !important;
     color: white;
+}
+
+/*---------------------------------------------------------------*/
+@media screen and (max-width: 768px) {
+    .custom-input {
+        width: 100%;
+        height: 50px;
+        font-size: 1.0rem;
+        padding: 15px;
+        border: 1px solid var(--foreground);
+        box-sizing: border-box;
+    }
 }

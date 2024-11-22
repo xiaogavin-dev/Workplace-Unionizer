@@ -39,9 +39,15 @@ const VerticalNavbar = ({ togglePopup, buttonRef, unions, handleUnionClick }: { 
                     <a href="/search"><div className="add-button">+</div></a>
                 </div>
 
-                <div className="book-button" ref={buttonRef} onClick={handleBookButtonClick} style={{ cursor: 'pointer' }}>
-                    📚
-                </div>
+                <img
+                    src="/images/resource-guide-icon.png"
+                    alt="books"
+                    className="book-button"
+                    ref={buttonRef} // Now properly typed as HTMLImageElement
+                    onClick={handleBookButtonClick}
+                    style={{ cursor: 'pointer' }}
+                />
+
             </div>
         </div>
     );
