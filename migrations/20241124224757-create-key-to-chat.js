@@ -1,35 +1,39 @@
 'use strict';
+
+const { UUID } = require('sequelize');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('chats', {
+    await queryInterface.createTable('keyToChats', {
       id: {
         allowNull: false,
+        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
+        type: Sequelize.INTEGER
       },
-      name: {
-        type: Sequelize.STRING
-      },
-      unionId: {
-        type: Sequelize.UUID,
+      keyVersionId: {
+        type: UUID,
         allowNull: false,
         references: {
-          model: "unions",
+          model: 'keyVersions',
           key: 'id'
         },
         onDelete: "CASCADE",
         onUpdate: "CASCADE"
       },
-      chatKeyVersion: {
-        type: Sequelize.UUID,
-        allowNull: true,
+      chatId: {
+        type: UUID,
+        allowNull: false,
         references: {
-          model: 'keyVersions',
+          model: 'chats',
           key: 'id'
         },
-
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
+      },
+      active: {
+        type: Sequelize.BOOLEAN,
       },
       createdAt: {
         allowNull: false,
@@ -38,10 +42,10 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
-      },
+      }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('chats');
+    await queryInterface.dropTable('keyToChats');
   }
 };

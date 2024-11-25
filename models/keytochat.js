@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class encryptedKey extends Model {
+  class keyToChat extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,34 +11,34 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      encryptedKey.belongsTo(models.keyVersion, {
-        foreignKey: 'versionId',
+      keyToChat.belongsTo(models.keyVersion, {
+        foreignKey: "keyVersionId",
         onDelete: "CASCADE",
         onUpdate: "CASCADE"
       })
-      encryptedKey.belongsTo(models.pubkey, {
-        foreignKey: "pubkeyValue",
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE"
+      keyToChat.belongsTo(models.chat, {
+        foreignKey: "chatId",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE"
       })
     }
   }
-  encryptedKey.init({
-    encencryptedKey: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    pubkeyValue: {
-      type: DataTypes.TEXT,
-      allowNull: false
-    },
-    versionId: {
+  keyToChat.init({
+    keyVersionId: {
       type: DataTypes.UUID,
+      allowNull: false
+    },
+    chatId: {
+      type: DataTypes.UUID,
+      allowNull: false
+    },
+    active: {
+      type: DataTypes.BOOLEAN,
       allowNull: false
     }
   }, {
     sequelize,
-    modelName: 'encryptedKey',
+    modelName: 'keyToChat',
   });
-  return encryptedKey;
+  return keyToChat;
 };

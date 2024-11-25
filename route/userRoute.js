@@ -1,7 +1,8 @@
-const { verifyUser } = require('../controller/userController')
+const { login, signup } = require('../controller/userController')
 
 const router = require('express').Router()
 
-router.route('/verify-token').post(verifyUser)
+router.route('/login').post(login)
+router.route('/signup').post(signup)
 
 module.exports = router

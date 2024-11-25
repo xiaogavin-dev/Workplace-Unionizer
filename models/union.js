@@ -61,20 +61,16 @@ module.exports = (sequelize, DataTypes) => {
               }
             })
             const pubkeyValue = adminPubkey[0].dataValues.value
-            const newKeyVersion = keyVersion.create({
-              vCount: 1
-            })
             // Create a general chat for the union
             const newChat = await Chat.create(
               {
                 id: uuidv4(),
                 name: `${union.name} general chat`,
                 unionId: union.id,
-                chatkeyVersion: newKeyVersion.id,
                 createdAt: new Date(),
                 updatedAt: new Date(),
               },
-              { transaction, userId, pubkeyValue, newKeyVersion }
+              { transaction, userId, pubkeyValue }
             );
             console.log(`Hook triggered: Chat for ${union.name} created`);
 

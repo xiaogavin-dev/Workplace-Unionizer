@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+const { v4: uuidv4 } = require('uuid')
 module.exports = (sequelize, DataTypes) => {
   class user extends Model {
     /**
@@ -27,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
       })
-      user.hasOne(model.pubkey, {
+      user.hasOne(models.pubkey, {
         foreignKey: 'userId',
         onDelete: "CASCADE",
         onUpdate: "CASCADE"
@@ -48,12 +49,13 @@ module.exports = (sequelize, DataTypes) => {
         const Pubkey = sequelize.models.pubkey;
 
         try {
-          if (!options.pubkey) {
+          if (!options.publicKey) {
             throw new Error("public key was never provided")
           }
           const newPubkey = await Pubkey.create({
-            value: options.pubkey,
-            userId: user.id
+            id: uuidv4(),
+            value: options.publicKey,
+            userId: user.uid
           })
           console.log(`public key for use was stored ${newPubkey}`)
         }

@@ -5,7 +5,6 @@ module.exports = {
     await queryInterface.createTable('keyVersions', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,

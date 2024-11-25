@@ -58,15 +58,15 @@ const createUnion = async (req, res) => {
       userId
     });
 
-    // Add the user as an admin to the union
-    await user_union.create({
-      id: uuidv4(),
-      userId,
-      role: 'admin',
-      unionId: unionId,
-    });
+    // // Add the user as an admin to the union
+    // await user_union.create({
+    //   id: uuidv4(),
+    //   userId,
+    //   role: 'admin',
+    //   unionId: unionId,
+    // });
 
-    console.log("Union created successfully with ID:", newUnion.id);
+    // console.log("Union created successfully with ID:", newUnion.id);
 
     // Loop through each workplace and insert individually
     for (const wp of parsedWorkplaces) {

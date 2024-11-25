@@ -5,7 +5,6 @@ module.exports = {
     await queryInterface.createTable('user_chats', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
@@ -21,20 +20,20 @@ module.exports = {
         onDelete: 'CASCADE',
       },
       userId: {
-        type: Sequelize.UUID,
+        type: Sequelize.STRING,
         allowNull: false,
         references: {
-          model: 'user',
-          key: 'id'
+          model: 'users',
+          key: 'uid'
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
       pubkeyValue: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: false,
         references: {
-          model: 'pubkey',
+          model: 'pubkeys',
           key: 'value'
         }
       },

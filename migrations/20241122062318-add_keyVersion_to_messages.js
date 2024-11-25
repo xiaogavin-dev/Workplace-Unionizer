@@ -10,12 +10,12 @@ module.exports = {
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
     return queryInterface.addColumn(
-      'message',
+      'messages',
       'keyVersionId', {
       type: Sequelize.UUID,
       allowNull: false,
       references: {
-        model: 'keyVersion',
+        model: 'keyVersions',
         key: 'id'
       },
       onUpdate: "CASCADE",
@@ -33,7 +33,7 @@ module.exports = {
      * await queryInterface.dropTable('users');
      */
     return queryInterface.removeColumn(
-      'message',
+      'messages',
       'keyVersionId'
     );
   }

@@ -30,12 +30,12 @@ module.exports = (sequelize, DataTypes) => {
   }
   pubkey.init({
     value: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
       unique: true
     },
     userId: {
-      type: DataTypes.UUID,
+      type: DataTypes.STRING,
       allowNull: false
     }
   }, {

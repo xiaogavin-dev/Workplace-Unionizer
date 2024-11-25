@@ -5,7 +5,6 @@ module.exports = {
     await queryInterface.createTable('encryptedKeys', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
@@ -15,14 +14,24 @@ module.exports = {
         allowNull: false
       },
       pubkeyValue: {
-        type: Sequelize.UUID,
+        type: Sequelize.TEXT,
         allowNull: false,
         references: {
-          model: "pubkey",
+          model: "pubkeys",
           key: 'value'
         },
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
+      },
+      chatId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: 'chats',
+          key: 'id'
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE"
       },
       createdAt: {
         allowNull: false,

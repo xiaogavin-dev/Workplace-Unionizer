@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'CASCADE',
       });
       userChat.belongsTo(models.chat, {
-        foreignKey: 'unionId',
+        foreignKey: 'chatId',
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     pubkeyValue: {
-      type: DataTypes.UUID,
+      type: DataTypes.TEXT,
       allowNull: false
     }
   }, {
