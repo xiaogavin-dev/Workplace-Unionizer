@@ -40,13 +40,13 @@ export async function retrievePrivateKey() {
     });
 }
 
-(async () => {
-    try {
-        const privateKey = "private-key-data";
-        console.log(await storePrivateKey(privateKey));
-        const retrievedKey = await retrievePrivateKey();
-        console.log("Retrieved Key:", retrievedKey.key);
-    } catch (error) {
-        console.error("Error:", error);
-    }
-})();
+// (async () => {
+//     try {
+//         const privateKey = "private-key-data";
+//         console.log(await storePrivateKey(privateKey));
+//         const retrievedKey = await retrievePrivateKey();
+//         console.log("Retrieved Key:", retrievedKey.key);
+//     } catch (error) {
+//         console.error("Error:", error);
+//     }
+// })();

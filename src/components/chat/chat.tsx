@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAppSelector } from "@/lib/redux/hooks/redux";
 import { usePathname } from "next/navigation";
-import { encryptMessage, generateKeyPair } from "../../lib/util/encryptionCalls"
+import { encryptMessage, encryptSymmetricKeys, createSymmetricKey } from "../../lib/util/encryptionCalls"
 import { error } from "console";
 
 const PATH = "http://localhost:5000";
@@ -37,6 +37,7 @@ interface roomInfoType {
     createdAt: string | null;
     id: string | null;
     name: string | null;
+    keyVersion: string | null,
     unionId: string | null;
     updatedAt: string | null;
 }
@@ -71,35 +72,68 @@ const Chat: FC = () => {
                 createdAt: new Date(),
                 updatedAt: new Date(),
             };
-            const generateKeys = async () => {
 
-                const encrypt_data = encryptMessage(msg_details.content, publicKey)
-                console.log(encrypt_data)
-            }
-            generateKeys()
             const createMessage = async (msg_details: messageInfo) => {
                 try {
-                    const response = await fetch(`${PATH}/messages/createChatMessage`, {
-                        method: 'POST',
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ msg_details })
-                    })
+                    const symmetricKeyResponse = await createSymmetricKey() //returns the symmetric key in UTF-8 format as {symmetric_key: SFSEGES...=}
+                    console.log(symmetricKeyResponse.symmetric_key)
+                    //if there is no keyVersion for the current room create a new encryption key
+                    if (roomData.room?.keyVersion == null) {
+                        const symmetricKey = symmetricKeyResponse.symmetric_key
+                        const response = await fetch(`${PATH}/chat/getPublicKeys?chatId=${chunks[chunks.length - 1]}`)
+                        if (!response.ok) {
+                            throw new Error("There was an error getting pubkeys")
+                        }
+                        data = await response.json()
+                        const publicKeys = data.data
+                        const encryptedSymmetricKeys = await encryptSymmetricKeys(symmetricKey, publicKeys)
 
-                    if (!response.ok) {
-                        throw new Error("Error with response")
+                        try {
+                            const response = await fetch(`${PATH}/chat/storeEncryptedKey`, {
+                                method: "POST",
+                                headers: {
+                                    'content-type': 'application/json'
+                                },
+                                body: JSON.stringify({})
+                            })
+                        } catch (error) {
+                            console.log(error, 'could not store symmetric key')
+                        }
+                        for (const publicKey in encryptedSymmetricKeys) {
+                            if (encryptedSymmetricKeys.hasOwnProperty(publicKeys)) {
+                                console.log(publicKey, '\n', '\n', encryptedSymmetricKeys[publicKey])
+
+                            }
+                        }
                     }
-                    const data = await response.json()
-                    console.log(data.data)
-                    setMessages((old) => ({
-                        messages: [msg_details, ...(old.messages ?? [])],
-                    }));
+                    else {
+
+                    }
                 } catch (error) {
-                    console.error("error creating message", error)
+                    console.log("There was an error grabbing public keys", error)
                 }
+                // try {
+                //     const response = await fetch(`${PATH}/messages/createChatMessage`, {
+                //         method: 'POST',
+                //         headers: {
+                //             "Content-Type": "application/json",
+                //         },
+                //         body: JSON.stringify({ msg_details })
+                //     })
+
+                //     if (!response.ok) {
+                //         throw new Error("Error with response")
+                //     }
+                //     const data = await response.json()
+                //     console.log(data.data)
+                //     setMessages((old) => ({
+                //         messages: [msg_details, ...(old.messages ?? [])],
+                //     }));
+                // } catch (error) {
+                //     console.error("error creating message", error)
+                // }
             }
-            // createMessage(msg_details)
+            createMessage(msg_details)
             // socketRef.current.emit("SEND_MSG", msg_details, roomData);
         }
     };
