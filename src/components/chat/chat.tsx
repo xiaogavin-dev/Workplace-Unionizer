@@ -23,10 +23,11 @@ interface messageInfo {
     id: string;
     content: string;
     userId: string;
-    userDN: string;
     chatId: string;
     createdAt: Date;
     updatedAt: Date;
+    keyVersionId: string | null
+
 }
 
 interface messageType {
@@ -37,7 +38,7 @@ interface roomInfoType {
     createdAt: string | null;
     id: string | null;
     name: string | null;
-    keyVersion: string | null,
+    chatKeyVersion: string | null,
     unionId: string | null;
     updatedAt: string | null;
 }
@@ -67,7 +68,6 @@ const Chat: FC = () => {
                 id: crypto.randomUUID(),
                 content: data.message,
                 userId: user?.uid ?? "",
-                userDN: user?.displayName ?? "",
                 chatId: chunks[chunks.length - 1],
                 createdAt: new Date(),
                 updatedAt: new Date(),
@@ -76,9 +76,10 @@ const Chat: FC = () => {
             const createMessage = async (msg_details: messageInfo) => {
                 try {
                     const symmetricKeyResponse = await createSymmetricKey() //returns the symmetric key in UTF-8 format as {symmetric_key: SFSEGES...=}
-                    console.log(symmetricKeyResponse.symmetric_key)
+                    console.log(roomData.room?.chatKeyVersion)
+
                     //if there is no keyVersion for the current room create a new encryption key
-                    if (roomData.room?.keyVersion == null) {
+                    if (roomData.room?.chatKeyVersion == null) {
                         const symmetricKey = symmetricKeyResponse.symmetric_key
                         const response = await fetch(`${PATH}/chat/getPublicKeys?chatId=${chunks[chunks.length - 1]}`)
                         if (!response.ok) {
@@ -86,28 +87,33 @@ const Chat: FC = () => {
                         }
                         data = await response.json()
                         const publicKeys = data.data
-                        const encryptedSymmetricKeys = await encryptSymmetricKeys(symmetricKey, publicKeys)
-
+                        const encryptedKeys = await encryptSymmetricKeys(symmetricKey, publicKeys)
+                        const chatId = roomData.room?.id
                         try {
-                            const response = await fetch(`${PATH}/chat/storeEncryptedKey`, {
+                            const response = await fetch(`${PATH}/chat/storeEncryptedKeys`, {
                                 method: "POST",
                                 headers: {
                                     'content-type': 'application/json'
                                 },
-                                body: JSON.stringify({})
+                                body: JSON.stringify({ chatId, encryptedKeys })
                             })
+                            if (!response.ok) {
+                                throw new Error("There was an error with response to store keys")
+                            }
+                            const data = await response.json()
+                            setRoomData({ room: data.data })
                         } catch (error) {
                             console.log(error, 'could not store symmetric key')
                         }
-                        for (const publicKey in encryptedSymmetricKeys) {
-                            if (encryptedSymmetricKeys.hasOwnProperty(publicKeys)) {
-                                console.log(publicKey, '\n', '\n', encryptedSymmetricKeys[publicKey])
-
-                            }
-                        }
                     }
                     else {
-
+                        // grab the encrypted key
+                        const response = await fetch(`${PATH}/chat/getEncryptedKey?userId=${user?.uid}&chatKeyVersion=${roomData.room?.chatKeyVersion}`)
+                        if (!response.ok) {
+                            throw new Error("There was an error getting your encrypted symmetric key")
+                        }
+                        const data = await response.json()
+                        console.log(data.data)
                     }
                 } catch (error) {
                     console.log("There was an error grabbing public keys", error)
