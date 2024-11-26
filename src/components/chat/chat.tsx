@@ -165,8 +165,8 @@ const Chat: FC = () => {
     return (
         <div className="flex grow">
             {user ?
-                <Card className='h-[calc(100vh-80px)]  flex flex-col w-full grow'>
-                    <CardHeader className='flex-none' >
+                <Card className='h-[calc(100vh-80px)] flex flex-col w-[calc(100vw-375px)]'>
+                    <CardHeader className='flex-none'>
                         <CardTitle><ChatHeader roomName={roomData.room?.name ?? ""} /></CardTitle>
                     </CardHeader>
                     <CardContent className='flex-grow flex flex-col-reverse overflow-y overflow-y-auto p-4'>
