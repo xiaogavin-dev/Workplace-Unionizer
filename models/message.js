@@ -44,10 +44,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    userDN: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
+    // userDN: {
+    //   type: DataTypes.STRING,
+    //   allowNull: false
+    // },
     keyVersionId: {
       type: DataTypes.UUID,
       allowNull: false

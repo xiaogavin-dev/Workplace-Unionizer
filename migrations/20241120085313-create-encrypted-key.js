@@ -10,8 +10,18 @@ module.exports = {
         defaultValue: Sequelize.UUIDV4,
       },
       encryptedKey: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: false
+      },
+      versionId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: "keyVersions",
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       pubkeyValue: {
         type: Sequelize.TEXT,

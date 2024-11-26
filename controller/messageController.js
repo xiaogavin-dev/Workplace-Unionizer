@@ -9,7 +9,7 @@ const getChatMessages = async (req, res) => {
                 chatId
             },
             order: [['createdAt', 'DESC']],
-            limit: 70,
+            limit: 30,
         })
         const messages = []
         if (chatMessages[0]) {
@@ -34,9 +34,9 @@ const createChatMessage = async (req, res) => {
             content: msg_details.content,
             chatId: msg_details.chatId,
             userId: msg_details.userId,
-            userDN: msg_details.userDN,
             createdAt: msg_details.createdAt,
-            updatedAt: msg_details.updatedAt
+            updatedAt: msg_details.updatedAt,
+            keyVersionId: msg_details.keyVersionId
         })
 
 

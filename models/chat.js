@@ -17,8 +17,13 @@ module.exports = (sequelize, DataTypes) => {
       });
       // Current key version
       chat.hasOne(models.keyVersion, {
-        foreignKey: 'chatKeyVersion',
+        sourceKey: 'chatKeyVersion'
       });
+      chat.hasMany(models.encryptedKey, {
+        foreignKey: 'chatId',
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+      })
     }
   }
   chat.init(

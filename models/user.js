@@ -24,7 +24,6 @@ module.exports = (sequelize, DataTypes) => {
       })
       user.hasMany(models.message, {
         foreignKey: 'userId',
-        onDelete: 'userId',
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
       })

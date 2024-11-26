@@ -21,10 +21,15 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
       })
+      encryptedKey.belongsTo(models.chat, {
+        foreignKey: 'chatId',
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      })
     }
   }
   encryptedKey.init({
-    encencryptedKey: {
+    encryptedKey: {
       type: DataTypes.STRING,
       allowNull: false
     },
@@ -33,6 +38,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     versionId: {
+      type: DataTypes.UUID,
+      allowNull: false
+    },
+    chatId: {
       type: DataTypes.UUID,
       allowNull: false
     }
