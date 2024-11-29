@@ -40,6 +40,10 @@ module.exports = (sequelize, DataTypes) => {
     pubkeyValue: {
       type: DataTypes.TEXT,
       allowNull: false
+    },
+    role: {
+      type: DataTypes.ENUM('general', 'admin'),
+      allowNull: false,
     }
   }, {
     sequelize,

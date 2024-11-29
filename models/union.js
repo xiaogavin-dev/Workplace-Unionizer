@@ -67,6 +67,8 @@ module.exports = (sequelize, DataTypes) => {
                 id: uuidv4(),
                 name: `${union.name} general chat`,
                 unionId: union.id,
+                isDefault: true,
+                isPublic: true,
                 createdAt: new Date(),
                 updatedAt: new Date(),
               },

@@ -92,8 +92,32 @@ const joinUnion = async (req, res) => {
     console.error(error)
   }
 }
+const leaveUnion = async (req, res) => {
+
+}
+const getUnionPublicChats = async (req, res) => {
+  const { unionId } = req.query
+  try {
+    const publicChatInstances = await chat.findAll({
+      where: {
+        isPublic: true,
+        unionId
+      }
+    })
+    const publicChats = []
+    for (const publicChat of publicChatInstances) {
+      publicChats.push(publicChat.dataValues)
+    }
+    res.status(200).json({ message: 'Chats returned', data: publicChats })
+  } catch (error) {
+    console.log("Error in 'getUnionPublicChats", error)
+    res.status(400).json({ data: error })
+  }
+}
+
 module.exports = {
   getUnions,
   getUserUnions,
-  joinUnion
+  joinUnion,
+  getUnionPublicChats
 };

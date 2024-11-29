@@ -10,6 +10,11 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
+      Workplace.belongsToMany(models.user, {
+        through: 'user_workplace',
+        foreignKey: 'workplaceId',
+        otherKey: 'userId'
+      });
     }
   }
 

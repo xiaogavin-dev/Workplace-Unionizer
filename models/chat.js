@@ -43,6 +43,16 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         allowNull: true, // Allow null for backward compatibility
       },
+      isDefault: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      isPublic: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: 1
+      }
     },
     {
       hooks: {
@@ -55,6 +65,7 @@ module.exports = (sequelize, DataTypes) => {
               id: uuidv4(),
               userId: options.userId,
               chatId: chat.id,
+              role: 'admin',
               pubkeyValue: options.pubkeyValue,
             }, { transaction });
 
