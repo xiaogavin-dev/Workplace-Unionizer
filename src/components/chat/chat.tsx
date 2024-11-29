@@ -10,8 +10,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAppSelector } from "@/lib/redux/hooks/redux";
 import { usePathname } from "next/navigation";
-import { encryptMessage, encryptSymmetricKeys, createSymmetricKey } from "../../lib/util/encryptionCalls"
-import { error } from "console";
+import { encryptMessage, encryptSymmetricKeys, createSymmetricKey, decryptMessage } from "../../lib/util/encryptionCalls"
+import { retrievePrivateKey } from '@/lib/util/IndexedDBCalls';
+import { handleNewChatMember } from "@/lib/util/handleKeyUpdates";
 
 const PATH = "http://localhost:5000";
 
@@ -23,11 +24,11 @@ interface messageInfo {
     id: string;
     content: string;
     userId: string;
+    userDn: string | null,
     chatId: string;
     createdAt: Date;
     updatedAt: Date;
-    keyVersionId: string | null
-
+    keyVersionId: string | null | undefined
 }
 
 interface messageType {
@@ -39,6 +40,8 @@ interface roomInfoType {
     id: string | null;
     name: string | null;
     chatKeyVersion: string | null,
+    isPublic: boolean,
+    isDefault: boolean,
     unionId: string | null;
     updatedAt: string | null;
 }
@@ -57,7 +60,7 @@ const Chat: FC = () => {
     const [isConnected, setIsConnected] = useState<boolean>(false)
     const [roomData, setRoomData] = useState<RoomType>({ room: null });
     const [messages, setMessages] = useState<messageType>({ messages: [] });
-
+    const [init, setInit] = useState<boolean>(false)
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
     });
@@ -68,79 +71,73 @@ const Chat: FC = () => {
                 id: crypto.randomUUID(),
                 content: data.message,
                 userId: user?.uid ?? "",
+                userDn: user?.displayName ?? "",
                 chatId: chunks[chunks.length - 1],
                 createdAt: new Date(),
                 updatedAt: new Date(),
+                keyVersionId: roomData.room?.chatKeyVersion
             };
-
+            setMessages((old) => ({
+                messages: [msg_details, ...(old.messages ?? [])],
+            }));
+            let encryptedMessageDetails: messageInfo | null = null
+            socketRef.current.emit("SEND_MSG", msg_details, roomData);
             const createMessage = async (msg_details: messageInfo) => {
                 try {
-                    const symmetricKeyResponse = await createSymmetricKey() //returns the symmetric key in UTF-8 format as {symmetric_key: SFSEGES...=}
-                    console.log(roomData.room?.chatKeyVersion)
-
                     //if there is no keyVersion for the current room create a new encryption key
                     if (roomData.room?.chatKeyVersion == null) {
-                        const symmetricKey = symmetricKeyResponse.symmetric_key
-                        const response = await fetch(`${PATH}/chat/getPublicKeys?chatId=${chunks[chunks.length - 1]}`)
-                        if (!response.ok) {
-                            throw new Error("There was an error getting pubkeys")
-                        }
-                        data = await response.json()
-                        const publicKeys = data.data
-                        const encryptedKeys = await encryptSymmetricKeys(symmetricKey, publicKeys)
-                        const chatId = roomData.room?.id
                         try {
-                            const response = await fetch(`${PATH}/chat/storeEncryptedKeys`, {
-                                method: "POST",
-                                headers: {
-                                    'content-type': 'application/json'
-                                },
-                                body: JSON.stringify({ chatId, encryptedKeys })
-                            })
-                            if (!response.ok) {
-                                throw new Error("There was an error with response to store keys")
-                            }
-                            const data = await response.json()
-                            setRoomData({ room: data.data })
+
+                            const newRoomInfo = await handleNewChatMember(roomData.room)
+                            setRoomData({ room: newRoomInfo })
                         } catch (error) {
-                            console.log(error, 'could not store symmetric key')
+                            console.log("WE NEVER GET PAST THIS POINT")
+                            return
                         }
                     }
-                    else {
-                        // grab the encrypted key
-                        const response = await fetch(`${PATH}/chat/getEncryptedKey?userId=${user?.uid}&chatKeyVersion=${roomData.room?.chatKeyVersion}`)
-                        if (!response.ok) {
-                            throw new Error("There was an error getting your encrypted symmetric key")
-                        }
-                        const data = await response.json()
-                        console.log(data.data)
+
+                    // grab the encrypted key
+                    console.log(`THIS IS THE ROOM KEY VERSION ID: ${roomData.room?.chatKeyVersion}`)
+                    const response = await fetch(`${PATH}/chat/getEncryptedKey?userId=${user?.uid}&chatKeyVersion=${roomData.room?.chatKeyVersion}`)
+                    if (!response.ok) {
+                        throw new Error("There was an error getting your encrypted symmetric key")
                     }
+                    const encryptedKeyData = await response.json()
+                    console.log(encryptedKeyData.data)
+                    const fetchPrivKey = async () => {
+                        const privateKey = await retrievePrivateKey()
+                        return privateKey
+                    }
+                    const privateKey = await fetchPrivKey()
+                    const encryptedSymmetricKey = encryptedKeyData.data.encryptedKey
+                    const message = msg_details.content
+                    const { encryptedMessage } = await encryptMessage(message, privateKey?.key, encryptedSymmetricKey)
+                    encryptedMessageDetails = { ...msg_details, content: encryptedMessage, keyVersionId: roomData.room?.chatKeyVersion }
+
                 } catch (error) {
                     console.log("There was an error grabbing public keys", error)
                 }
-                // try {
-                //     const response = await fetch(`${PATH}/messages/createChatMessage`, {
-                //         method: 'POST',
-                //         headers: {
-                //             "Content-Type": "application/json",
-                //         },
-                //         body: JSON.stringify({ msg_details })
-                //     })
+                try {
+                    const response = await fetch(`${PATH}/messages/createChatMessage`, {
+                        method: 'POST',
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ msg_details: encryptedMessageDetails })
+                    })
 
-                //     if (!response.ok) {
-                //         throw new Error("Error with response")
-                //     }
-                //     const data = await response.json()
-                //     console.log(data.data)
-                //     setMessages((old) => ({
-                //         messages: [msg_details, ...(old.messages ?? [])],
-                //     }));
-                // } catch (error) {
-                //     console.error("error creating message", error)
-                // }
+                    if (!response.ok) {
+                        throw new Error("Error with response")
+                    }
+                    const data = await response.json()
+                    console.log(data.data)
+
+                } catch (error) {
+                    console.error("error creating message", error)
+                }
             }
             createMessage(msg_details)
-            // socketRef.current.emit("SEND_MSG", msg_details, roomData);
+
         }
     };
     // Initialize the socket connectiond
@@ -155,25 +152,41 @@ const Chat: FC = () => {
                 console.error(error);
             }
         };
+        const fetchPrivKey = async () => {
+            const privateKey = await retrievePrivateKey()
+            return privateKey
+        }
 
         const fetchMessages = async () => {
             try {
-                const response = await fetch(`${PATH}/messages/getChatMessages?chatId=${chunks[chunks.length - 1]}`);
+                console.log(user?.uid)
+                const response = await fetch(`${PATH}/messages/getChatMessages?chatId=${chunks[chunks.length - 1]}&userId=${user?.uid}`);
                 if (!response.ok) throw new Error("Error with message response");
                 const data = await response.json();
                 console.log(data.data)
-                setMessages({ messages: data.data });
+                const privateKey: any = await fetchPrivKey()
+                let encryptedMessages = data.data.messages
+                const keys = data.data.keys
+                const decrypted_messages = await decryptMessage(encryptedMessages, privateKey?.key, keys)
+                console.log(decrypted_messages)
+                const messages = encryptedMessages.map((message: messageInfo, index: number) => ({
+                    ...message, content: decrypted_messages[index].decryptedContent
+                }))
+                setMessages({ messages });
+
             } catch (error) {
                 console.error(error);
             }
         };
+        if (!init && user) {
+            fetchChatInfo()
+            fetchMessages()
+            setInit(true)
+        }
 
-        fetchChatInfo()
-        fetchMessages()
 
 
-
-    }, []);
+    }, [user]);
     useEffect(() => {
         if (user) {
             socketRef.current = io(PATH, {
@@ -187,6 +200,7 @@ const Chat: FC = () => {
             });
             socketRef.current.on("RECEIVED_MSG", (data: messageInfo) => {
                 if (data.userId != user.uid) {
+                    console.log("MESSAGE IS BEING CALLED")
                     setMessages((old) => ({
                         messages: [data, ...(old.messages ?? [])],
                     }));

@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useAppSelector, useAppDispatch } from '@/lib/redux/hooks/redux';
 import { doSignOut } from "../../firebase/auth";
 import { listenToAuthChanges } from '@/lib/redux/features/auth/authSlice';
-import { retrievePrivateKey } from '@/lib/util/IndexedDBCalls';
 import './horizontal-navbar.css';
 
 interface HorizontalNavbarProps {
@@ -35,11 +34,7 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
 
     useEffect(() => {
         dispatch(listenToAuthChanges());
-        const fetchPrivKey = async () => {
-            const privateKey = await retrievePrivateKey()
-            console.log(privateKey)
-        }
-        fetchPrivKey()
+
         if (isDropdownOpen) {
             document.addEventListener('mousedown', handleClickOutside);
         } else {

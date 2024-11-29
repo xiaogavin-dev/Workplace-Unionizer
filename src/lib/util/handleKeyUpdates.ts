@@ -1,0 +1,66 @@
+import { createSymmetricKey, encryptSymmetricKeys } from "./encryptionCalls"
+interface roomInfoType {
+    createdAt: string | null;
+    id: string | null;
+    name: string | null;
+    chatKeyVersion: string | null,
+    isPublic: boolean,
+    isDefault: boolean,
+    unionId: string | null;
+    updatedAt: string | null;
+}
+export const handleNewChatMember = async (chat: roomInfoType | null) => {
+    // when someone new joins a chat we need to create a new key 
+    const { symmetric_key } = await createSymmetricKey()
+    //before we can encrypt this new symmetric_key we need to get everyone's public key from chat_users
+    console.log(chat?.id)
+    const publicKeysResponse = await fetch(`http://localhost:5000/chat/getPublicKeys?chatId=${chat?.id}`)
+    if (!publicKeysResponse.ok) { throw new Error("THere was an error with getting the public keys") }
+    const publicKeyData = await publicKeysResponse.json()
+    console.log(publicKeyData)
+    const publicKeys = publicKeyData.data
+    const encryptedKeys = await encryptSymmetricKeys(symmetric_key, publicKeys)
+    console.log(encryptedKeys)
+    // const encryptSymmetricKeys{}
+    const chatId = chat?.id
+    try {
+        console.log("STORING NEW ENCRYPTED KEYS ")
+        const response = await fetch(`http://localhost:5000/chat/storeEncryptedKeys`, {
+            method: "POST",
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({ chatId, encryptedKeys })
+        })
+        if (!response.ok) {
+            throw new Error("There was an error with response to store keys")
+        }
+        const data = await response.json()
+        return data.data
+    } catch (error) {
+        console.log(error, 'could not store symmetric key')
+    }
+}
+export const handleMemberJoin = async (unionId: string | undefined, userId: string) => {
+    try {
+        //get all chats that are public in this specific union
+        let unionPublicChats: Array<roomInfoType> = []
+        try {
+            const getChatResponse = await fetch(`http://localhost:5000/union/getUnionPublicChats?unionId=${unionId}`)
+            if (!getChatResponse.ok) { throw new Error("The getChatResponse was not okay") }
+            const chatResponseData = await getChatResponse.json()
+            unionPublicChats = chatResponseData.data
+        } catch (error) {
+            console.log('There was an error with getting public chats', error)
+        }
+        for (const chat of unionPublicChats) {
+            try {
+                await handleNewChatMember(chat)
+            } catch (error) {
+                console.log(`There was an error updating keys for ${chat.name}`)
+            }
+        }
+    } catch (error) {
+        console.log('There was an error handling join keys')
+    }
+}

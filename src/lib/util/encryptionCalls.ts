@@ -56,17 +56,17 @@ export const createSymmetricKey = async () => {
 }
 
 
-export const encryptMessage = async (message, public_keys) => {
+export const encryptMessage = async (message, privateKey, encryptedSymmetricKey) => {
     console.log(message)
-    console.log(public_keys)
+    console.log(privateKey)
     try {
-        const response = await fetch("http://127.0.0.1:5000/encrypt",
+        const response = await fetch("http://127.0.0.1:5000/encrypt-message",
             {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ message, public_keys })
+                body: JSON.stringify({ message, privateKey, encryptedSymmetricKey })
             }
         )
         if (!response.ok) {
@@ -78,6 +78,31 @@ export const encryptMessage = async (message, public_keys) => {
     }
     catch (e) {
         console.log("There was an issue encrypting message")
+    }
+}
+export const decryptMessage = async (messages, privateKey, keys) => {
+    console.log(messages)
+    console.log(privateKey)
+    console.log(keys)
+    try {
+        const response = await fetch("http://127.0.0.1:5000/decrypt-message",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ messages, privateKey, keys })
+            }
+        )
+        if (!response.ok) {
+            throw new Error("Response was not okay")
+        }
+        const data = await response.json()
+        console.log(data)
+        return data
+    }
+    catch (e) {
+        console.log("There was an issue decrypting message")
     }
 }
 

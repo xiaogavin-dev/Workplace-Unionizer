@@ -5,9 +5,12 @@ import Layout from '@/components/Layout';
 import './joinunion.css';
 import { useAppSelector, useAppDispatch } from '@/lib/redux/hooks/redux';
 import { setUserUnions } from '@/lib/redux/features/user_unions/userUnionsSlice';
-import { createSymmetricKey, encryptSymmetricKeys } from '@/lib/util/encryptionCalls';
+// import { createSymmetricKey, encryptSymmetricKeys } from '@/lib/util/encryptionCalls';
+// import { join } from 'path';
+import { handleMemberJoin } from '@/lib/util/handleKeyUpdates';
 import { join } from 'path';
 interface UnionData {
+  id: string,
   name: string;
   description: string;
   imageUrl?: string;
@@ -46,9 +49,9 @@ const JoinUnion = () => {
     }
   }, [unionId]);
   const onSubmit = async () => {
-    const joinUnion = async (encrypted_symmetric_keys: string[]) => {
+    const joinUnion = async () => {
       try {
-        console.log(unionData)
+        // console.log(unionData)
         const userUnionInfo = {
           userId: user?.uid,
           unionId,
@@ -65,7 +68,8 @@ const JoinUnion = () => {
           throw new Error("There was an error with the response")
         }
         const responseData = await response.json()
-        console.log(responseData)
+        await handleMemberJoin(unionData?.id, user?.uid)
+        // console.log(responseData)
       } catch (error) {
         console.log("Issue joining union")
       }
@@ -87,13 +91,7 @@ const JoinUnion = () => {
         console.error('There was an error receiving user unions', e)
       }
     }
-    try {
-      const { symmetric_key } = await createSymmetricKey();
-      const encryptedSymmetricKey = await encryptSymmetricKeys(symmetric_key)
-    } catch (error) {
-      console.log("error getting symmetric key")
-    }
-
+    joinUnion()
   }
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -131,7 +129,7 @@ const JoinUnion = () => {
                 <label>What are other ways we can get in contact with you?</label>
                 <input type="text" placeholder="Aa" />
               </div>
-              <button className="submit-button">Submit</button>
+              <button className="submit-button" onClick={() => onSubmit()}>Submit</button>
             </div>
           </>
         ) : (
