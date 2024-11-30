@@ -59,7 +59,6 @@ const signup = () => {
             const data = await generateKeyPair()
             await createUserWithEmailAndPassword(auth, values.email, values.password);
             if (auth.currentUser) {
-                console.log(auth.currentUser);
                 await updateProfile(auth.currentUser, {
                     displayName: values.username
                 });
@@ -75,7 +74,6 @@ const signup = () => {
                 if (data) {
                     const { publicKey, privateKey } = data
                     const response = await storePrivateKey(privateKey)
-                    console.log(response)
                     try {
                         const token = await auth.currentUser.getIdToken();
                         const res = await fetch('http://localhost:5000/users/signup', {
@@ -85,7 +83,6 @@ const signup = () => {
                             },
                             body: JSON.stringify({ token, publicKey })
                         })
-                        console.log(res)
                     } catch (error) {
                         console.log(error)
                     }

@@ -97,13 +97,11 @@ const Chat: FC = () => {
                     }
 
                     // grab the encrypted key
-                    console.log(`THIS IS THE ROOM KEY VERSION ID: ${roomData.room?.chatKeyVersion}`)
                     const response = await fetch(`${PATH}/chat/getEncryptedKey?userId=${user?.uid}&chatKeyVersion=${roomData.room?.chatKeyVersion}`)
                     if (!response.ok) {
                         throw new Error("There was an error getting your encrypted symmetric key")
                     }
                     const encryptedKeyData = await response.json()
-                    console.log(encryptedKeyData.data)
                     const fetchPrivKey = async () => {
                         const privateKey = await retrievePrivateKey()
                         return privateKey
@@ -130,8 +128,6 @@ const Chat: FC = () => {
                         throw new Error("Error with response")
                     }
                     const data = await response.json()
-                    console.log(data.data)
-
                 } catch (error) {
                     console.error("error creating message", error)
                 }
@@ -159,16 +155,13 @@ const Chat: FC = () => {
 
         const fetchMessages = async () => {
             try {
-                console.log(user?.uid)
                 const response = await fetch(`${PATH}/messages/getChatMessages?chatId=${chunks[chunks.length - 1]}&userId=${user?.uid}`);
                 if (!response.ok) throw new Error("Error with message response");
                 const data = await response.json();
-                console.log(data.data)
                 const privateKey: any = await fetchPrivKey()
                 let encryptedMessages = data.data.messages
                 const keys = data.data.keys
                 const decrypted_messages = await decryptMessage(encryptedMessages, privateKey?.key, keys)
-                console.log(decrypted_messages)
                 const messages = encryptedMessages.map((message: messageInfo, index: number) => ({
                     ...message, content: decrypted_messages[index].decryptedContent
                 }))
@@ -210,7 +203,6 @@ const Chat: FC = () => {
     }, [user])
     useEffect(() => {
         if (!user || !isConnected || !roomData.room) return;
-        console.log(roomData.room)
         socketRef.current?.emit("join_room", user, roomData);
 
         socketRef.current?.on("USER_ADDED", (data) => {

@@ -13,14 +13,11 @@ export const handleNewChatMember = async (chat: roomInfoType | null) => {
     // when someone new joins a chat we need to create a new key 
     const { symmetric_key } = await createSymmetricKey()
     //before we can encrypt this new symmetric_key we need to get everyone's public key from chat_users
-    console.log(chat?.id)
     const publicKeysResponse = await fetch(`http://localhost:5000/chat/getPublicKeys?chatId=${chat?.id}`)
     if (!publicKeysResponse.ok) { throw new Error("THere was an error with getting the public keys") }
     const publicKeyData = await publicKeysResponse.json()
-    console.log(publicKeyData)
     const publicKeys = publicKeyData.data
     const encryptedKeys = await encryptSymmetricKeys(symmetric_key, publicKeys)
-    console.log(encryptedKeys)
     // const encryptSymmetricKeys{}
     const chatId = chat?.id
     try {

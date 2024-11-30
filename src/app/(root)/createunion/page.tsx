@@ -101,7 +101,6 @@ const CreateUnion = () => {
             });
 
             const data = await response.json();
-            console.log("Union ID from response:", data.id);
             if (response.ok) {
                 setMessage('Union successfully added to the database!');
                 if (data.id) {

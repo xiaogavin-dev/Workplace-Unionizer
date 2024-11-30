@@ -32,7 +32,6 @@ const UnionDetail = () => {
     }, [id]);
     const joinUnion = async () => {
         try {
-            console.log(unionData)
             const userUnionInfo = {
                 userId: user?.uid,
                 unionId: id,
@@ -49,7 +48,6 @@ const UnionDetail = () => {
                 throw new Error("There was an error with the response")
             }
             const responseData = await response.json()
-            console.log(responseData)
         } catch (error) {
             console.log("Issue joining union")
         }

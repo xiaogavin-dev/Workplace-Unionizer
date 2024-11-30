@@ -26,14 +26,12 @@ const JoinUnion = () => {
   const dispatch = useAppDispatch()
   useEffect(() => {
     if (unionId) {
-      console.log("Fetching data for union ID:", unionId);
       const fetchUnionData = async () => {
         try {
           const response = await fetch(`http://localhost:5000/union/getUnion/${unionId}`);
           if (!response.ok) throw new Error('Failed to fetch union data');
 
           const data = await response.json();
-          console.log("Fetched data:", data);
           setUnionData(data.data);
         } catch (err) {
           const error = err as Error;

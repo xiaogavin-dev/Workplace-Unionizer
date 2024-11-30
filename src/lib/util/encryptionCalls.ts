@@ -12,8 +12,6 @@ export const generateKeyPair = async () => {
         // Store the private key in IndexedDB
         await storePrivateKey(privateKey);
 
-        console.log('Public Key:', publicKey);
-
         return { publicKey, privateKey };
     } catch (error) {
         console.log(error)
@@ -47,7 +45,6 @@ export const createSymmetricKey = async () => {
             throw new Error("Response was not okay")
         }
         const data = await response.json()
-        console.log(data)
         return data
     }
     catch (e) {
@@ -57,8 +54,7 @@ export const createSymmetricKey = async () => {
 
 
 export const encryptMessage = async (message, privateKey, encryptedSymmetricKey) => {
-    console.log(message)
-    console.log(privateKey)
+
     try {
         const response = await fetch("http://127.0.0.1:5000/encrypt-message",
             {
@@ -73,7 +69,6 @@ export const encryptMessage = async (message, privateKey, encryptedSymmetricKey)
             throw new Error("Response was not okay")
         }
         const data = await response.json()
-        console.log(data)
         return data
     }
     catch (e) {
@@ -81,9 +76,6 @@ export const encryptMessage = async (message, privateKey, encryptedSymmetricKey)
     }
 }
 export const decryptMessage = async (messages, privateKey, keys) => {
-    console.log(messages)
-    console.log(privateKey)
-    console.log(keys)
     try {
         const response = await fetch("http://127.0.0.1:5000/decrypt-message",
             {
@@ -98,7 +90,6 @@ export const decryptMessage = async (messages, privateKey, keys) => {
             throw new Error("Response was not okay")
         }
         const data = await response.json()
-        console.log(data)
         return data
     }
     catch (e) {
