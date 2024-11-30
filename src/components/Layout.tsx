@@ -86,6 +86,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     throw new Error('Response error')
                 }
                 const data = await userUnionsRes.json()
+                // console.log(data.data)
                 dispatch(setUserUnions({
                     unions: data.data
                 }))

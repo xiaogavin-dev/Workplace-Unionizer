@@ -53,13 +53,9 @@ const login = () => {
         try {
             await signInWithEmailAndPassword(auth, values.email, values.password)
             if (auth.currentUser) {
-                console.log(auth.currentUser);
-
-
-
                 try {
                     const token = await auth.currentUser.getIdToken();
-                    const verifyRes = await fetch('http://localhost:5000/users/verify-token', {
+                    const verifyRes = await fetch('http://localhost:5000/users/login', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

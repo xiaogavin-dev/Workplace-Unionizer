@@ -23,7 +23,8 @@ import Link from 'next/link'
 import { useAppDispatch } from '@/lib/redux/hooks/redux';
 import { setAuthState } from '@/lib/redux/features/auth/authSlice';
 import "../login/signin.css"
-
+import { generateKeyPair } from '@/lib/util/encryptionCalls'
+import { storePrivateKey } from '@/lib/util/IndexedDBCalls'
 const SignUpSchema = SignUpValidation.extend({
     username: z.string().min(1, { message: "Username is required" }),
     email: z.string().email({ message: "Invalid email address" }),
@@ -55,9 +56,9 @@ const signup = () => {
 
         setLoading(true);
         try {
+            const data = await generateKeyPair()
             await createUserWithEmailAndPassword(auth, values.email, values.password);
             if (auth.currentUser) {
-                console.log(auth.currentUser);
                 await updateProfile(auth.currentUser, {
                     displayName: values.username
                 });
@@ -70,19 +71,23 @@ const signup = () => {
                         email: values.email,
                     },
                 }));
-                try {
-                    const token = await auth.currentUser.getIdToken();
-                    const res = await fetch('http://localhost:5000/users/verify-token', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ token })
-                    })
-                    console.log(res)
-                } catch (error) {
-                    console.log(error)
+                if (data) {
+                    const { publicKey, privateKey } = data
+                    const response = await storePrivateKey(privateKey)
+                    try {
+                        const token = await auth.currentUser.getIdToken();
+                        const res = await fetch('http://localhost:5000/users/signup', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ token, publicKey })
+                        })
+                    } catch (error) {
+                        console.log(error)
+                    }
                 }
+                else { throw new Error("There was an error retrieving key pair values") }
                 router.push('/search');
             }
         } catch (error: any) {

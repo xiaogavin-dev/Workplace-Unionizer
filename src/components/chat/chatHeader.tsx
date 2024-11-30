@@ -18,10 +18,11 @@ interface chatBodyProps {
         id: string;
         content: string;
         userId: string;
-        userDN: string;
+        userDn: string | null,
         chatId: string;
         createdAt: Date;
         updatedAt: Date;
+        keyVersionId: string | null
     }>;
     currentUserId: string | null;
 }
@@ -46,7 +47,7 @@ const ChatBody: FC<chatBodyProps> = ({ messages, currentUserId }) => {
                 >
                     {message.userId !== currentUserId && (
                         <div className="w-9 h-9 rounded-full flex items-center justify-center mr-2 bg-gray-200">
-                            {message.userDN.charAt(0).toUpperCase()}
+                            {message.userDn?.charAt(0).toUpperCase()}
                         </div>
                     )}
                     <div
