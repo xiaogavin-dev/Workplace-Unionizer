@@ -27,7 +27,6 @@ const port = process.env.PORT || 5000;
 app.post('/', async (req, res) => {
   try {
     const { username, password } = req.body;
-    console.log("Received login request for:", username);
 
     // Query the database for the user
     const query = 'SELECT * FROM users WHERE email = $1';
@@ -40,7 +39,6 @@ app.post('/', async (req, res) => {
     }
 
     const user = result.rows[0];
-    console.log("User found in DB:", user);
 
     // Compare the submitted password with the hashed password in the database
     const passwordMatch = await bcrypt.compare(password, user.password);

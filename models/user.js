@@ -61,7 +61,6 @@ module.exports = (sequelize, DataTypes) => {
             value: options.publicKey,
             userId: user.uid
           })
-          console.log(`public key for use was stored ${newPubkey}`)
         }
         catch (e) {
           console.log(e)

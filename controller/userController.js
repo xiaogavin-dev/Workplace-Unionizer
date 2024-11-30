@@ -51,8 +51,6 @@ const login = async (req, res) => {
             return res.status(404).json({ success: false, message: 'User does not exist. Please sign up first.' });
         }
 
-        console.log('User login successful:', existingUser);
-
         res.status(200).json({ success: true, message: 'User login verified.', user: existingUser });
     } catch (error) {
         console.error('Error during login process', error);

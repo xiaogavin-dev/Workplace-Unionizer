@@ -5,7 +5,6 @@ const getChatMessages = async (req, res) => {
     //IMPORTANT -> I NEED TO ADD THE USERID SO I CAN GRAB ONLY THE KEYS ENCRYPTED KEYS THAT BELONG TO THIS SPECIFIC USER. 
     // RIGHT NOW I AM GRABBING THE ENCRYPTED KEY FOR THE USER THAT CREATED TEHE CHATS WHICH CAUSES AN ERROR
     const { chatId, userId } = req.query
-    console.log("LINE 8 THIS IS THE USERID", userId)
     try {
         const chatMessages = await message.findAll({
             where: {
@@ -33,7 +32,6 @@ const getChatMessages = async (req, res) => {
         const messages = []
         const keys = []
         let prevKeyVersion = null
-        console.log(userPubkeyValue)
         if (chatMessages[0]) {
             for (const message of chatMessages) {
                 if (message.keyVersionId == prevKeyVersion) {
@@ -69,7 +67,6 @@ const getChatMessages = async (req, res) => {
                             updatedAt: message.dataValues.updatedAt,
                             keyVersionId: message.dataValues.keyVersionId,
                         })
-                        console.log(encryptedSymmetricKey)
                         keys.push(encryptedSymmetricKey)
                         prevKeyVersion = message.keyVersionId
                     }
@@ -88,7 +85,6 @@ const getChatMessages = async (req, res) => {
 
 const createChatMessage = async (req, res) => {
     const { msg_details } = req.body
-    console.log(msg_details)
     try {
         const createdMessage = await message.create({
             id: msg_details.id,
@@ -101,7 +97,6 @@ const createChatMessage = async (req, res) => {
         })
 
 
-        console.log("message created: ", createdMessage.dataValues)
         res.status(200).json({ message: "Message created successfully", data: createdMessage.dataValues })
     } catch (error) {
         console.log("there was an error creating message: ", error)

@@ -56,7 +56,6 @@ module.exports = (sequelize, DataTypes) => {
                     })
                     for (const publicChat of publicChatInstances) {
                         if (!publicChat.dataValues.id) {
-                            console.log(publicChat)
                             console.log("NOT GRABBING chatId PROPERLY: ", publicChat.dataValues);
                             continue; // Skip this chat
                         }
@@ -78,7 +77,6 @@ module.exports = (sequelize, DataTypes) => {
 
                             console.log(
                                 `User chat instance created for user: ${user_union.userId}`,
-                                newUserChat.dataValues
                             );
                         } catch (error) {
                             console.error(

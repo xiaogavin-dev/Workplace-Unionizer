@@ -78,7 +78,6 @@ const createUnion = async (req, res) => {
 
       // Insert the workplace record into the database
       await workplace.create(workplaceData);
-      console.log("Inserted workplace:", workplaceData);
     }
 
     // Respond with success

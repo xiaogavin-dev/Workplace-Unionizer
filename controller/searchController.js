@@ -3,7 +3,6 @@ const { Op } = require('sequelize');
 
 const searchUnions = async (req, res) => {
     const { unionname, location, organization } = req.query;
-    console.log("Query Parameters:", req.query);
 
     const unionQuery = {};
 
@@ -28,9 +27,9 @@ const searchUnions = async (req, res) => {
             where: unionQuery,
             include: [{
                 model: workplace,
-                as: 'associatedWorkplaces',  
+                as: 'associatedWorkplaces',
                 where: workplaceQuery,
-                required: true  
+                required: true
             }]
         });
 

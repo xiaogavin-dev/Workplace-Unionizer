@@ -21,7 +21,6 @@ const getPublicKeys = async (req, res) => {
     const {
         chatId,
     } = req.query
-    console.log(chatId)
     const user_chat_map = await user_chat.findAll({
         where: {
             chatId
@@ -31,7 +30,6 @@ const getPublicKeys = async (req, res) => {
     for (const user_chat_instance of user_chat_map) {
         publicKeys.push(user_chat_instance.dataValues.pubkeyValue)
     }
-    console.log(publicKeys)
     res.status(200).json({ message: "Chat info Received", data: publicKeys })
 
 }
@@ -41,7 +39,6 @@ const storeEncryptedKeys = async (req, res) => {
         chatId,
         encryptedKeys
     } = req.body
-    console.log("1_________________________________________________________________________________")
     try {
         const chatInfo = await chat.findOne({
             where: {
@@ -53,7 +50,6 @@ const storeEncryptedKeys = async (req, res) => {
             }
         })
         //first we have to create a new keyVersion for this new symmetric key
-        console.log("2_________________________________________________________________________________")
         const newKeyVersionValue = chatInfo.keyVersion ? chatInfo.keyVersion + 1 : 1
         // create keyVersion
         const newKeyVersion = await keyVersion.create({
@@ -61,7 +57,6 @@ const storeEncryptedKeys = async (req, res) => {
             vCount: newKeyVersionValue,
             chatId
         }, { encryptedKeys, chatId })
-        console.log(newKeyVersion)
         //we also need to update the current keyVersion for the specific chat
         const [numRowsUpdated] = await chat.update(
             { chatKeyVersion: newKeyVersion.id, },
@@ -89,7 +84,6 @@ const getEncryptedKey = async (req, res) => {
                 userId
             }
         })
-        console.log("THIS IS USER PUBKEY LINE 92: ", chatKeyVersion)
         //now we have pubkey for the user, we will get the encrypted message for the specific, chat
         const encryptedKeyRow = await encryptedKey.findOne({
             where: {

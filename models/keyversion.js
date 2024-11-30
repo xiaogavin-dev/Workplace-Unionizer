@@ -35,7 +35,6 @@ module.exports = (sequelize, DataTypes) => {
           const { encryptedKey } = sequelize.models
           const newEncryptedKeyArray = []
           for (const publicKey in encryptedKeys) {
-            console.log(publicKey, encryptedKeys[publicKey])
             const newEncryptedKey = await encryptedKey.create({
               id: uuidv4(),
               encryptedKey: encryptedKeys[publicKey],
@@ -45,7 +44,6 @@ module.exports = (sequelize, DataTypes) => {
             })
             newEncryptedKeyArray.push(newEncryptedKey)
           }
-          console.log(newEncryptedKeyArray)
         }
       },
       sequelize,
