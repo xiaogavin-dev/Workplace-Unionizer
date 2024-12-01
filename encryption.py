@@ -170,6 +170,7 @@ def generate_RSA_key_pair():
     private_key = rsa.generate_private_key(
         public_exponent=65537,
         key_size=4096
+        backend=default_backend()
     )
     private_pem = private_key.private_bytes(
         encoding=serialization.Encoding.PEM,
