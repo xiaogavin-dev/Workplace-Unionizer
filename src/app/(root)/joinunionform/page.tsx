@@ -43,12 +43,48 @@ const JoinUnionForm = () => {
         }
     }, [unionId]);
 
+    // Handle adding a new question
     const handleAddQuestion = () => setQuestions([...questions, ""]);
+
+    // Handle removing a question
     const handleRemoveQuestion = (index: number) => setQuestions(questions.filter((_, i) => i !== index));
+
+    // Handle changing a question's value
     const handleQuestionChange = (index: number, value: string) => {
         const updatedQuestions = [...questions];
         updatedQuestions[index] = value;
         setQuestions(updatedQuestions);
+    };
+
+    // Save questions to the backend
+    const handleSaveQuestions = async () => {
+        if (!unionId) {
+            alert("Union ID is missing.");
+            return;
+        }
+    
+        try {
+            const response = await fetch('http://localhost:5000/form/questions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    unionId,
+                    questions,
+                }),
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to save questions');
+            }
+    
+            const data = await response.json();
+            alert('Questions saved successfully!');
+        } catch (error) {
+            console.error('Error saving questions:', error);
+            alert('An error occurred while saving questions.');
+        }
     };
 
     if (loading) return <p>Loading...</p>;
@@ -59,7 +95,7 @@ const JoinUnionForm = () => {
             <div className="join-unionform-page">
                 {unionData && (
                     <div className="union-header">
-                        {/* <img src="/path/to/union-logo.png" alt="Union Logo" className="union-logo" /> */}
+                        {/* Union details */}
                         <div className="union-info">
                             <h3>{unionData.name}</h3>
                             <p>{unionData.description}</p>
@@ -67,6 +103,7 @@ const JoinUnionForm = () => {
                     </div>
                 )}
 
+                {/* Form for creating questions */}
                 <div className="questions-section">
                     {questions.map((question, index) => (
                         <div className="question-remove-container" key={index}>
@@ -83,9 +120,14 @@ const JoinUnionForm = () => {
                             </button>
                         </div>
                     ))}
+
                     <div className="save-add-button-container">
-                        <button className="save-form-button">Save</button>
-                        <button className="add-question-button" onClick={handleAddQuestion}><b>+</b></button>
+                        <button className="save-form-button" onClick={handleSaveQuestions}>
+                            Save
+                        </button>
+                        <button className="add-question-button" onClick={handleAddQuestion}>
+                            <b>+</b>
+                        </button>
                     </div>
                 </div>
             </div>
