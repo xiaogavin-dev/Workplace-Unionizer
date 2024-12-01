@@ -76,7 +76,7 @@ const signup = () => {
                     const response = await storePrivateKey(privateKey)
                     try {
                         const token = await auth.currentUser.getIdToken();
-                        const res = await fetch('http://localhost:5000/users/signup', {
+                        const res = await fetch(`http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/users/signup`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',

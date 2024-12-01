@@ -104,6 +104,7 @@ const Chat: FC = () => {
                     const encryptedKeyData = await response.json()
                     const fetchPrivKey = async () => {
                         const privateKey = await retrievePrivateKey()
+                        console.log(privateKey)
                         return privateKey
                     }
                     const privateKey = await fetchPrivKey()
@@ -150,6 +151,7 @@ const Chat: FC = () => {
         };
         const fetchPrivKey = async () => {
             const privateKey = await retrievePrivateKey()
+            console.log(privateKey)
             return privateKey
         }
 
