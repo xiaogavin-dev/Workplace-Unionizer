@@ -14,6 +14,7 @@ const userRouter = require('./route/userRoute')
 const messageRouter = require('./route/messageRoute')
 const chatRouter = require('./route/chatRoute')
 const searchRoute = require('./route/searchRoute');
+const formRoute = require('./route/formRoute');
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -62,6 +63,7 @@ app.use('/users', userRouter);
 app.use('/messages', messageRouter)
 app.use('/chat', chatRouter)
 app.use('/api', searchRoute);
+app.use('/form', formRoute);
 
 // Catch-all 404 route
 app.use('*', (req, res, next) => {
