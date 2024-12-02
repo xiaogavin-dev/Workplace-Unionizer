@@ -1,0 +1,47 @@
+.find-lawyer-page {
+    margin-right: 90px;
+    color: #666B62;
+    border-radius: 10px;
+}
+  
+  .form-area {
+    margin-bottom: 15px;
+    min-width: 40vw;
+  }
+  
+  .form-area label {
+    display: block;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+    color: #666B62;
+  }
+  
+  .form-area input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    color: #666b62;
+    background-color: transparent;
+    border: 1px solid #555;
+    border-radius: 5px;
+    outline: none;
+  }
+  
+  .form-area input::placeholder {
+    color: #777;
+  }
+  
+  .find-lawyer-button {
+    background-color: #61a653;
+    color: white;
+    border-radius: 30px;
+    padding: 10px 20px;
+    margin-top: 30px;
+    min-width: 40vw;
+    font-size: 20px;
+  }
+  
+  .find-lawyer-button:hover {
+    background-color: #294224;
+  }
+  

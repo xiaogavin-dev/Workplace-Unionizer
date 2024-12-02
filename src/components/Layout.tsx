@@ -59,15 +59,31 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             case "/resources":
                 return "Resource Guide";
             case "/resources/forming-a-union":
-                return "Forming a Union";
+                return "";
             case "/resources/organizing-a-strike":
-                return "Organizing a Strike";
+                return "";
             case "/resources/knowing-your-rights":
-                return "Knowing Your Rights";
+                return "";
             case "/resources/negotiating-a-contract":
-                return "Negotiating a Contract";
+                return "";
+            case "/resources/links-to-external-resources":
+                return "";
+            case "/resources/find-an-employment-lawyer":
+                return "Find a Lawyer";
+            case "/settings/basic/email":
+                return "";
+            case "/settings/basic/password":
+                return "";
+            case "/settings/basic/profile":
+                return "";
+            case "/settings/contact/notifications":
+                return "";
+            case "/settings/misc/delete-account":
+                return "";
+            case "/settings":
+                return "Account Settings";
             default:
-                return "Unionizer";
+                return null;
         }
     }
     useEffect(() => {
@@ -143,7 +159,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     </SidebarProvider> : <div>{children}</div>}
             </div>
 
-            {pathname.includes("settings") ? 
+            {pathname.includes("settings") ?
                 <DynamicSidebar /> : ""
             }
 
@@ -197,11 +213,17 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                         </li>
                         {openDropdowns.includes(3) && (
                             <ul className="nested-resources">
-                                <li># Additional Resource 1</li>
-                                <li># Additional Resource 2</li>
+                                <li onClick={() => router.push('/resources/links-to-external-resources')}># Links to External Resources</li>
                             </ul>
                         )}
                     </ul>
+                    <li
+                        onClick={() => router.push('/resources/find-an-employment-lawyer')}
+                        className="find-lawyer-link"
+                    >
+                        Find a Lawyer
+                    </li>
+
                 </div>
             )}
 

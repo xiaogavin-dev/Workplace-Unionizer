@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import "../resources.css";
+
 
 const Rights = () => {
 
