@@ -5,6 +5,8 @@ import { useAppSelector } from '@/lib/redux/hooks/redux';
 import { useRouter } from 'next/navigation';
 import { User } from 'firebase/auth';
 import "./createunion.css";
+import PropagateLoader from 'react-spinners/PropagateLoader';
+
 const CreateUnion = () => {
     const router = useRouter();
     const [name, setName] = useState('');
@@ -13,6 +15,9 @@ const CreateUnion = () => {
     const [visibility, setVisibility] = useState('public');
     const [message, setMessage] = useState(''); 
     const { user } = useAppSelector(state => state.auth) as { user: User | null };
+    const [loading, setLoading] = useState<boolean>(false);
+    const [toggle, setToggle] = useState<boolean>(false);
+
     const handleUnionNameChange = (e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value);
     const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value);
     interface Workplace {
@@ -58,6 +63,8 @@ const CreateUnion = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setMessage('');
+        setLoading(true);
+
         try {
             let userId = user?.uid;
             if (!userId) {
@@ -81,6 +88,7 @@ const CreateUnion = () => {
             const data = await response.json();
             console.log("Union ID from response:", data.id);
             if (response.ok) {
+                setToggle(true);
                 setMessage('Union successfully added to the database!');
  
                 if (data.id) {
@@ -97,6 +105,8 @@ const CreateUnion = () => {
             console.error('An error occurred:', error);
             setMessage('An error occurred while submitting the form.');
         }
+
+        setLoading(false);
     };
     return (
         <Layout>
@@ -256,7 +266,8 @@ const CreateUnion = () => {
                                 </label>
                             </div>
                         </div>
-                        <button type="submit" className="submit-btn">Submit</button>
+                        {loading ? <PropagateLoader className='align-self-center' /> : 
+                                <button type="submit" className="submit-btn" disabled={toggle}>Submit</button>}
                         {message && <p className="message">{message}</p>}
                     </form>
                 </div>
