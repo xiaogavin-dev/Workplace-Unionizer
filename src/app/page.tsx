@@ -14,7 +14,7 @@ interface User {
 }
 export default function Login() {
   const router = useRouter();
-  //const { secondsRemaining } = useSeconds('/search', 5);
+  const { secondsRemaining } = useSeconds('/search', 5);
   const { isAuthenticated, isLoading, user }: {
     isAuthenticated: boolean;
     isLoading: boolean;

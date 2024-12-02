@@ -16,7 +16,7 @@
 .navbar-left {
     display: flex;
     align-items: center;
-    gap: 190px;
+    gap: 300px;
     transition: gap 0.5s ease;
 }
 
@@ -42,7 +42,7 @@
     font-weight: bold;
     color: var(--foreground);
     margin-left: 200px;
-    transition: margin-left 0.5s ease;
+    transition: gap 0.5s ease;
 }
 
 .navbar-item.profile{
@@ -77,41 +77,53 @@
     background-color: #f2f2f2;
 }
 /*---------------------------------------------------*/
+@media screen and (max-width: 1900px) {
+    .navbar-left {
+        gap: 260px; 
+    }
+}
 @media screen and (max-width: 1800px) {
     .navbar-left {
-        gap: 120px; 
+        gap: 230px; 
+    }
+}
+@media screen and (max-width: 1700px) {
+    .navbar-left {
+        gap: 180px; 
     }
 }
 @media screen and (max-width: 1600px) {
     .navbar-left {
-        gap: 80px; 
+        gap: 140px; 
     }
 }
 
 @media screen and (max-width: 1500px) {
     .navbar-left {
-        gap: 40px; 
+        gap: 100px; 
     }
 }
 
 @media screen and (max-width: 1400px) {
     .navbar-left {
-        gap: 20px; 
+        gap: 80px; 
+    }
+}
+@media screen and (max-width: 1300px) {
+    .navbar-left {
+        gap: 40px; 
     }
 }
 
 @media screen and (max-width: 1200px) {
     .navbar-left {
-        gap: 0px; 
-    }
-    .page-name {
-        margin-left: 150px;
+        gap: 20px; 
     }
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 1100px) {
     .page-name {
-        margin-left: 100px;
+        margin-left: 150px;
     }
 }
 

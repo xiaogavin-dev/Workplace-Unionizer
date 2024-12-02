@@ -6,13 +6,21 @@ body, html {
 }
 
 .create-union-page {
-    height: 100vh; 
-    overflow-y: auto; 
-    display: flex;
-    justify-content: center;
-    align-items: flex-start; 
-    padding: 20px;
-    box-sizing: border-box;
+  height: 100vh; 
+  overflow-y: scroll; 
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; 
+  padding: 20px;
+  box-sizing: border-box;
+
+  /* Hide the scrollbar */
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+}
+
+.create-union-page::-webkit-scrollbar {
+  display: none; 
 }
 
 /* Form styling */

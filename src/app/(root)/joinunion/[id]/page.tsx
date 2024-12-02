@@ -62,23 +62,23 @@ const JoinUnion = () => {
               </div>
             </div>
             <div className='questions-container'>
-                <div className="form-field">
+                <div className="form-area">
                   <label>Which location do you work at?</label>
                   <input type="text" placeholder="Aa" />
                 </div>
-                <div className="form-field">
+                <div className="form-area">
                   <label>What is your position?</label>
                   <input type="text" placeholder="Aa" />
                 </div>
-                <div className="form-field">
+                <div className="form-area">
                   <label>Who is your manager?</label>
                   <input type="text" placeholder="Aa" />
                 </div>
-                <div className="form-field">
+                <div className="form-area">
                   <label>What are other ways we can get in contact with you?</label>
                   <input type="text" placeholder="Aa" />
                 </div>
-              <button className="submit-button">Submit</button>
+              <button className="submit-form-button">Submit</button>
             </div>
           </>
         ) : (
