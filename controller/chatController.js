@@ -99,4 +99,4 @@ const getEncryptedKey = async (req, res) => {
     }
 
 }
-module.exports = { getChatInfo, getPublicKeys, storeEncryptedKeys, getEncryptedKey }
+module.exports = { getChatInfo, getPublicKeys, storeEncryptedKeys, getEncryptedKey}
