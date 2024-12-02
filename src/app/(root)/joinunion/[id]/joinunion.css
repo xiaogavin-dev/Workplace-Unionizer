@@ -1,7 +1,8 @@
 .join-union-page {
-    max-width: 900px;
+    display: block;
     margin-top: 50px;
     padding: 0 20px; 
+    padding-bottom: 50px;
     box-sizing: border-box; 
 }
 
@@ -14,6 +15,7 @@
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 10px;
+    min-width: 40vw;
 }
 
 .union-card img {
@@ -44,25 +46,24 @@
     flex-direction: column;
     gap: 20px;
     margin-top: 50px;
-    width: 100%; /* Allow it to stretch across the container */
-    max-width: 800px; /* Set a maximum width for larger screens */
-    margin-left: auto; /* Center align horizontally */
-    margin-right: auto; /* Center align horizontally */
+    width: 100%; 
+    margin-left: auto; 
+    margin-right: auto; 
 }
-.form-area {
+.form-field {
     display: flex;
     flex-direction: column;
-    width: 100%; /* Adjust to parent container */
+    width: 100%; 
     box-sizing: border-box;
 }
 
-.form-area label {
+.form-field label {
     font-size: 1em;
     color: #505050;
     margin-bottom: 5px;
 }
 
-.form-area input {
+.form-field input {
     padding: 10px;
     font-size: 1em;
     color: #313131;
@@ -71,10 +72,10 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     outline: none;
-    min-width: 50vw;
+    min-width: 40vw;
 }
 
-.form-area input::placeholder {
+.form-field input::placeholder {
     color: #888;
 }
 
@@ -87,53 +88,49 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    width: 100%; /* Full width for small screens */
-    max-width: 150px; /* Set max-width for larger screens */
+    width: 100%;
+    max-width: 150px; 
+    margin-top: 15px;
 }
 
 .submit-form-button:hover {
     background-color: #294224;
 }
 
-/* Media Queries for Responsiveness */
 @media screen and (max-width: 768px) {
     .join-union-page {
-        padding: 0 10px; /* Reduce side padding on smaller screens */
+        padding: 0 60px; 
     }
 
     .union-card {
-        flex-direction: column; /* Stack content vertically */
+        flex-direction: column; 
         align-items: flex-start;
     }
 
     .union-card img {
-        margin-bottom: 10px; /* Add space between image and text */
+        margin-bottom: 10px; 
     }
 
     .questions-container {
-        gap: 15px; /* Reduce gap for compact layout */
-    }
-
-    .form-area {
-        max-width: 100%; /* Ensure inputs are full width */
+        gap: 15px; 
     }
 
     .submit-form-button {
-        max-width: 100%; /* Ensure the button is full width */
+        max-width: 100%; 
     }
 }
 
 @media screen and (max-width: 480px) {
     .union-info h1 {
-        font-size: 1em; /* Adjust font size for very small screens */
+        font-size: 1em; 
     }
 
-    .form-area input {
-        font-size: 0.9em; /* Slightly smaller inputs on small screens */
+    .form-field input {
+        font-size: 0.9em; 
     }
 
     .submit-form-button {
-        padding: 5px 15px; /* Adjust padding for smaller buttons */
+        padding: 5px 15px; 
         font-size: 1em;
     }
 }

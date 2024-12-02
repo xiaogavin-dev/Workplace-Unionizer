@@ -127,7 +127,7 @@ const JoinUnion = () => {
                 <label>What are other ways we can get in contact with you?</label>
                 <input type="text" placeholder="Aa" />
               </div>
-              <button className="submit-button" onClick={() => onSubmit()}>Submit</button>
+              <button className="submit-form-button" onClick={() => onSubmit()}>Submit</button>
             </div>
           </>
         ) : (

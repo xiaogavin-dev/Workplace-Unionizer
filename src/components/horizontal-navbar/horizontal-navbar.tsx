@@ -85,6 +85,8 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
                 return "";
             case "/resources/links-to-external-resources":
                 return "";
+            case "/resources/find-an-employment-lawyer":
+                return "Find a Lawyer";
             case "/settings/basic/email":
                 return "";
             case "/settings/basic/password":

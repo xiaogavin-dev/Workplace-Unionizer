@@ -1,13 +1,13 @@
 "use client";
 
 import React from 'react';
-import "../resources.css";
+import "./externalResources.css";
 
 const ExternalResources = () => {
     return (
-        <div className="page-wrapper">
-            <h1 className="page-title">Links to External Resources</h1>
-            <ul className="resources-list">
+        <div className="external-resources-wrapper">
+            <h1 className="external-resources-title">Links to External Resources</h1>
+            <ul className="external-resources-list">
                 <li>
                     <a href="https://uaw.org" target="_blank" rel="noopener noreferrer">
                         UAW Union Resources

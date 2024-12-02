@@ -18,6 +18,20 @@
   color: var(--foreground);
 }
 
+.find-lawyer-link {
+  cursor: pointer;
+  color: #61a653;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: 40px;
+}
+
+.find-lawyer-link:hover {
+  color: #294224; 
+  text-decoration: underline;
+}
+
+
 .resource-list {
   list-style: none;
   padding-left: 0;

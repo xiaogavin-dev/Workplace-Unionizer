@@ -1,46 +1,46 @@
 @import url('https://fonts.googleapis.com/css2?family=Pontano+Sans&display=swap');
-.page-wrapper {
+.external-resources-wrapper {
   padding: 30px 50px;
   max-width: 1000px;
   margin-top: 30px;
-  color: #666B62; /* Light text color */
+  color: #666B62;
   font-family: 'Pontano Sans', sans-serif;
 }
 
-.page-title {
+.external-resources-title {
   font-size: 2rem;
   margin-bottom: 20px;
   font-weight: bold;
 }
 
-.resources-list {
+.external-resources-list {
   list-style-type: none;
   padding: 0;
   line-height: 1.8;
   font-size: 1.2rem;
 }
 
-.resources-list li {
+.external-resources-list li {
   margin-bottom: 15px;
 }
 
-.resources-list a {
-  color: #61a653; /* Green link color */
+.external-resources-list a {
+  color: #61a653; 
   text-decoration: none;
   font-weight: bold;
 }
 
-.resources-list a:hover {
+.external-resources-list a:hover {
   text-decoration: underline;
   color: #294224;
 }
 
 @media screen and (max-width: 768px) {
-  .page-title {
+  .external-resources-title {
     font-size: 1.7rem;
   }
   
-  .resources-list {
+  .external-resources-list {
     font-size: 1.0rem;
   }
 }

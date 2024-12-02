@@ -147,6 +147,7 @@
     .results-page{
       margin-left: 0px;
       padding: 0px;
+      padding-bottom: 50px;
     }
     .search-bar {
       flex-direction: column; 

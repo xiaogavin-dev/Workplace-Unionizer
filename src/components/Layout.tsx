@@ -68,6 +68,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 return "";
             case "/resources/links-to-external-resources":
                 return "";
+            case "/resources/find-an-employment-lawyer":
+                return "Find a Lawyer";
             case "/settings/basic/email":
                 return "";
             case "/settings/basic/password":
@@ -215,6 +217,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                             </ul>
                         )}
                     </ul>
+                    <li
+                        onClick={() => router.push('/resources/find-an-employment-lawyer')}
+                        className="find-lawyer-link"
+                    >
+                        Find a Lawyer
+                    </li>
+
                 </div>
             )}
 
