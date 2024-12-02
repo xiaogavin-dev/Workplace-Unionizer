@@ -315,7 +315,6 @@ html {
 @media screen and (max-width: 840px) {
   .workplace-input.invisible {
     display: none;
-    /* Completely hides the invisible input field */
   }
 
   .custom-radio {
