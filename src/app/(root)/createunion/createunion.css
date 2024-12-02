@@ -5,7 +5,8 @@ body, html {
     padding: 0;
 }
 
-.create-union-page {
+.create-union-page::-webkit-scrollbar {
+  display: none; 
     height: 100vh; 
     width: 100vw;
     overflow-y: auto; 
