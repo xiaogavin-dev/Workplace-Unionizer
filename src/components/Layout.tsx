@@ -100,6 +100,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     throw new Error('Response error')
                 }
                 const data = await userUnionsRes.json()
+                // console.log(data.data)
                 dispatch(setUserUnions({
                     unions: data.data
                 }))
@@ -178,7 +179,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                         </li>
                         {openDropdowns.includes(1) && (
                             <ul className="nested-resources">
-                                <li onClick={() => router.push('/resources/forming-a-union')}># Forming a Union</li>
+                                <li onClick={() => router.push('/createunion')}># Forming a Union</li>
                                 <li onClick={() => router.push('/resources/knowing-your-rights')}># Knowing Your Rights</li>
                             </ul>
                         )}

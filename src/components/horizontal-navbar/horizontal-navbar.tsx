@@ -112,7 +112,7 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
             </div>
 
             <div className="navbar-item profile" onClick={toggleDropdown}>
-                <img src="/images/union-user-icon.png" className="user-btn" alt="user btn" />
+                <img src="/images/union-user-icon.png" className="user-btn h-12 w-12" alt="user btn" />
                 {isDropdownOpen && (
                     <div className="dropdown-menu" ref={dropdownRef}>
                         <ul>

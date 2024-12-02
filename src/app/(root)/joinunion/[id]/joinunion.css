@@ -1,7 +1,5 @@
 .join-union-page {
-    display: block;
-    width: 100%; 
-    width: 850px; 
+    max-width: 900px;
     margin-top: 50px;
     padding: 0 20px; 
     box-sizing: border-box; 
@@ -73,7 +71,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     outline: none;
-    width: 100%; /* Full width for parent container */
+    min-width: 50vw;
 }
 
 .form-area input::placeholder {

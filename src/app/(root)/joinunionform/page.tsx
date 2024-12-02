@@ -59,7 +59,7 @@ const JoinUnionForm = () => {
             <div className="join-unionform-page">
                 {unionData && (
                     <div className="union-header">
-                        <img src="/path/to/union-logo.png" alt="Union Logo" className="union-logo" />
+                        {/* <img src="/path/to/union-logo.png" alt="Union Logo" className="union-logo" /> */}
                         <div className="union-info">
                             <h3>{unionData.name}</h3>
                             <p>{unionData.description}</p>

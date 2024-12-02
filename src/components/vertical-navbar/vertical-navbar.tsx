@@ -32,7 +32,7 @@ const VerticalNavbar = ({ togglePopup, buttonRef, unions, handleUnionClick }: { 
                     {
                         unions?.length ?
                             unions.map((union, ind) => {
-                                return <div key={ind} className="navbar-item " onClick={(e: React.MouseEvent) => { handleUnionClick(e, union) }} style={{ backgroundColor: '#f39c12' }}>{union.name[0]}</div>
+                                return <div key={ind} className="navbar-item" onClick={(e: React.MouseEvent) => { handleUnionClick(e, union) }} style={{ backgroundColor: '#f39c12', display: 'flex', justifyContent: 'center' }}>{union.name[0]}</div>
                             }) : <></>
                     }
 
