@@ -8,6 +8,7 @@ import HorizontalNavbar from '@/components/horizontal-navbar/horizontal-navbar';
 import './resource-popup.css';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
+import DynamicSidebar from './dynamic-navbar';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname();
@@ -58,15 +59,31 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             case "/resources":
                 return "Resource Guide";
             case "/resources/forming-a-union":
-                return "Forming a Union";
+                return "";
             case "/resources/organizing-a-strike":
-                return "Organizing a Strike";
+                return "";
             case "/resources/knowing-your-rights":
-                return "Knowing Your Rights";
+                return "";
             case "/resources/negotiating-a-contract":
-                return "Negotiating a Contract";
+                return "";
+            case "/resources/links-to-external-resources":
+                return "";
+            case "/resources/find-an-employment-lawyer":
+                return "Find a Lawyer";
+            case "/settings/basic/email":
+                return "";
+            case "/settings/basic/password":
+                return "";
+            case "/settings/basic/profile":
+                return "";
+            case "/settings/contact/notifications":
+                return "";
+            case "/settings/misc/delete-account":
+                return "";
+            case "/settings":
+                return "Account Settings";
             default:
-                return "Unionizer";
+                return null;
         }
     }
     useEffect(() => {
@@ -125,25 +142,26 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     };
 
     return (
-        <div className="h-[calc(100vh-80px)] page-wrapper grow mt-[80px] ml-[90px]">
+        <div className="h-[calc(100vh-80px)] page-wrapper mt-[80px] ml-[90px]">
             <div className="horizontal-navbar-container">
                 <HorizontalNavbar pageName={getDynamicPageName()} />
             </div>
-
-            <div className="h-[calc(100vh-80px)] grow">
+            <div className="h-[calc(100vh-80px)]">
                 <div className="vertical-navbar-container">
                     <VerticalNavbar togglePopup={togglePopup} buttonRef={buttonRef} unions={unions} handleUnionClick={handleUnionClick} />
                 </div>
-
                 {currUnion ?
                     <SidebarProvider>
                         <AppSidebar chats={currUnion?.chats} />
-                        <div className="page-content grow">
+                        <div className="page-content">
                             {children}
                         </div>
                     </SidebarProvider> : <div>{children}</div>}
-
             </div>
+
+            {pathname.includes("settings") ?
+                <DynamicSidebar /> : ""
+            }
 
             {/* Resource Guide Pop-up */}
             {isPopupOpen && (
@@ -163,7 +181,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                         </li>
                         {openDropdowns.includes(1) && (
                             <ul className="nested-resources">
-                                <li onClick={() => router.push('/resources/forming-a-union')}># Forming a Union</li>
+                                <li onClick={() => router.push('/createunion')}># Forming a Union</li>
                                 <li onClick={() => router.push('/resources/knowing-your-rights')}># Knowing Your Rights</li>
                             </ul>
                         )}
@@ -195,11 +213,17 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                         </li>
                         {openDropdowns.includes(3) && (
                             <ul className="nested-resources">
-                                <li># Additional Resource 1</li>
-                                <li># Additional Resource 2</li>
+                                <li onClick={() => router.push('/resources/links-to-external-resources')}># Links to External Resources</li>
                             </ul>
                         )}
                     </ul>
+                    <li
+                        onClick={() => router.push('/resources/find-an-employment-lawyer')}
+                        className="find-lawyer-link"
+                    >
+                        Find a Lawyer
+                    </li>
+
                 </div>
             )}
 

@@ -1,4 +1,5 @@
 import { createSymmetricKey, encryptSymmetricKeys } from "./encryptionCalls"
+
 interface roomInfoType {
     createdAt: string | null;
     id: string | null;
@@ -13,7 +14,7 @@ export const handleNewChatMember = async (chat: roomInfoType | null) => {
     // when someone new joins a chat we need to create a new key 
     const { symmetric_key } = await createSymmetricKey()
     //before we can encrypt this new symmetric_key we need to get everyone's public key from chat_users
-    const publicKeysResponse = await fetch(`http://localhost:5000/chat/getPublicKeys?chatId=${chat?.id}`)
+    const publicKeysResponse = await fetch(`http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/chat/getPublicKeys?chatId=${chat?.id}`)
     if (!publicKeysResponse.ok) { throw new Error("THere was an error with getting the public keys") }
     const publicKeyData = await publicKeysResponse.json()
     const publicKeys = publicKeyData.data
@@ -22,7 +23,7 @@ export const handleNewChatMember = async (chat: roomInfoType | null) => {
     const chatId = chat?.id
     try {
         console.log("STORING NEW ENCRYPTED KEYS ")
-        const response = await fetch(`http://localhost:5000/chat/storeEncryptedKeys`, {
+        const response = await fetch(`http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/chat/storeEncryptedKeys`, {
             method: "POST",
             headers: {
                 'content-type': 'application/json'
@@ -43,7 +44,7 @@ export const handleMemberJoin = async (unionId: string | undefined, userId: stri
         //get all chats that are public in this specific union
         let unionPublicChats: Array<roomInfoType> = []
         try {
-            const getChatResponse = await fetch(`http://localhost:5000/union/getUnionPublicChats?unionId=${unionId}`)
+            const getChatResponse = await fetch(`http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/union/getUnionPublicChats?unionId=${unionId}`)
             if (!getChatResponse.ok) { throw new Error("The getChatResponse was not okay") }
             const chatResponseData = await getChatResponse.json()
             unionPublicChats = chatResponseData.data

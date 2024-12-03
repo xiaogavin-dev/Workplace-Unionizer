@@ -103,13 +103,14 @@ const Chat: FC = () => {
                     }
                     const encryptedKeyData = await response.json()
                     const fetchPrivKey = async () => {
-                        const privateKey = await retrievePrivateKey()
+                        const privateKey = await retrievePrivateKey(user!.uid)
+                        console.log(privateKey)
                         return privateKey
                     }
                     const privateKey = await fetchPrivKey()
                     const encryptedSymmetricKey = encryptedKeyData.data.encryptedKey
                     const message = msg_details.content
-                    const { encryptedMessage } = await encryptMessage(message, privateKey?.key, encryptedSymmetricKey)
+                    const { encryptedMessage } = await encryptMessage(message, privateKey, encryptedSymmetricKey)
                     encryptedMessageDetails = { ...msg_details, content: encryptedMessage, keyVersionId: roomData.room?.chatKeyVersion }
 
                 } catch (error) {
@@ -149,7 +150,8 @@ const Chat: FC = () => {
             }
         };
         const fetchPrivKey = async () => {
-            const privateKey = await retrievePrivateKey()
+            const privateKey = await retrievePrivateKey(user!.uid)
+            console.log(privateKey)
             return privateKey
         }
 
@@ -161,7 +163,7 @@ const Chat: FC = () => {
                 const privateKey: any = await fetchPrivKey()
                 let encryptedMessages = data.data.messages
                 const keys = data.data.keys
-                const decrypted_messages = await decryptMessage(encryptedMessages, privateKey?.key, keys)
+                const decrypted_messages = await decryptMessage(encryptedMessages, privateKey, keys)
                 const messages = encryptedMessages.map((message: messageInfo, index: number) => ({
                     ...message, content: decrypted_messages[index].decryptedContent
                 }))
@@ -218,8 +220,8 @@ const Chat: FC = () => {
     return (
         <div className="flex grow">
             {user ?
-                <Card className='h-[calc(100vh-80px)]  flex flex-col w-full grow'>
-                    <CardHeader className='flex-none' >
+                <Card className='h-[calc(100vh-80px)] flex flex-col w-[calc(100vw-375px)]'>
+                    <CardHeader className='flex-none'>
                         <CardTitle><ChatHeader roomName={roomData.room?.name ?? ""} /></CardTitle>
                     </CardHeader>
                     <CardContent className='flex-grow flex flex-col-reverse overflow-y overflow-y-auto p-4'>

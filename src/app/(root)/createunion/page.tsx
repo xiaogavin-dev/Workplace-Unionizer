@@ -5,21 +5,21 @@ import { useAppSelector } from '@/lib/redux/hooks/redux';
 import { useRouter } from 'next/navigation';
 import { User } from 'firebase/auth';
 import "./createunion.css";
+import PropagateLoader from 'react-spinners/PropagateLoader';
 
 const CreateUnion = () => {
     const router = useRouter();
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [workplaces, setWorkplaces] = useState([
-        { workplaceName: '', organization: '', city: '', street: '', addressLine2: '', state: '', zip: '', country: '' }
-    ]);
+    const [workplaces, setWorkplaces] = useState([{ workplaceName: '', organization: '', city: '', street: '', addressLine2: '', state: '', zip: '', country: '' }]);
     const [visibility, setVisibility] = useState('public');
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState(''); 
     const { user } = useAppSelector(state => state.auth) as { user: User | null };
+    const [loading, setLoading] = useState<boolean>(false);
+    const [toggle, setToggle] = useState<boolean>(false);
 
     const handleUnionNameChange = (e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value);
     const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value);
-
     interface Workplace {
         workplaceName: string;
         organization: string;
@@ -30,23 +30,17 @@ const CreateUnion = () => {
         zip: string;
         country: string;
     }
-
     const handleWorkplaceChange = (index: number, field: keyof Workplace, value: string) => {
         const updatedWorkplaces = [...workplaces];
         updatedWorkplaces[index][field] = value;
         setWorkplaces(updatedWorkplaces);
     };
     const handleAddWorkplace = () => {
-        setWorkplaces([
-            ...workplaces,
-            { workplaceName: '', organization: '', city: '', street: '', addressLine2: '', state: '', zip: '', country: '' }
-        ]);
+        setWorkplaces([...workplaces, { workplaceName: '', organization: '', city: '', street: '', addressLine2: '', state: '', zip: '', country: '' }]);
     };
-
     const handleRemoveWorkplace = (index: number) => {
         setWorkplaces(workplaces.filter((_, i) => i !== index));
     };
-
     const [image, setImage] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,57 +53,51 @@ const CreateUnion = () => {
             fileInputRef.current.click();
         }
     };
+    // Remove the selected image
     const removeImage = () => {
         setImage(null);
         if (fileInputRef.current) {
-            fileInputRef.current.value = '';
+            fileInputRef.current.value = ''; 
         }
     };
-
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setMessage('');
+        setLoading(true);
 
         try {
-            const userId = user?.uid;
+            let userId = user?.uid;
             if (!userId) {
                 console.error("User ID is undefined. Make sure the user is logged in.");
                 return;
             }
-
-            const workplacesWithUnionName = workplaces.map(wp => ({
-                ...wp,
-                unionName: name,
-            }));
-
-            // Payload with union name added to each workplace
-            const payload = {
-                name,
-                description,
-                visibility,
-                workplaces: workplacesWithUnionName,  // Updated workplaces array
-                image: image ? URL.createObjectURL(image) : null,
-                userId,
-            };
-
             const response = await fetch('http://localhost:5000/union/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(payload),
+                body: JSON.stringify({
+                    name,
+                    description,
+                    visibility,
+                    workplaces,
+                    image: image ? URL.createObjectURL(image) : null,
+                    userId,  
+                }),
             });
-
             const data = await response.json();
+            console.log("Union ID from response:", data.id);
             if (response.ok) {
+                setToggle(true);
                 setMessage('Union successfully added to the database!');
+ 
                 if (data.id) {
                     setTimeout(() => {
                         router.push(`/joinunionform?unionId=${data.id}`);
                     }, 3000);
                 } else {
                     console.error("Union ID is missing in the response");
-                }
+                }             
             } else {
                 setMessage(`Error: ${data.message}`);
             }
@@ -117,8 +105,9 @@ const CreateUnion = () => {
             console.error('An error occurred:', error);
             setMessage('An error occurred while submitting the form.');
         }
-    };
 
+        setLoading(false);
+    };
     return (
         <Layout>
             <div className="create-union-page">
@@ -133,7 +122,7 @@ const CreateUnion = () => {
                                 </div>
                                 <div className="form-group">
                                     <label><b>Description</b> - Shown to users in search results</label>
-                                    <textarea value={description} onChange={handleDescriptionChange} placeholder="Description" />
+                                    <textarea value={description} onChange={handleDescriptionChange} placeholder="Text box currently being written in changes color" />
                                 </div>
                             </div>
                             <div className="image-upload-container">
@@ -187,12 +176,23 @@ const CreateUnion = () => {
                                                 onChange={(e) => handleWorkplaceChange(index, 'organization', e.target.value)}
                                             />
                                         </div>
+                                        <div className="workplace-input invisible">
+                                            <input type="text" disabled />
+                                        </div>
                                         <div className="workplace-input">
                                             <input
                                                 type="text"
                                                 placeholder="Street"
                                                 value={workplace.street}
                                                 onChange={(e) => handleWorkplaceChange(index, 'street', e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="workplace-input">
+                                            <input
+                                                type="text"
+                                                placeholder="Address Line 2"
+                                                value={workplace.addressLine2}
+                                                onChange={(e) => handleWorkplaceChange(index, 'addressLine2', e.target.value)}
                                             />
                                         </div>
                                         <div className="workplace-input">
@@ -234,9 +234,8 @@ const CreateUnion = () => {
                                 Add Workplace
                             </button>
                         </div>
-
                         {/* Visibility */}
-                        <div className="visibility-container">
+                        < div className="visibility-container" >
                             <label><b>Visibility & Access</b></label>
                             <div className="visibility-option">
                                 <label>
@@ -267,8 +266,8 @@ const CreateUnion = () => {
                                 </label>
                             </div>
                         </div>
-
-                        <button type="submit" className="submit-btn">Submit</button>
+                        {loading ? <PropagateLoader className='align-self-center' /> : 
+                                <button type="submit" className="submit-btn" disabled={toggle}>Submit</button>}
                         {message && <p className="message">{message}</p>}
                     </form>
                 </div>
@@ -276,5 +275,4 @@ const CreateUnion = () => {
         </Layout>
     );
 };
-
 export default CreateUnion;

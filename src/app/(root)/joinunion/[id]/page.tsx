@@ -120,9 +120,9 @@ const JoinUnion = () => {
               />
             </div>
           ))}
-          <button className="submit-button" onClick={onSubmit}>
-            Submit
-          </button>
+           </div>
+              <button className="submit-form-button" onClick={() => onSubmit()}>Submit</button>
+            </div>
         </div>
       </div>
     </Layout>

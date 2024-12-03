@@ -10,11 +10,14 @@
     top: 0;
     left: 0;
     z-index: 1000;
+    box-sizing: border-box;
 }
 
 .navbar-left {
     display: flex;
     align-items: center;
+    gap: 300px;
+    transition: gap 0.5s ease;
 }
 
 .navbar-logo {
@@ -26,7 +29,7 @@
 
 .logo {
     height: 50px;
-    margin-right: 10px;
+    margin-right: 20px;
 }
 
 .name {
@@ -37,12 +40,13 @@
 .page-name {
     font-size: 1.9rem;
     font-weight: bold;
-    margin-left: 340px; 
     color: var(--foreground);
+    margin-left: 200px;
+    transition: gap 0.5s ease;
 }
 
-.user-btn{
-    background-color: var(--navbar-background);
+.navbar-item.profile{
+    margin-right: 20px;
 }
 
 /* Dropdown menu styles */
@@ -71,4 +75,66 @@
 
 .dropdown-menu li:hover {
     background-color: #f2f2f2;
+}
+/*---------------------------------------------------*/
+@media screen and (max-width: 1900px) {
+    .navbar-left {
+        gap: 260px; 
+    }
+}
+@media screen and (max-width: 1800px) {
+    .navbar-left {
+        gap: 230px; 
+    }
+}
+@media screen and (max-width: 1700px) {
+    .navbar-left {
+        gap: 180px; 
+    }
+}
+@media screen and (max-width: 1600px) {
+    .navbar-left {
+        gap: 140px; 
+    }
+}
+
+@media screen and (max-width: 1500px) {
+    .navbar-left {
+        gap: 100px; 
+    }
+}
+
+@media screen and (max-width: 1400px) {
+    .navbar-left {
+        gap: 80px; 
+    }
+}
+@media screen and (max-width: 1300px) {
+    .navbar-left {
+        gap: 40px; 
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .navbar-left {
+        gap: 20px; 
+    }
+}
+
+@media screen and (max-width: 1100px) {
+    .page-name {
+        margin-left: 150px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .horizontal-navbar-container {
+        padding: 0 10px; 
+    }
+    .logo {
+        margin-left: 5px;
+    }
+    .page-name {
+        margin-left: 50px;
+    }
 }

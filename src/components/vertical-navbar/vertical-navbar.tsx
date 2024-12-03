@@ -32,16 +32,22 @@ const VerticalNavbar = ({ togglePopup, buttonRef, unions, handleUnionClick }: { 
                     {
                         unions?.length ?
                             unions.map((union, ind) => {
-                                return <div key={ind} className="navbar-item " onClick={(e: React.MouseEvent) => { handleUnionClick(e, union) }} style={{ backgroundColor: '#f39c12' }}>{union.name[0]}</div>
+                                return <div key={ind} className="navbar-item" onClick={(e: React.MouseEvent) => { handleUnionClick(e, union) }} style={{ backgroundColor: '#f39c12', display: 'flex', justifyContent: 'center' }}>{union.name[0]}</div>
                             }) : <></>
                     }
 
                     <a href="/search"><div className="add-button">+</div></a>
                 </div>
 
-                <div className="book-button" ref={buttonRef} onClick={handleBookButtonClick} style={{ cursor: 'pointer' }}>
-                    📚
-                </div>
+                <img
+                    src="/images/resource-guide-icon.png"
+                    alt="books"
+                    className="book-button"
+                    ref={buttonRef} // Now properly typed as HTMLImageElement
+                    onClick={handleBookButtonClick}
+                    style={{ cursor: 'pointer' }}
+                />
+
             </div>
         </div>
     );

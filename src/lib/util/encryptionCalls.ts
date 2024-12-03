@@ -3,7 +3,7 @@ import { storePrivateKey } from './IndexedDBCalls'
 // Generate RSA Key Pair
 export const generateKeyPair = async () => {
     try {
-        const response = await fetch("http://127.0.0.1:5000/generate-rsa-key-pair")
+        const response = await fetch(`${process.env.NEXT_PUBLIC_ENCRYPTION_PORT}/generate-rsa-key-pair`)
         if (!response.ok) {
             throw new Error("Response was not okay")
         }
@@ -19,7 +19,7 @@ export const generateKeyPair = async () => {
 };
 export const encryptSymmetricKeys = async (symmetric_key: string, public_keys: string[]) => {
     try {
-        const response = await fetch("http://127.0.0.1:5000/encrypt-symmetric",
+        const response = await fetch(`${process.env.NEXT_PUBLIC_ENCRYPTION_PORT}/encrypt-symmetric`,
             {
                 method: "POST",
                 headers: {
@@ -40,7 +40,7 @@ export const encryptSymmetricKeys = async (symmetric_key: string, public_keys: s
 }
 export const createSymmetricKey = async () => {
     try {
-        const response = await fetch("http://127.0.0.1:5000/create-symmetric-key")
+        const response = await fetch(`${process.env.NEXT_PUBLIC_ENCRYPTION_PORT}/create-symmetric-key`)
         if (!response.ok) {
             throw new Error("Response was not okay")
         }
@@ -56,7 +56,7 @@ export const createSymmetricKey = async () => {
 export const encryptMessage = async (message, privateKey, encryptedSymmetricKey) => {
 
     try {
-        const response = await fetch("http://127.0.0.1:5000/encrypt-message",
+        const response = await fetch(`${process.env.NEXT_PUBLIC_ENCRYPTION_PORT}/encrypt-message`,
             {
                 method: "POST",
                 headers: {
@@ -77,7 +77,8 @@ export const encryptMessage = async (message, privateKey, encryptedSymmetricKey)
 }
 export const decryptMessage = async (messages, privateKey, keys) => {
     try {
-        const response = await fetch("http://127.0.0.1:5000/decrypt-message",
+        console.log(process.env.NEXT_PUBLIC_ENCRYPTION_PORT)
+        const response = await fetch(`${process.env.NEXT_PUBLIC_ENCRYPTION_PORT}/decrypt-message`,
             {
                 method: "POST",
                 headers: {

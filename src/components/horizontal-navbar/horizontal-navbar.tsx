@@ -56,24 +56,53 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
         }
     };
 
-    // Function to dynamically determine the page name based on the current path
     const getDynamicPageName = () => {
+        if (pathname.startsWith("/joinunion")) {
+            return "Join a Union";
+        }
         switch (pathname) {
             case "/":
                 return "Home";
             case "/search":
                 return "Find a Union";
+            case "/results":
+                return "Find a Union";
+            case "/createunion":
+                return "Create a Union";
+            case "/joinunionform":
+                return "Join a Union Form";
+            case "/chat":
+                return "Chat"
             case "/resources":
                 return "Resource Guide";
             case "/resources/forming-a-union":
-                return "Forming a Union";
+                return "";
             case "/resources/organizing-a-strike":
-                return "Organizing a Strike";
-            // Add more cases for other routes as needed
+                return "";
+            case "/resources/knowing-your-rights":
+                return "";
+            case "/resources/negotiating-a-contract":
+                return "";
+            case "/resources/links-to-external-resources":
+                return "";
+            case "/resources/find-an-employment-lawyer":
+                return "Find a Lawyer";
+            case "/settings/basic/email":
+                return "";
+            case "/settings/basic/password":
+                return "";
+            case "/settings/basic/profile":
+                return "";
+            case "/settings/contact/notifications":
+                return "";
+            case "/settings/misc/delete-account":
+                return "";
+            case "/settings":
+                return "Account Settings";
             default:
-                return pageName || "Unionizer"; // Default page name or passed prop
+                return null;
         }
-    };
+    }
 
     return (
         <div className="horizontal-navbar-container">
@@ -85,7 +114,7 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
             </div>
 
             <div className="navbar-item profile" onClick={toggleDropdown}>
-                <img src="/images/user.png" className="user-btn" alt="user btn" />
+                <img src="/images/union-user-icon.png" className="user-btn h-12 w-12" alt="user btn" />
                 {isDropdownOpen && (
                     <div className="dropdown-menu" ref={dropdownRef}>
                         <ul>
@@ -98,7 +127,7 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
                                 <Link href="/profile">Profile</Link>
                             </li>
                             <li>
-                                <Link href="/settings">Settings & Privacy</Link>
+                                <Link href="/settings/basic/profile">Settings & Privacy</Link>
                             </li>
                             <li>
                                 <Link href="/help">Help</Link>
