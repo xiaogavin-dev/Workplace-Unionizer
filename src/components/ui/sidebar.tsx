@@ -495,6 +495,7 @@ const SidebarMenu = React.forwardRef<
     {...props}
   />
 ))
+
 SidebarMenu.displayName = "SidebarMenu"
 
 const SidebarMenuItem = React.forwardRef<
