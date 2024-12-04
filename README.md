@@ -67,10 +67,13 @@ This will install all the packages and dependencies required for the project.
 - Go to [PostgreSQL Downloads](https://www.postgresql.org/download/) and download PostgreSQL for your operating system.
 - **For Windows**:
   1. Click on **Windows** and then **Download the Installer**.
-  2. ![PostgreSQL Installer](assets/readme_images/img2.png)
+  2. ![PostgreSQL Installer](assets/readme_images/img4.png)
   3. Download the latest version for your specific device architecture (e.g., Windows x-86-64).
   4. Follow the installation process.
 - After installation, open **SQL Shell** and set it up as per your requirements.
+    1. follow the instructions on this link until the terminal looks like this
+    2. ![PostgreSQL Installer](assets/readme_images/img5.png)
+    3. we will add the information you just set up into a .env file in the next step
 
 #### 4.2 Set Up Environment Variables
 - Create a file called `.env` in the root of your project.
