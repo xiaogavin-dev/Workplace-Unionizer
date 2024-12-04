@@ -4,28 +4,38 @@ const userUnion = require('../models/user-union');
 const { v4: uuidv4 } = require('uuid')
 const getUnions = async (req, res) => {
   try {
-    const {
-      unionname,
-      location,
-      organization
-    } = req.query;
+    const { unionname, location, organization } = req.query;
 
-    let query = 'SELECT * FROM unions WHERE 1=1';
+    // SQL query to join unions with workplaces and filter based on query parameters
+    let query = `
+      SELECT 
+        unions.id, 
+        unions.name, 
+        unions.description,
+        unions.visibility,
+        workplaces.organization, 
+        workplaces.state AS location 
+      FROM unions
+      LEFT JOIN workplaces 
+        ON unions.id = workplaces."unionId"
+      WHERE 1=1
+    `;
+
     const queryParams = [];
 
     if (unionname) {
       queryParams.push(`%${unionname}%`);
-      query += ` AND name ILIKE $${queryParams.length}`; // Using ILIKE for case-insensitive search
+      query += ` AND unions.name ILIKE $${queryParams.length}`;
     }
 
     if (location) {
       queryParams.push(`%${location}%`);
-      query += ` AND location ILIKE $${queryParams.length}`;
+      query += ` AND workplaces.state ILIKE $${queryParams.length}`;
     }
 
     if (organization) {
       queryParams.push(`%${organization}%`);
-      query += ` AND organization ILIKE $${queryParams.length}`;
+      query += ` AND workplaces.organization ILIKE $${queryParams.length}`;
     }
 
     console.log('Query:', query, 'Params:', queryParams);
@@ -36,7 +46,7 @@ const getUnions = async (req, res) => {
       return res.status(200).json({
         status: 'success',
         data: [],
-        message: 'No unions found'
+        message: 'No unions found for the specified criteria',
       });
     }
 
@@ -52,6 +62,7 @@ const getUnions = async (req, res) => {
     });
   }
 };
+
 const getUserUnions = async (req, res) => {
   const { userId } = req.query
   const userUnions = await user_union.findAll({

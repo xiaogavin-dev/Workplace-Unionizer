@@ -73,16 +73,16 @@ app.use('*', (req, res, next) => {
   });
 });
 
-app.get("/api/unions/:unionId/polls", async (req, res) => {
-    try {
-        const { unionId } = req.params;
-        const polls = await Poll.findAll({ where: { unionId } });
-        res.json(polls);
-    } catch (error) {
-        console.error("Error fetching polls:", error);
-        res.status(500).send("Error fetching polls");
-    }
-});
+// app.get("/api/unions/:unionId/polls", async (req, res) => {
+//     try {
+//         const { unionId } = req.params;
+//         const polls = await Poll.findAll({ where: { unionId } });
+//         res.json(polls);
+//     } catch (error) {
+//         console.error("Error fetching polls:", error);
+//         res.status(500).send("Error fetching polls");
+//     }
+// });
 
 server.listen(port, () => {
   socketInit(server)
