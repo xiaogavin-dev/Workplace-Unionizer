@@ -1,31 +1,23 @@
-# **Unionizer**
-## Getting Started
-**Prerequisites**
-- git
-- Node.js & npm
-- Both **[workplace-unionizer-frontend](https://github.com/Tonyl3260/workplace-unionizer-frontend)** and **[workplace-unionizer-backend](https://github.com/Tonyl3260/workplace-unionizer-backend)** github repos cloned 
+# **Unionizer Application Documentation**
 
-**Setup app and start**
-1. Clone **[workplace-unionizer-frontend](https://github.com/Tonyl3260/workplace-unionizer-frontend)**
-```bash
-git clone git@github.com:Tonyl3260/workplace-unionizer-frontend.git
-```
-2. cd to **[workplace-unionizer-frontend](https://github.com/Tonyl3260/workplace-unionizer-frontend)** and install all modules needed for app, this may take a while to install
-```bash
-cd workplace-unionizer-frontend
-npm install
-```
-3. After all modules have been installed, create a file named `.env.local`
-```bash
-touch .env.local
-```
-4. Edit with your chosen editor, we use gedit here but any text editor works. Paste contents from `.env.local` given and save (this will be provided)
-```bash
-gedit .env.local
-```
-5. Starting up frontend of app
-```bash
-npm run dev
-```
-6. View the app in your browser at 
-[http://localhost:3000/](http://localhost:3000/)
+This is a complete guide to setting up and running the Unionizer app, including the **Backend**, **Encryption Service**, and **Frontend**. Please follow the steps carefully for each repository.
+
+---
+
+## **Backend (Node.js)**
+
+This is the backend API required for the Unionizer app. Ensure this service is running for the app to function correctly.
+
+### **How to Run**
+
+#### **Prerequisites**
+1. **Node.js Installed**: Ensure you have Node.js installed, and `npm` commands are runnable in your terminal.
+2. **GitHub Account**: Required to clone the repository.
+3. **Code Editor**: Visual Studio Code is recommended, but any editor will work.
+
+#### **Setup Instructions**
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Tonyl3260/workplace-unionizer-backend.git
+   ```
+
