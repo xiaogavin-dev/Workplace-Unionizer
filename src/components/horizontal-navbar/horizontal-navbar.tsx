@@ -118,7 +118,7 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
             <div className="navbar-left">
                 <a href="/" onClick={handleLogoClick} className="navbar-logo">
                     <img
-                        src="/images/Unionizer_Logo_v3.png"
+                        src="/images/Unionizer_Logo.png"
                         className="logo"
                         alt="Unionizer Logo"
                     />
