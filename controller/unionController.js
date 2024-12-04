@@ -13,6 +13,7 @@ const getUnions = async (req, res) => {
         unions.name, 
         unions.description,
         unions.visibility,
+        unions.image,
         workplaces.organization, 
         workplaces.state AS location 
       FROM unions
