@@ -32,17 +32,31 @@ const VerticalNavbar = ({ togglePopup, buttonRef, unions, handleUnionClick }: { 
                 <div className="navbar-items">
                     {
                         unions?.length ?
-                            unions.map((union, ind) => {
-                                return <div key={ind} className="navbar-item" onClick={(e: React.MouseEvent) => { handleUnionClick(e, union) }} style={{ display: 'flex', justifyContent: 'center' }}><img
-                                    src={`http://localhost:5000${union.image}`}
-                                    alt={`${union.name} Logo`}
-                                    className="union-image"
-                                    onError={(e) => {
-                                        e.target.onerror = null;
-                                        e.target.src = defaultImage;
-                                    }}
-                                /></div>
-                            }) : <></>
+                            unions.map((union, ind) => (<div
+                                key={ind}
+                                className="navbar-item"
+                                onClick={(e) => {
+                                    handleUnionClick(e, union);
+                                }}
+                                style={{ display: "flex", justifyContent: "center" }}
+                            >
+                                {union.image ? (
+                                    <img
+                                        src={`http://localhost:5000${union.image}`}
+                                        alt={`${union.name} Logo`}
+                                        className="union-image"
+                                        style={{ maxHeight: "50px" }}
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.src = defaultImage;
+                                        }}
+                                    />
+                                ) : (
+                                    <div className="union-initial" style={{ maxHeight: "50px" }}>
+                                        {union.name?.[0]?.toUpperCase() }
+                                    </div>
+                                )}
+                            </div>)) : <></>
                     }
 
                     <a href="/search"><div className="add-button">+</div></a>

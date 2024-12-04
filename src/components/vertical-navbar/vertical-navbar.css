@@ -107,3 +107,24 @@
 .book-button:hover {
     background-color: #61a653;
 }
+
+.union-image {
+    max-height: 50px;
+    width: auto;
+    object-fit: contain; 
+    border-radius: 10%; 
+}
+
+.union-initial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #61a653;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    width: 50px;
+    height: 50px;
+    border-radius: 10%;
+    text-transform: uppercase;
+}
