@@ -1,5 +1,5 @@
 const admin = require('../firebaseAdmin.js');
-const { user } = require('../models'); // Import the Sequelize user model
+const { user } = require('../models/index.js'); // Import the Sequelize user model
 
 const signup = async (req, res) => {
     const { token, publicKey } = req.body;
