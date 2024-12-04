@@ -5,7 +5,6 @@ import Layout from "@/components/Layout";
 import "./joinunion.css";
 import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks/redux";
 import { setUserUnions } from "@/lib/redux/features/user_unions/userUnionsSlice";
-import { handleMemberJoin } from "@/lib/util/handleKeyUpdates";
 
 interface UnionData {
   id: string;
@@ -21,7 +20,6 @@ interface Question {
 
 const JoinUnion = () => {
   const { id: unionId } = useParams();
-
   const [unionData, setUnionData] = useState<UnionData | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<string[]>([]);
@@ -41,8 +39,7 @@ const JoinUnion = () => {
         const data = await response.json();
         setUnionData(data.data);
       } catch (err) {
-        const error = err as Error;
-        setError(error.message);
+        setError((err as Error).message);
       }
     };
 
@@ -57,8 +54,7 @@ const JoinUnion = () => {
         setQuestions(data.data);
         setAnswers(new Array(data.data.length).fill(""));
       } catch (err) {
-        const error = err as Error;
-        setError(error.message);
+        setError((err as Error).message);
       } finally {
         setLoading(false);
       }
@@ -68,7 +64,7 @@ const JoinUnion = () => {
       fetchUnionData();
       fetchQuestions();
     } else {
-      console.error("Union ID not found in URL.");
+      setError("Union ID not found in URL.");
       setLoading(false);
     }
   }, [unionId]);
@@ -80,50 +76,70 @@ const JoinUnion = () => {
   };
 
   const onSubmit = async () => {
-    const joinUnion = async () => {
-      try {
-        const userUnionInfo = {
-          userId: user?.uid,
-          unionId,
-          role: "general",
-        };
-        const response = await fetch(
-          `http://localhost:5000/union/joinUnion`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ userUnionInfo }),
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Failed to join the union");
-        }
-        const responseData = await response.json();
-        await handleMemberJoin(unionData?.id, user?.uid);
-      } catch (error) {
-        console.error("Issue joining union");
+    try {
+      // Submit form answers
+      const formAnswers = questions.map((question, index) => ({
+        questionId: question.id,
+        unionId,
+        userId: user?.uid,
+        answer: answers[index],
+      }));
+
+      const answersResponse = await fetch(`http://localhost:5000/form/answers`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ formAnswers }),
+      });
+
+      if (!answersResponse.ok) {
+        throw new Error("Failed to submit form answers");
       }
 
-      try {
-        const userUnionsRes = await fetch(
-          `http://localhost:5000/union/getUserUnions?userId=${user?.uid}`
-        );
-        if (!userUnionsRes.ok) {
-          throw new Error("Failed to fetch user unions");
-        }
-        const data = await userUnionsRes.json();
-        dispatch(
-          setUserUnions({
-            unions: data.data,
-          })
-        );
-      } catch (e) {
-        console.error("There was an error receiving user unions", e);
+      const answersData = await answersResponse.json();
+      console.log("Form answers saved:", answersData);
+
+      // Join the union
+      const userUnionInfo = {
+        userId: user?.uid,
+        unionId,
+        role: "general",
+      };
+
+      const joinResponse = await fetch(`http://localhost:5000/union/joinUnion`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userUnionInfo }),
+      });
+
+      if (!joinResponse.ok) {
+        throw new Error("Failed to join the union");
       }
-    };
-    joinUnion();
+
+      const joinData = await joinResponse.json();
+      console.log("Union joined:", joinData);
+
+      // Update user unions
+      const userUnionsRes = await fetch(
+        `http://localhost:5000/union/getUserUnions?userId=${user?.uid}`
+      );
+
+      if (!userUnionsRes.ok) {
+        throw new Error("Failed to fetch user unions");
+      }
+
+      const userUnionsData = await userUnionsRes.json();
+      dispatch(setUserUnions({ unions: userUnionsData.data }));
+
+      // Success message
+      alert("Survey submitted and union joined successfully!");
+    } catch (error) {
+      console.error("Error submitting survey or joining union:", error);
+      alert("An error occurred while processing your request.");
+    }
   };
 
   if (loading) return <p>Loading...</p>;
@@ -159,10 +175,7 @@ const JoinUnion = () => {
                   />
                 </div>
               ))}
-              <button
-                className="submit-form-button"
-                onClick={() => onSubmit()}
-              >
+              <button className="submit-form-button" onClick={onSubmit}>
                 Submit
               </button>
             </div>

@@ -64,49 +64,43 @@ const CreateUnion = () => {
         e.preventDefault();
         setMessage('');
         setLoading(true);
-
+    
         try {
-            let userId = user?.uid;
-            if (!userId) {
-                console.error("User ID is undefined. Make sure the user is logged in.");
-                return;
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('description', description);
+            formData.append('visibility', visibility);
+            formData.append('userId', user?.uid || '');
+            formData.append('workplaces', JSON.stringify(workplaces)); 
+            if (image) {
+                formData.append('image', image); 
             }
+    
             const response = await fetch('http://localhost:5000/union/create', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name,
-                    description,
-                    visibility,
-                    workplaces,
-                    image: image ? URL.createObjectURL(image) : null,
-                    userId,  
-                }),
+                body: formData,
             });
+    
             const data = await response.json();
-            console.log("Union ID from response:", data.id);
+            console.log(data.id)
+            console.log(data.data)
             if (response.ok) {
                 setToggle(true);
                 setMessage('Union successfully added to the database!');
- 
-                if (data.id) {
+                if (data.data.id) {
                     setTimeout(() => {
-                        router.push(`/joinunionform?unionId=${data.id}`);
+                        router.push(`/joinunionform?unionId=${data.data.id}`);
                     }, 3000);
-                } else {
-                    console.error("Union ID is missing in the response");
-                }             
+                }
             } else {
                 setMessage(`Error: ${data.message}`);
             }
         } catch (error) {
             console.error('An error occurred:', error);
             setMessage('An error occurred while submitting the form.');
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(false);
     };
     return (
         <Layout>
