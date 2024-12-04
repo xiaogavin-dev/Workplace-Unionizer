@@ -62,7 +62,7 @@ const JoinUnionForm = () => {
             alert("Union ID is missing.");
             return;
         }
-    
+
         try {
             const response = await fetch('http://localhost:5000/form/questions', {
                 method: 'POST',
@@ -74,11 +74,11 @@ const JoinUnionForm = () => {
                     questions,
                 }),
             });
-    
+
             if (!response.ok) {
                 throw new Error('Failed to save questions');
             }
-    
+
             const data = await response.json();
             alert('Questions saved successfully!');
         } catch (error) {
@@ -90,6 +90,8 @@ const JoinUnionForm = () => {
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
 
+    const defaultImage = "/images/Unionizer_Logo.png";
+
     return (
         <Layout>
             <div className="join-unionform-page">
@@ -97,6 +99,15 @@ const JoinUnionForm = () => {
                     <div className="union-header">
                         {/* Union details */}
                         <div className="union-info">
+                            <img
+                                src={`http://localhost:5000${unionData.image}`}
+                                alt={`${unionData.name} Logo`}
+                                className="result-image"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = defaultImage;
+                                }}
+                            />
                             <h3>{unionData.name}</h3>
                             <p>{unionData.description}</p>
                         </div>

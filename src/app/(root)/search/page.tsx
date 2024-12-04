@@ -100,7 +100,7 @@ const Search = () => {
                                         <FormItem>
                                             <FormLabel className='find-tags'>Location</FormLabel>
                                             <FormControl>
-                                                <Input className="custom-input" placeholder="City, State" {...field} />
+                                                <Input className="custom-input" placeholder="State" {...field} />
                                             </FormControl>
                                         </FormItem>
                                     )}
