@@ -56,6 +56,15 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
         }
     };
 
+    const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault(); 
+        if (isAuthenticated) {
+            router.push("/search"); 
+        } else {
+            router.push("/"); 
+        }
+    };
+
     const getDynamicPageName = () => {
         if (pathname.startsWith("/joinunion")) {
             return "Join a Union";
@@ -107,8 +116,12 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
     return (
         <div className="horizontal-navbar-container">
             <div className="navbar-left">
-                <a href="/search" className="navbar-logo">
-                    <img src="/images/Unionizer_Logo_v3.png" className="logo" alt="Flowbite Logo" />
+                <a href="/" onClick={handleLogoClick} className="navbar-logo">
+                    <img
+                        src="/images/Unionizer_Logo_v3.png"
+                        className="logo"
+                        alt="Unionizer Logo"
+                    />
                 </a>
                 <h1 className="page-name">{getDynamicPageName()}</h1> {/* Dynamically set the page name */}
             </div>

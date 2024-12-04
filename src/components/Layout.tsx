@@ -7,7 +7,7 @@ import VerticalNavbar from '@/components/vertical-navbar/vertical-navbar';
 import HorizontalNavbar from '@/components/horizontal-navbar/horizontal-navbar';
 import './resource-popup.css';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/app-sidebar/app-sidebar"
 import DynamicSidebar from './dynamic-navbar';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
