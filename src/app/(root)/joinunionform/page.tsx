@@ -108,8 +108,10 @@ const JoinUnionForm = () => {
                                     e.target.src = defaultImage;
                                 }}
                             />
-                            <h3>{unionData.name}</h3>
-                            <p>{unionData.description}</p>
+                            <div className="union-details">
+                                <h3>{unionData.name}</h3>
+                                <p>{unionData.description}</p>
+                            </div>
                         </div>
                     </div>
                 )}
