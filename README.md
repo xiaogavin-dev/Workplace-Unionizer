@@ -1,53 +1,105 @@
-## **Backend (Node.js)**
+# **Backend (Node.js)**
 
-This is the backend service called by our client to create and access all tables and rows. This is one of the repos that must be run for the app to properly work.
+This is the backend service called by our client to create and access all tables and rows. This is one of the repositories that must be run for the app to function properly.
+
 ---
-### **How to run:**
+
+## **How to Run**
+
+### **Prerequisites**
 1. **Node.js Installed**: Ensure you have Node.js installed, and `npm` commands are runnable in your terminal.
 2. **Code Editor**: Visual Studio Code is recommended, but any editor will work.
 
-#### **Setup Instructions**
-1. Open up a terminal and make sure you are in folder called server
+---
 
-2. Set up Firebase Authentication:
-    1. create a Firebase Project
-        1. Go to [text](https://firebase.google.com/)
-        1. click Go to Console > Create a Project
-        1. Follow the instructions and use default settings
-    2. Once the project is ready we want to activate user authentication 
-        1. on the sidebase under "Build" click on Authentication
-        1. click on get started
-        1. under sign-in method tab click on "Email/Password"
-            1. enable Email/Password
-            1. email link will stay disabled 
-            1. click save
-    3. Now that authentication is enabled we need to make it so we have firebase-sdk set for our server folder. To do this we need a service-account.json file
-        1. in the console click on the gear sign next to “Project Overview” located on the side bar. Click on “Project Settings”
-        1. navigate to “Service accounts”
-        1. scroll down and click on Generate new private key
-            1. It will give you a warning telling you to keep the private key PRIVATE. It should be added to the gitignore if it is not already there (it should already be there)
-            1. click generate key
-            1. This will download the key for the service account which we will rename and place in our project directory
-                1. locate the file in your local downloads directory   
-                1. either move the file or copy its contents to the cloned repository folder
-                1. ![Alt Text](assets/readme_images/img1.png)
-                1. We will rename the file to match the name in the .gitignore
-                1. rename the file serviceAccountKey.json 
-                1. it should end up looking something like this…
-                1. ![Alt Text](assets/readme_images/img2.png)
-                1. That is it for setting up firebase FOR THE BACKEND… There is more to do for the frontend 
-        1. After setting up the firebase navigate to the cloned repository folder. Run the following command:
-        1. ```bash
-        npm i
-        ```
-        this will install all the packages and dependencies required for the project
-        1. Before setting up environment variables, we need to make sure our database is up and running. We need to install postgresql. If you already have postgresSQL installed on your device you may skip this step.
-            1. Go to [text](https://www.postgresql.org/download/) and install postgres for your operating system
-                1. I have a windows so I’ll click on windows and then on “download the installer”
-                1. ![Alt Text](assets/readme_images/img2.png)
-                1. download the latest version for your specific device architecture
-                    1. I have a windows x-86-64 so i install the installer for my architecture
-                1. go through the installation process 
+## **Setup Instructions**
 
+### 1. Clone the Repository
+- Open a terminal and ensure you are in the correct directory where you want to clone the repository.
+- Navigate to the `server` folder.
+
+### 2. Set Up Firebase Authentication
+#### 2.1 Create a Firebase Project
+1. Go to [Firebase Console](https://firebase.google.com/).
+2. Click **Go to Console** > **Create a Project**.
+3. Follow the instructions and use the default settings.
+
+#### 2.2 Enable User Authentication
+1. In the Firebase Console, under the **Build** section, click on **Authentication**.
+2. Click **Get Started**.
+3. Under the **Sign-in Method** tab:
+   - Click on **Email/Password**.
+   - Enable **Email/Password** (leave the email link disabled).
+   - Click **Save**.
+
+#### 2.3 Set Up Firebase SDK for the Server Folder
+1. In the Firebase Console, click the gear icon next to **Project Overview** in the sidebar, then click **Project Settings**.
+2. Navigate to the **Service Accounts** tab.
+3. Scroll down and click **Generate new private key**.
+   - You will see a warning reminding you to keep the private key **PRIVATE** (ensure the key is added to `.gitignore` if it’s not already there).
+   - Click **Generate Key**.
+4. **Add the Service Account Key to Your Project**:
+   1. Locate the downloaded key in your local `Downloads` directory.
+   2. Move the file or copy its contents into the cloned repository folder.
+   3. Rename the file to `serviceAccountKey.json`.
+   4. Ensure it looks like this:
+
+   ![Service Account Key Placement](assets/readme_images/img1.png)
+
+   5. After renaming, it should look like this:
+
+   ![Service Account Key Renamed](assets/readme_images/img2.png)
+
+---
+
+### 3. Install Dependencies
+After setting up Firebase, navigate to the cloned repository folder and run:
+```bash
+npm i
+```
+This will install all the packages and dependencies required for the project.
+
+---
+
+### 4. Set Up the Database
+#### 4.1 Install PostgreSQL
+- If you already have PostgreSQL installed, skip this step.
+- Go to [PostgreSQL Downloads](https://www.postgresql.org/download/) and download PostgreSQL for your operating system.
+- **For Windows**:
+  1. Click on **Windows** and then **Download the Installer**.
+  2. ![PostgreSQL Installer](assets/readme_images/img2.png)
+  3. Download the latest version for your specific device architecture (e.g., Windows x-86-64).
+  4. Follow the installation process.
+- After installation, open **SQL Shell** and set it up as per your requirements.
+
+#### 4.2 Set Up Environment Variables
+- Create a file called `.env` in the root of your project.
+- Add the following structure to the `.env` file (use your PostgreSQL credentials):
+  ```bash
+  DB_USERNAME=postgres
+  DB_PASSWORD=(your_password)
+  DB_NAME=postgres
+  DB_HOST=localhost
+  DB_PORT=5432
+  ```
+
+---
+
+### **Next Steps**
+- Run database migrations: 
+  ```bash
+  npx sequelize-cli db:migrate
+  ```
+- Start the backend server:
+  - Using Node.js:
+    ```bash
+    node index.js
+    ```
+  - Using Nodemon (if installed):
+    ```bash
+    nodemon index.js
+    ```
+
+---
 
 
