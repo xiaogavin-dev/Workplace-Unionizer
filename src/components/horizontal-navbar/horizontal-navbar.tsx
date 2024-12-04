@@ -107,8 +107,8 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
     return (
         <div className="horizontal-navbar-container">
             <div className="navbar-left">
-                <a href="/" className="navbar-logo">
-                    <img src="/images/Unionizer_Logo.png" className="logo" alt="Flowbite Logo" />
+                <a href="/search" className="navbar-logo">
+                    <img src="/images/Unionizer_Logo_v3.png" className="logo" alt="Flowbite Logo" />
                 </a>
                 <h1 className="page-name">{getDynamicPageName()}</h1> {/* Dynamically set the page name */}
             </div>
@@ -124,10 +124,7 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
                                 </span>
                             </li>
                             <li>
-                                <Link href="/profile">Profile</Link>
-                            </li>
-                            <li>
-                                <Link href="/settings/basic/profile">Settings & Privacy</Link>
+                                <Link href="/settings/basic/profile">Account Settings</Link>
                             </li>
                             <li>
                                 <Link href="/help">Help</Link>
