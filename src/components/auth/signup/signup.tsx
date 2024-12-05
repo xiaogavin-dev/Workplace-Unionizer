@@ -38,7 +38,7 @@ const signup = () => {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const [loading, setLoading] = useState<boolean>(false);
-    const [passwordError, setPasswordError] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     const form = useForm<z.infer<typeof SignUpSchema>>({
         resolver: zodResolver(SignUpSchema),
@@ -52,7 +52,7 @@ const signup = () => {
 
     async function onSubmit(values: z.infer<typeof SignUpSchema>) {
         if (values.password !== values.confirmPassword) {
-            setPasswordError("Passwords do not match.");
+            setError("Passwords do not match.");
             return;
         }
 
@@ -90,12 +90,13 @@ const signup = () => {
                 router.push('/search');
             }
         } catch (error: any) {
+            console.log(error);
             setLoading(false);
 
             if (error.code === 'auth/email-already-in-use') {
-                alert("The email address is already in use by another account.");
+                setError("The email address is already in use by another account.");
             } else {
-                alert(error.message);
+                setError(error.message);
             }
         }
     }
@@ -126,8 +127,9 @@ const signup = () => {
                             <FormItem className="form-item">
                                 <FormLabel className="form-label">Email</FormLabel>
                                 <FormControl className="form-control">
-                                    <Input placeholder="Enter your email" className="form-input" {...field} />
+                                    <Input placeholder="Enter your email" className="form-input" {...form.register('email')} />
                                 </FormControl>
+                                <FormMessage className="form-message" />
                             </FormItem>
                         )}
                     />
@@ -149,7 +151,6 @@ const signup = () => {
                         <FormControl className="form-control">
                             <Input placeholder="Confirm your password" type="password" className="form-input" {...form.register('confirmPassword')} />
                         </FormControl>
-                        {passwordError && <p className="error-message">{passwordError}</p>}
                         <FormMessage className="form-message" />
                     </FormItem>
 
@@ -157,7 +158,10 @@ const signup = () => {
                         {loading ? (
                             <PropagateLoader />
                         ) : (
-                            <Button type="submit" className="submit-button">Sign Up</Button>
+                            <div>
+                                {error && <p className="error-message">{error}</p>}
+                                <Button type="submit" className="submit-button">Sign Up</Button>
+                            </div>
                         )}
                     </div>
                     <h3 className="signup-login-link">
