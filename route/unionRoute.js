@@ -2,6 +2,7 @@ const { getUnions, getUserUnions, joinUnion, getUnionPublicChats } = require('..
 const { getUnionById } = require('../controller/unionIdController')
 const { createUnion } = require('../controller/createUnionController');
 const {upload} = require('../controller/uploadController'); 
+const { getWorkplacesByUnionId } = require("../controller/workplaceController");
 
 const router = require('express').Router()
 
@@ -16,5 +17,7 @@ router.route('/getUnionPublicChats').get(getUnionPublicChats)
 router.route('/joinUnion').post(joinUnion)
 
 router.post('/create', upload.single('image'), createUnion);
+
+router.get("/getWorkplaces", getWorkplacesByUnionId);
 
 module.exports = router
