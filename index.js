@@ -65,6 +65,8 @@ app.use('/chat', chatRouter)
 app.use('/api', searchRoute);
 app.use('/form', formRoute);
 
+app.use('/uploads', express.static('uploads'));
+
 // Catch-all 404 route
 app.use('*', (req, res, next) => {
   res.status(404).json({
@@ -72,17 +74,6 @@ app.use('*', (req, res, next) => {
     message: "route not found"
   });
 });
-
-// app.get("/api/unions/:unionId/polls", async (req, res) => {
-//     try {
-//         const { unionId } = req.params;
-//         const polls = await Poll.findAll({ where: { unionId } });
-//         res.json(polls);
-//     } catch (error) {
-//         console.error("Error fetching polls:", error);
-//         res.status(500).send("Error fetching polls");
-//     }
-// });
 
 server.listen(port, () => {
   socketInit(server)

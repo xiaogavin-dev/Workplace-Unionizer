@@ -54,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       hooks: {
         afterCreate: async (union, options) => {
-          const { chat: Chat, workplace: Workplace, user_union: UserUnion, poll: Poll, pubkey: Pubkey } = sequelize.models;
+          const { chat: Chat, user_union: UserUnion, poll: Poll, pubkey: Pubkey } = sequelize.models;
 
           try {
             const transaction = options.transaction || (await sequelize.transaction());

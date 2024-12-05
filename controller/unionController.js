@@ -13,12 +13,13 @@ const getUnions = async (req, res) => {
         unions.name, 
         unions.description,
         unions.visibility,
+        unions.image,
         workplaces.organization, 
         workplaces.state AS location 
       FROM unions
       LEFT JOIN workplaces 
         ON unions.id = workplaces."unionId"
-      WHERE 1=1
+      WHERE unions.visibility = 'public'
     `;
 
     const queryParams = [];
