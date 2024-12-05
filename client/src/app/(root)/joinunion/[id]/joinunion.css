@@ -1,0 +1,138 @@
+.join-union-page {
+    display: block;
+    margin-top: 50px;
+    padding: 0 20px;
+    padding-bottom: 100px;
+    box-sizing: border-box;
+}
+
+.union-card {
+    display: flex;
+    align-items: center;
+    background-color: #f0f0f0;
+    color: #3a3a3a;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    min-width: 40vw;
+}
+
+.union-card img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.union-card div{
+    margin-right: 15px;
+}
+
+.union-info {
+    flex-grow: 1;
+}
+
+.union-info h1 {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #424242;
+}
+
+.union-info p {
+    margin: 5px 0;
+    color: #797979;;
+}
+
+/*-------------------------------------------------------*/
+.questions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 50px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 60vw;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    word-wrap: break-word; 
+}
+
+.form-field label {
+    font-size: 1em;
+    color: #505050;
+    margin-bottom: 5px;
+}
+
+.form-field textarea {
+    width: 100%;
+    padding: 8px;
+    font-size: 0.9em;
+    line-height: 1.2em;
+    resize: none;
+    overflow: hidden;
+    border: 1px solid rgba(153, 153, 153, 0.3);
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: none;
+    outline: none;
+    color: #464646;
+    height: auto;
+    min-height: 1.2em;
+}
+
+.form-field textarea::placeholder {
+    color: #888;
+}
+
+/*---------------------------------------------*/
+.submit-form-button {
+    background-color: #61a653;
+    color: white;
+    padding: 6px 20px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 150px;
+    margin-top: 15px;
+}
+
+.submit-form-button:hover {
+    background-color: #294224;
+}
+
+@media screen and (max-width: 768px) {
+    .join-union-page {
+        padding: 0 60px;
+        padding-bottom: 100px;
+    }
+
+    .union-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .union-card img {
+        margin-bottom: 10px;
+    }
+
+    .union-card div{
+        margin-bottom: 10px;
+    }
+
+    .questions-container {
+        gap: 15px;
+    }
+
+    .submit-form-button {
+        max-width: 100%;
+    }
+}

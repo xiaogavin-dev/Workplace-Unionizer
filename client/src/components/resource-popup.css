@@ -1,0 +1,95 @@
+.resource-popup {
+  position: fixed;
+  left: 90px;
+  top: 0;
+  bottom: 0;
+  width: 300px;
+  background-color: rgb(250, 250, 250);
+  padding: 20px;
+  z-index: 1000;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+}
+
+.popup-title {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: var(--foreground);
+}
+
+.find-lawyer-link {
+  cursor: pointer;
+  color: #61a653;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: 40px;
+}
+
+.find-lawyer-link:hover {
+  color: #294224; 
+  text-decoration: underline;
+}
+
+
+.resource-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.resource-list li {
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: var(--foreground);
+}
+
+.popup-title {
+  font-size: 1.9rem;
+  font-weight: bold;
+}
+
+.page-content {}
+
+.arrow {
+  margin-right: 10px;
+  border: solid var(--foreground);
+  border-width: 0 2px 2px 0;
+  display: inline-block;
+  padding: 3px;
+  transform: rotate(310deg);
+  transition: transform 0.3s;
+}
+
+.arrow.down {
+  transform: rotate(45deg);
+
+}
+
+li.resources-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+li.active {
+  background-color: transparent;
+  color: inherit;
+  padding: 5px;
+  border-radius: 0;
+}
+
+ul ul {
+  margin-left: 20px;
+}
+
+li {
+  list-style-type: none;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.nested-resources li:hover,
+.nested-resources li:focus {
+  background-color: rgba(184, 184, 184, 0.2);
+  padding: 5px;
+  border-radius: 5px;
+}

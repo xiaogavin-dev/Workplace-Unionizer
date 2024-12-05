@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Pontano+Sans&display=swap');
+/* Article container */
+.article-container {
+max-width: 1000px;
+padding: 30px 50px;
+padding-bottom: 100px;
+margin-top: 20px;
+border-radius: 8px;
+}
+
+/* Article title */
+.article-title {
+font-size: 2.0rem;
+font-weight: bold;
+color: #666B62;
+font-family: 'Pontano Sans', sans-serif;
+margin-bottom: 20px;
+}
+
+/* Author and metadata */
+.article-meta {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start; 
+    margin-bottom: 40px;
+  }
+  
+  .author-info {
+    margin-bottom: 5px; 
+  }
+  
+  .author-name {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #666B62;
+    font-family: 'Pontano Sans', sans-serif;
+  }
+  
+  .publish-info {
+    font-size: 0.9rem;
+    color: #9e9e9e;
+    font-family: 'Pontano Sans', sans-serif;
+  }
+  
+
+/* Article content */
+.article-content p {
+font-size: 1.2rem;
+line-height: 1.8;
+margin-bottom: 15px;
+color: #707070;
+font-family: 'Pontano Sans', sans-serif;
+}
+
+/* Acknowledgment section */
+.aknowledgment h2 {
+font-size: 1.2rem;
+font-weight: bold;
+margin-top: 20px;
+margin-bottom: 10px;
+color: #666B62;
+font-family: 'Pontano Sans', sans-serif;
+}
+
+.aknowledgment p {
+margin-left: 20px;
+padding-left: 20px;
+}
+
+.aknowledgment p {
+font-size: 1.0rem;
+line-height: 1.8;
+margin-bottom: 10px;
+color: #666B62;
+font-family: 'Pontano Sans', sans-serif;
+}
+
+.aknowledgment p a {
+color: #61a653;
+text-decoration: none;
+font-weight: bold;
+font-family: 'Pontano Sans', sans-serif;
+}
+
+.aknowledgment p a:hover {
+text-decoration: underline;
+color: #294224;
+}
+
+@media screen and (max-width: 768px) {
+    .article-container {
+        padding-bottom: 100px;
+        }     
+  }
