@@ -1,5 +1,5 @@
 "use client";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Layout from "@/components/Layout";
 import "./joinunion.css";
@@ -10,7 +10,7 @@ interface UnionData {
   id: string;
   name: string;
   description: string;
-  imageUrl?: string;
+  image?: string; // Backend field for the image
 }
 
 interface Question {
@@ -27,6 +27,7 @@ const JoinUnion = () => {
   const [error, setError] = useState<string | null>(null);
   const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchUnionData = async () => {
@@ -77,7 +78,6 @@ const JoinUnion = () => {
 
   const onSubmit = async () => {
     try {
-      // Submit form answers
       const formAnswers = questions.map((question, index) => ({
         questionId: question.id,
         unionId,
@@ -97,10 +97,6 @@ const JoinUnion = () => {
         throw new Error("Failed to submit form answers");
       }
 
-      const answersData = await answersResponse.json();
-      console.log("Form answers saved:", answersData);
-
-      // Join the union
       const userUnionInfo = {
         userId: user?.uid,
         unionId,
@@ -119,10 +115,6 @@ const JoinUnion = () => {
         throw new Error("Failed to join the union");
       }
 
-      const joinData = await joinResponse.json();
-      console.log("Union joined:", joinData);
-
-      // Update user unions
       const userUnionsRes = await fetch(
         `http://localhost:5000/union/getUserUnions?userId=${user?.uid}`
       );
@@ -134,12 +126,38 @@ const JoinUnion = () => {
       const userUnionsData = await userUnionsRes.json();
       dispatch(setUserUnions({ unions: userUnionsData.data }));
 
-      // Success message
       alert("Survey submitted and union joined successfully!");
+      router.push(`/search`);
     } catch (error) {
       console.error("Error submitting survey or joining union:", error);
       alert("An error occurred while processing your request.");
     }
+  };
+
+  const getDefaultImage = () => {
+    const savedColors = JSON.parse(
+      localStorage.getItem("unionColors") || "{}"
+    );
+    const backgroundColor = savedColors[unionData?.id] || "#ccc";
+
+    return (
+      <div
+        style={{
+          backgroundColor,
+          color: "white",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          borderRadius: "50%",
+          width: "60px",
+          height: "60px",
+          fontSize: "1.5rem",
+          fontWeight: "bold",
+        }}
+      >
+        {unionData?.name?.[0]?.toUpperCase()}
+      </div>
+    );
   };
 
   if (loading) return <p>Loading...</p>;
@@ -151,11 +169,18 @@ const JoinUnion = () => {
         {unionData ? (
           <>
             <div className="union-card">
-              <img
-                src={unionData.imageUrl || "https://via.placeholder.com/60"}
-                alt="Union Logo"
-                className="union-logo"
-              />
+              {unionData.image ? (
+                <img
+                  src={`http://localhost:5000${unionData.image}`}
+                  alt={`${unionData.name} Logo`}
+                  className="union-logo"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/images/Unionizer_Logo.png";
+                  }}
+                />
+              ) : (
+                getDefaultImage()
+              )}
               <div className="union-info">
                 <h3>{unionData.name}</h3>
                 <p>{unionData.description}</p>
@@ -165,13 +190,18 @@ const JoinUnion = () => {
               {questions.map((question, index) => (
                 <div key={question.id} className="form-field">
                   <label>{question.questionText}</label>
-                  <input
+                  <textarea
                     type="text"
                     placeholder="Aa"
                     value={answers[index]}
                     onChange={(e) =>
                       handleAnswerChange(index, e.target.value)
                     }
+                    onInput={(e) => {
+                      const textarea = e.target;
+                      textarea.style.height = "auto"; 
+                      textarea.style.height = `${textarea.scrollHeight}px`; 
+                    }}
                   />
                 </div>
               ))}

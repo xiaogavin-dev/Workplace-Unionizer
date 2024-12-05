@@ -1,10 +1,10 @@
-'use client'
+'use client';
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAppSelector } from "@/lib/redux/hooks/redux";
-import { Button } from "@/components/ui/button";
 import { useEffect } from 'react';
 import HorizontalNavbar from '@/components/horizontal-navbar/horizontal-navbar';
+import './home.css'
 
 interface User {
   displayName?: string,
@@ -17,49 +17,48 @@ export default function Login() {
     isAuthenticated: boolean;
     isLoading: boolean;
     user: User | null;
-  } = useAppSelector(state => state.auth)
+  } = useAppSelector((state) => state.auth);
 
-  // if (isAuthenticated && user) {
-  //   router.push("/community");
-  // }
   useEffect(() => {
-    console.log(user)
-  }, [user])
-  return (<>
-    <HorizontalNavbar pageName="/" />
-    <main className="min-w-full flex justify-center">
-      <div className="max-w-fit content-center ">
-        {isAuthenticated != null ?
-          (user ? (
-            user.displayName ?
-              (
-                <div>
-                  Welcome to unionizer {user.displayName}
-                </div>
-              ) : null)
-            :
-            <ul className="p-3 border-2 rounded-lg shadow-lg">
-              <li>
-                <Link href={"/auth/login"}>
-                  <Button className="min-w-56 m-2 hover:bg-blue-700">
-                    Login
-                  </Button>
-                </Link>
+    console.log(user);
+  }, [user]);
 
-              </li>
-              <li>
-                <Link href={"/auth/signup"}>
-                  <Button className="min-w-56 m-2 hover:bg-blue-700">
-                    Create an account
-                  </Button>
-                </Link>
-              </li>
+  return (
+    <>
+      <HorizontalNavbar pageName="/" />
+      <div className="page-container">
+        {/* Background Image */}
+        <div className="background"></div>
 
-            </ul>) :
-          <></>
-        }
+        {/* Main Content */}
+        <main className="content">
+          <div className="card">
+            {isAuthenticated != null ? (
+              user ? (
+                user.displayName ? (
+                  <div>Welcome to Unionizer {user.displayName}</div>
+                ) : null
+              ) : (
+                <ul>
+                  <li>
+                    <h1 className="header">Already have an account? </h1>
+                    <Link href={"/auth/login"}>
+                      <button className="login-button">Login
+                      </button>
+                    </Link>
+                  </li>
+                  <li>
+                    <h1 className="header">New to Unionizer?</h1>
+                    <Link href={"/auth/signup"}>
+                      <button className="signup-button">Create an account</button>
+                    </Link>
+                  </li>
+                </ul>
+              )
+            ) : null}
+          </div>
+        </main>
       </div>
-    </main>
-  </>
+    </>
   );
 }

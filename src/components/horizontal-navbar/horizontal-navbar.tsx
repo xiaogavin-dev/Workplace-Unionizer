@@ -71,7 +71,7 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
         }
         switch (pathname) {
             case "/":
-                return "Home";
+                return "";
             case "/search":
                 return "Find a Union";
             case "/results":
@@ -83,7 +83,7 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
             case "/chat":
                 return "Chat"
             case "/resources":
-                return "Resource Guide";
+                return "";
             case "/resources/forming-a-union":
                 return "";
             case "/resources/organizing-a-strike":
@@ -126,32 +126,32 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
                 <h1 className="page-name">{getDynamicPageName()}</h1> {/* Dynamically set the page name */}
             </div>
 
-            <div className="navbar-item profile" onClick={toggleDropdown}>
-                <img src="/images/union-user-icon.png" className="user-btn h-12 w-12" alt="user btn" />
-                {isDropdownOpen && (
-                    <div className="dropdown-menu" ref={dropdownRef}>
-                        <ul>
-                            <li>
-                                <span className="block py-2 px-3 text-gray-900 rounded md:p-0 dark:text-white">
-                                    {user?.displayName}
-                                </span>
-                            </li>
-                            <li>
-                                <Link href="/settings/basic/profile">Account Settings</Link>
-                            </li>
-                            <li>
-                                <Link href="/help">Help</Link>
-                            </li>
-                            <hr />
-                            <li>
-                                <button onClick={handleSignOut} className="dropdown-logout-button">
-                                    Logout
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
-                )}
-            </div>
+            {isAuthenticated && (
+                <div className="navbar-item profile" onClick={toggleDropdown}>
+                    <img src="/images/union-user-icon.png" className="user-btn h-12 w-12" alt="user btn" />
+                    {isDropdownOpen && (
+                        <div className="dropdown-menu" ref={dropdownRef}>
+                            <ul>
+                                <li>
+                                    <span className="block py-2 px-3 text-gray-900 rounded md:p-0 dark:text-white">
+                                        {user?.displayName}
+                                    </span>
+                                </li>
+                                <li>
+                                    <Link href="/settings/basic/profile">Account Settings</Link>
+                                </li>
+                                <hr />
+                                <li>
+                                    <button onClick={handleSignOut} className="dropdown-logout-button">
+                                        Logout
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    )}
+                </div>
+            )}
+
         </div>
     );
 };

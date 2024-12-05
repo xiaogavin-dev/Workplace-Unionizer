@@ -3,6 +3,11 @@
     color: #666B62;
     border-radius: 10px;
 }
+
+.coming-soon{
+  margin-top: 10px;
+  font-size: 2.5rem;
+}
   
   .form-area {
     margin-bottom: 15px;

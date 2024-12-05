@@ -45,7 +45,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         }
         switch (pathname) {
             case "/":
-                return "Home";
+                return "";
             case "/search":
                 return "Find a Union";
             case "/results":
@@ -65,8 +65,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             case "/resources/knowing-your-rights":
                 return "";
             case "/resources/negotiating-a-contract":
-                return "";
-            case "/resources/links-to-external-resources":
                 return "";
             case "/resources/find-an-employment-lawyer":
                 return "Find a Lawyer";
@@ -172,7 +170,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     <ul className="resource-list">
                         {/* Resource 1 Dropdown */}
                         <li
-                            onClick={() => navigateToPage('/resources', 1)}
+                            onClick={() => toggleDropdown(1)}
                             style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                             className={`resources-title ${openDropdowns.includes(1) ? 'active' : ''}`}
                         >
@@ -181,14 +179,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                         </li>
                         {openDropdowns.includes(1) && (
                             <ul className="nested-resources">
-                                <li onClick={() => router.push('/createunion')}># Forming a Union</li>
-                                <li onClick={() => router.push('/resources/knowing-your-rights')}># Knowing Your Rights</li>
+                                <li onClick={() => router.push('/resources')}># Links to External resources</li>
                             </ul>
                         )}
-
                         {/* Resource 2 Dropdown */}
                         <li
-                            onClick={() => navigateToPage('/resources', 2)}
+                            onClick={() => toggleDropdown(2)}
                             style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                             className={`resources-title ${openDropdowns.includes(2) ? 'active' : ''}`}
                         >
@@ -197,14 +193,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                         </li>
                         {openDropdowns.includes(2) && (
                             <ul className="nested-resources">
-                                <li onClick={() => router.push('/resources/organizing-a-strike')}># Organizing a Strike</li>
-                                <li onClick={() => router.push('/resources/negotiating-a-contract')}># Negotiating a Contract</li>
+                                <li onClick={() => router.push('/resources/forming-a-union')}># Forming a Union</li>
+                                <li onClick={() => router.push('/resources/knowing-your-rights')}># Knowing Your Rights</li>
                             </ul>
                         )}
 
                         {/* Resource 3 Dropdown */}
                         <li
-                            onClick={() => navigateToPage('/resources', 3)}
+                            onClick={() => toggleDropdown(3)}
                             style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                             className={`resources-title ${openDropdowns.includes(3) ? 'active' : ''}`}
                         >
@@ -213,7 +209,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                         </li>
                         {openDropdowns.includes(3) && (
                             <ul className="nested-resources">
-                                <li onClick={() => router.push('/resources/links-to-external-resources')}># Links to External Resources</li>
+                                <li onClick={() => router.push('/resources/organizing-a-strike')}># Organizing a Strike</li>
+                                <li onClick={() => router.push('/resources/negotiating-a-contract')}># Negotiating a Contract</li>
                             </ul>
                         )}
                     </ul>

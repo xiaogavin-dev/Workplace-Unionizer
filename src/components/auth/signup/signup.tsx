@@ -1,12 +1,13 @@
-"use client"
-import React from 'react'
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { SignUpValidation } from '@/lib/validate'
-import { Button } from "@/components/ui/button"
-import { useState } from 'react'
-import PropagateLoader from "react-spinners/PropagateLoader"
+"use client";
+
+import React from 'react';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { SignUpValidation } from '@/lib/validate';
+import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import PropagateLoader from "react-spinners/PropagateLoader";
 import {
     Form,
     FormControl,
@@ -14,28 +15,30 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
-import { auth } from '@/firebase/firebase'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth } from '@/firebase/firebase';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAppDispatch } from '@/lib/redux/hooks/redux';
 import { setAuthState } from '@/lib/redux/features/auth/authSlice';
-import "../login/signin.css"
-import { generateKeyPair } from '@/lib/util/encryptionCalls'
-import { storePrivateKey } from '@/lib/util/IndexedDBCalls'
+import { generateKeyPair } from '@/lib/util/encryptionCalls';
+import { storePrivateKey } from '@/lib/util/IndexedDBCalls';
+import './signup.css';
+
 const SignUpSchema = SignUpValidation.extend({
     username: z.string().min(1, { message: "Username is required" }),
     email: z.string().email({ message: "Invalid email address" }),
     password: z.string().min(8, { message: "Password must be at least 8 characters long" }),
     confirmPassword: z.string()
 });
+
 const signup = () => {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const [loading, setLoading] = useState<boolean>(false);
-    const [passwordError, setPasswordError] = useState<string | null>(null); // State for password error
+    const [passwordError, setPasswordError] = useState<string | null>(null);
 
     const form = useForm<z.infer<typeof SignUpSchema>>({
         resolver: zodResolver(SignUpSchema),
@@ -48,7 +51,6 @@ const signup = () => {
     });
 
     async function onSubmit(values: z.infer<typeof SignUpSchema>) {
-        // Check if password and confirmPassword match
         if (values.password !== values.confirmPassword) {
             setPasswordError("Passwords do not match.");
             return;
@@ -56,7 +58,7 @@ const signup = () => {
 
         setLoading(true);
         try {
-            const data = await generateKeyPair()
+            const data = await generateKeyPair();
             await createUserWithEmailAndPassword(auth, values.email, values.password);
             if (auth.currentUser) {
                 await updateProfile(auth.currentUser, {
@@ -71,54 +73,48 @@ const signup = () => {
                         email: values.email,
                     },
                 }));
+
                 if (data) {
-                    const { publicKey, privateKey } = data
-                    const response = await storePrivateKey(auth.currentUser.uid, privateKey)
-                    try {
-                        const token = await auth.currentUser.getIdToken();
-                        const res = await fetch(`http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/users/signup`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ token, publicKey })
-                        })
-                    } catch (error) {
-                        console.log(error)
-                    }
+                    const { publicKey, privateKey } = data;
+                    await storePrivateKey(auth.currentUser.uid, privateKey);
+                    const token = await auth.currentUser.getIdToken();
+                    await fetch(`http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/users/signup`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ token, publicKey })
+                    });
                 }
-                else { throw new Error("There was an error retrieving key pair values") }
+
                 router.push('/search');
             }
         } catch (error: any) {
             setLoading(false);
 
-            // Check for email already in use error
             if (error.code === 'auth/email-already-in-use') {
-                console.error("Email is already in use!");
                 alert("The email address is already in use by another account.");
             } else {
-                console.error("There was an error signing up:", error.message);
                 alert(error.message);
             }
         }
     }
+
     return (
-        <div className='login-center-container'>
+        <div className="signup-container">
             <Form {...form}>
-                <div className='sm:w-420 flex-center flex-col py-3 '>
-                    <h2 className='h3-bold md:h2-bold font-bold text-4xl pb-1 text-center'>Unionizer</h2>
-                    <h3 className='text-center'>Create an Account</h3>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="signup-form">
+                <div className="signup-header">
+                    <h1 className="signup-title">Create an Account</h1>
                 </div>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField
                         control={form.control}
                         name="username"
                         render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Username</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Enter your username" {...field} />
+                            <FormItem className="form-item">
+                                <FormLabel className="form-label">Username</FormLabel>
+                                <FormControl className="form-control">
+                                    <Input placeholder="Enter your username" className="form-input" {...field} />
                                 </FormControl>
                             </FormItem>
                         )}
@@ -127,10 +123,10 @@ const signup = () => {
                         control={form.control}
                         name="email"
                         render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Email</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Enter your email" {...field} />
+                            <FormItem className="form-item">
+                                <FormLabel className="form-label">Email</FormLabel>
+                                <FormControl className="form-control">
+                                    <Input placeholder="Enter your email" className="form-input" {...field} />
                                 </FormControl>
                             </FormItem>
                         )}
@@ -139,34 +135,38 @@ const signup = () => {
                         control={form.control}
                         name="password"
                         render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Password</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Enter your password" type='password' {...field} />
+                            <FormItem className="form-item">
+                                <FormLabel className="form-label">Password</FormLabel>
+                                <FormControl className="form-control">
+                                    <Input placeholder="Enter your password" type="password" className="form-input" {...field} />
                                 </FormControl>
-                                <FormMessage />
+                                <FormMessage className="form-message" />
                             </FormItem>
                         )}
                     />
-                    <FormItem>
-                        <FormLabel>Confirm Password</FormLabel>
-                        <FormControl>
-                            <Input placeholder="Confirm your password" type="password" {...form.register('confirmPassword')} />
+                    <FormItem className="form-item">
+                        <FormLabel className="form-label">Confirm Password</FormLabel>
+                        <FormControl className="form-control">
+                            <Input placeholder="Confirm your password" type="password" className="form-input" {...form.register('confirmPassword')} />
                         </FormControl>
-                        {passwordError && <p className="text-red-600">{passwordError}</p>}
-                        <FormMessage />
+                        {passwordError && <p className="error-message">{passwordError}</p>}
+                        <FormMessage className="form-message" />
                     </FormItem>
 
-                    <div className='flex justify-center'>
-                        {loading ?
-                            <PropagateLoader className='align-self-center' />
-                            :
-                            <Button className='w-full hover:bg-blue-700' type="submit">Sign Up</Button>
-                        }
+                    <div className="button-container">
+                        {loading ? (
+                            <PropagateLoader />
+                        ) : (
+                            <Button type="submit" className="submit-button">Sign Up</Button>
+                        )}
                     </div>
-                    <h3 id="new-to-unionizer">Already have an account? <Link href="/auth/login">Login</Link></h3>
+                    <h3 className="signup-login-link">
+                        Already have an account? <Link href="/auth/login">Login</Link>
+                    </h3>
                 </form>
             </Form>
-        </div>)
-}
-export default signup
+        </div>
+    );
+};
+
+export default signup;

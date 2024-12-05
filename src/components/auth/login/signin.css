@@ -1,84 +1,124 @@
-#logo {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    margin: 30px;
-}
-
-.about-us {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    margin: 30px;
-}
-
-.login-center-container {
-    flex-direction: column;
+.login-container {
+    display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    max-width: 500px;
-    height: 100%;
-    margin-top:15px;
-    padding: 30px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
+    min-height: 100vh;
+    width: 100vw;
+    background-color: #d8d8d8;
+    padding: 20px;
 }
 
-@media (max-width: 600px) {
-    .login-center-container {
-        padding: 40px;
-        width: 90%;
-    }
-}
-
-h1 {
-    font-size: 25px;
-}
-
-input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid black;
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
-
-#forgot-password {
-    text-decoration: underline;
+.title {
+    font-size: 2.5rem;
     font-weight: bold;
-    font-size: 15px;
+    color: #333;
+    text-align: center;
+    margin-bottom: 30px;
 }
 
-#forgot-password:hover {
-    color: blue;
-}
-
-#login-button {
+/* Login Form */
+.login-form {
+    background: white;
+    max-width: 450px;
     width: 100%;
-    padding: 10px;
-    background-color: black;
+    padding: 50px;
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.form-item {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #858585;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.form-control {
+    position: relative;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 1rem;
+    border: 1px solid #b4b4b4;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-input:focus {
+    border-color: #61a653;
+    box-shadow: 0 0 5px rgba(97, 166, 83, 0.5);
+}
+
+.form-input::placeholder {
+    color: #aaa;
+    font-style: italic;
+}
+
+.form-message {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+.forgot-password {
+    text-align: right;
+    margin-bottom: 20px;
+    font-size: 1.0rem;
+}
+
+.forgot-password a {
+    color: #61a653;
+    text-decoration: none;
+}
+
+.forgot-password a:hover {
+    text-decoration: underline;
+    color: #294224;
+}
+
+/* Submit Button */
+.button-container {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.submit-button {
+    width: 100%;
+    padding: 25px;
+    background-color: #61a653;
     color: white;
+    font-size: 1.3rem;
+    font-weight: bold;
     border: none;
-    border-radius: 5px;
+    border-radius: 25px;
     cursor: pointer;
 }
 
-#login-button:hover {
-    background-color: darkblue;
+.submit-button:hover {
+    background-color: #294224;
 }
 
-#new-to-unionizer {
-    color: black;
-    font-size: 15px;
+/* Signup Link */
+.signup-link {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 1.1rem;
 }
 
-#new-to-unionizer #join-now {
-    color: black;
+.signup-link a {
+    color: #61a653;
+    text-decoration: none;
+}
+
+.signup-link a:hover {
     text-decoration: underline;
-    font-weight: bold;
-}
-
-#new-to-unionizer #join-now:hover {
-    color: blue;
+    color: #294224;
 }

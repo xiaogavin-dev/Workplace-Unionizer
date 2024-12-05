@@ -19,6 +19,7 @@ const FindEmploymentLawyer = () => {
           </div>
           <button className="find-lawyer-button">Find a Lawyer</button>
         </div>
+        <h1 className="coming-soon">Coming Soon...</h1>
       </div>
     </Layout>
   );

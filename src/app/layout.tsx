@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Head>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/images/Unionizer_Logo.ico" />
         <title>Unionizer</title>
       </Head>
       <body

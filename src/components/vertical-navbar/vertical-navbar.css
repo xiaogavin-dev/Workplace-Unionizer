@@ -109,9 +109,9 @@
 }
 
 .union-image {
-    max-height: 50px;
-    width: auto;
-    object-fit: contain; 
+    height: 50px;
+    width: 50px;
+    object-fit: cover; 
     border-radius: 10%; 
 }
 
@@ -119,8 +119,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #61a653;
-    color: white;
     font-size: 20px;
     font-weight: bold;
     width: 50px;
