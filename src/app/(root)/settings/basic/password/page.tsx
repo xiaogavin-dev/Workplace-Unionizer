@@ -4,28 +4,26 @@ import React, { useState } from "react";
 import Layout from '@/components/Layout';
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { SignUpValidation } from "@/lib/validate";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import "./password.css"
-import { getAuth, updatePassword } from "firebase/auth";
+import { EmailAuthProvider, getAuth, reauthenticateWithCredential, updatePassword } from "firebase/auth";
+
+interface formSchemaChangePassword {
+    currentPassword: string,
+    newPassword: string, 
+    confirmNewPassword: string
+}
 
 const Password = () => {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [password, setPassword] = useState<string | null>(null);
-    
+
     const auth = getAuth();
+    const currentUser = auth.currentUser;
+    
 
-    const formSchemaChangePassword = SignUpValidation.extend({
-        currentPassword: z.string(),
-        newPassword: z.string().min(8, { message: "Password must be atleast 8 characters long. "}), 
-        confirmNewPassword: z.string()
-    })
-
-    const changePasswordForm = useForm<z.infer<typeof formSchemaChangePassword>>({
-        resolver: zodResolver(formSchemaChangePassword),
+    const changePasswordForm = useForm<formSchemaChangePassword>({
         defaultValues: { 
             currentPassword: "",
             newPassword: "",
@@ -33,9 +31,14 @@ const Password = () => {
         },
     });
 
-    async function onSubmit(values: z.infer<typeof formSchemaChangePassword>) {
+    const handleSubmit = async (e) => {
+        e.preventDefault()
         setError(null);
-        
+
+        const form = e.target;
+        const formData = new FormData(form);
+        const values = Object.fromEntries(formData.entries());
+
         if(!values.currentPassword && !values.newPassword && !values.confirmNewPassword) {
             setError("Please provide all given fields.");
             return;
@@ -49,15 +52,27 @@ const Password = () => {
             return;
         }
 
-        await updatePassword(auth.currentUser, values.newPassword).then(() => {
-            setPassword("Password successfully changed.");
-            console.log("Password successfully changed.");
-        }).catch((error) => {
-            console.log("Error: ", error);
-            setError("Error in changing password."); 
-        }).finally(() => {
-            setLoading(false);
-        });
+        const credential = EmailAuthProvider.credential(
+            currentUser?.email,
+            values.currentPassword
+        )
+
+        await reauthenticateWithCredential(currentUser, credential)
+        .then(() => {
+            updatePassword(currentUser, values.newPassword)
+            .then(() => {
+                setPassword("Successfully changed password.");
+                reauthenticateWithCredential(currentUser, EmailAuthProvider.credential(currentUser?.email, values.newPassword));
+            })
+            .catch((e) => {
+                console.log(e);
+                setError("Error setting password.");
+            })
+        })
+        .catch((e) => {
+            console.log(e);
+            setError("Error setting password.");
+        })
 
         setLoading(false);
     }
@@ -68,7 +83,7 @@ const Password = () => {
                 <div className="text-xl font-semibold">Change Password</div>
                 <div className="mt-1">
                     <Form {...changePasswordForm}>
-                        <form className="max-w-xl space-y-2">
+                        <form className="max-w-xl space-y-2" onSubmit={handleSubmit}>
                             <FormField
                                 control={changePasswordForm.control}
                                 name="currentPassword"
@@ -105,10 +120,10 @@ const Password = () => {
                                     </FormItem>
                                 )}
                             />
+                            <button type="submit" id="submit-button-password" disabled={loading}>{loading ? "Submitting" : "Submit"}</button>
                         </form>
                     </Form>
                 </div>
-                <button onClick={onSubmit} type="submit" id="submit-button-password" disabled={loading}>{loading ? "Submitting" : "Submit"}</button>
                 {error && <p>{error}</p>}
                 {password && <p>{password}</p>}
             </div>
