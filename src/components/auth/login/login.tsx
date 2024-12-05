@@ -29,7 +29,8 @@ import './signin.css'
 const login = () => {
     const router = useRouter()
     const dispatch = useAppDispatch();
-    const [loading, setLoading] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<boolean>(false);
     const form = useForm<z.infer<typeof SignInValidation>>({
         resolver: zodResolver(SignInValidation),
         defaultValues: {
@@ -49,9 +50,14 @@ const login = () => {
     }, []);
 
     async function onSubmit(values: z.infer<typeof SignInValidation>) {
-        setLoading(true)
+        setLoading(true);
+        setError(false);
         try {
             await signInWithEmailAndPassword(auth, values.email, values.password)
+            .catch(e => {
+                console.log(e);
+                setError(true);
+            });
             if (auth.currentUser) {
                 try {
                     const token = await auth.currentUser.getIdToken();
@@ -96,7 +102,8 @@ const login = () => {
             console.error('There was an error with logging in: ', e)
         }
 
-        router.push('/search')
+        if(auth.currentUser)
+            router.push('/search')
         setLoading(false)
     }
 
@@ -150,7 +157,10 @@ const login = () => {
                         {loading ? (
                             <PropagateLoader />
                         ) : (
-                            <Button className="submit-button" type="submit">Login</Button>
+                            <div className='text-red-600 font-semibold mb-4'>
+                                {error ? "Incorrect Email or Password" : null}
+                                <Button className="submit-button" type="submit">Login</Button>
+                            </div>
                         )}
                     </div>
                     <h3 className="signup-link">
