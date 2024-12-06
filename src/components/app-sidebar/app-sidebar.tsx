@@ -33,20 +33,24 @@ export function AppSidebar({
   const [totalEmployees, setTotalEmployees] = useState<number | null>(null);
   const [message, setMessage] = useState("");
   const [openDropdowns, setOpenDropdowns] = useState<string[]>([]);
-  const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isUnionDropdownOpen, setUnionDropdownOpen] = useState(false);
+  const [isInviteModalOpen, setInviteModalOpen] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+  const [inviteLink, setInviteLink] = useState<string>("");
+  const [copyMessage, setCopyMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const toggleButtonRef = useRef<HTMLButtonElement>(null);
 
   const toggleUnionDropdown = () => {
-    setUnionDropdownOpen((prevState) => !prevState); // Toggle the dropdown state
+    setUnionDropdownOpen((prevState) => !prevState);
   };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // Close dropdown only if the click is outside both the dropdown and the toggle button
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node) &&
@@ -55,19 +59,23 @@ export function AppSidebar({
       ) {
         setUnionDropdownOpen(false);
       }
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        setInviteModalOpen(false);
+      }
     };
 
-    // Attach mousedown listener
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      // Cleanup listener on unmount
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   const handleOptionClick = (path: string) => {
-    setUnionDropdownOpen(false); // Close dropdown after clicking an option
+    setUnionDropdownOpen(false);
     router.push(path);
   };
 
@@ -132,6 +140,35 @@ export function AppSidebar({
     );
   };
 
+  const handleInviteWorkers = async () => {
+    try {
+      setIsGeneratingLink(true);
+      const backendUrl = `http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}`;
+      const response = await fetch(`${backendUrl}/api/invites/generateInviteLink?unionId=${unionId}`);
+      if (!response.ok) {
+        throw new Error("Failed to generate invite link.");
+      }
+      const data = await response.json();
+      const inviteLink = data.link;
+
+      setInviteLink(inviteLink);
+      setErrorMessage("");
+    } catch (error) {
+      console.error("Error generating invite link:", error);
+      setErrorMessage("Failed to generate invite link. Please try again.");
+    } finally {
+      setIsGeneratingLink(false);
+    }
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(inviteLink);
+    setCopyMessage("Invite link copied to clipboard!");
+    setTimeout(() => {
+      setCopyMessage("");
+    }, 3000);
+  };
+
   return (
     <div className="app-sidebar-container">
       <Sidebar className="app-sidebar">
@@ -141,13 +178,13 @@ export function AppSidebar({
             <div className="union-title">
               <h1 className="union-name">{unionName} Union</h1>
               <button
-                 className="dropdown-toggle-button"
-                 ref={toggleButtonRef} // Attach the ref to the button
-                 onClick={toggleUnionDropdown} // Toggle dropdown on button click
-                 aria-label="Union Menu"
+                className="dropdown-toggle-button"
+                ref={toggleButtonRef}
+                onClick={toggleUnionDropdown}
+                aria-label="Union Menu"
               >
                 <img
-                  src="/images/hamburger.png" // Replace with your actual image path
+                  src="/images/hamburger.png"
                   alt="Union Menu"
                   className="hamburger-icon"
                 />
@@ -158,7 +195,7 @@ export function AppSidebar({
               <div className="union-dropdown-menu" ref={dropdownRef}>
                 <div
                   className="union-dropdown-item"
-                  onClick={() => handleOptionClick("/union/invite-workers")}
+                  onClick={() => setInviteModalOpen(true)}
                 >
                   Invite Workers
                 </div>
@@ -395,6 +432,42 @@ export function AppSidebar({
           </div>
         </div>
       </Modal>
+
+      {isInviteModalOpen && (
+        <Modal isOpen={isInviteModalOpen} onClose={() => setInviteModalOpen(false)}>
+          <div className="invite-modal" ref={modalRef}>
+            {!inviteLink ? (
+              <div className="invite-workers-header">
+                <h2>Invite Workers</h2>
+                <button
+                  className="invite-button"
+                  onClick={handleInviteWorkers}
+                  disabled={isGeneratingLink}
+                >
+                  {isGeneratingLink ? "Generating..." : "Generate Invite Link"}
+                </button>
+              </div>
+            ) : (
+              <div className="invite-link-header">
+                <h2>Generated Link</h2>
+                <p className="invite-link-label">Invitation Link:</p>
+                <div className="invite-link-container">
+                  <input
+                    type="text"
+                    value={inviteLink}
+                    readOnly
+                    className="invite-link-input"
+                  />
+                  <button className="copy-link-button" onClick={handleCopyLink}>
+                    Copy
+                  </button>
+                </div>
+                {copyMessage && <p className="copy-success-message">{copyMessage}</p>}
+              </div>
+            )}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

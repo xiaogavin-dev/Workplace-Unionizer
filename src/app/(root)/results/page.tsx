@@ -15,29 +15,7 @@ const Results = () => {
     const [location, setLocation] = useState("");
     const [organization, setOrganization] = useState("");
 
-    const getDefaultImage = (union) => {
-        const savedColors = JSON.parse(localStorage.getItem("unionColors") || "{}");
-        const backgroundColor = savedColors[union.id] || "#ccc";
-
-        return (
-            <div
-                style={{
-                    backgroundColor,
-                    color: "white",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: "50%",
-                    width: "60px",
-                    height: "60px",
-                    fontSize: "1.5rem",
-                    fontWeight: "bold",
-                }}
-            >
-                {union.name?.[0]?.toUpperCase()}
-            </div>
-        );
-    };
+    const defaultImage = "/images/Unionizer_Logo.png";
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -147,19 +125,15 @@ const Results = () => {
                     ) : results.length > 0 ? (
                         results.map((union) => (
                             <div key={union.id} className="result-item">
-                                {union.image ? (
-                                    <img
-                                        src={`http://localhost:5000${union.image}`}
-                                        alt={`${union.name} Logo`}
-                                        className="result-image"
-                                        onError={(e) => {
-                                            e.target.onerror = null;
-                                            e.target.src = defaultImage;
-                                        }}
-                                    />
-                                ) : (
-                                    getDefaultImage(union)
-                                )}
+                                <img
+                                    src={`http://localhost:5000${union.image}`}
+                                    alt={`${union.name} Logo`}
+                                    className="result-image"
+                                    onError={(e) => {
+                                        e.target.onerror = null; 
+                                        e.target.src = defaultImage;
+                                    }}
+                                />
                                 <div className="result-details">
                                     <h3>{union.name}</h3>
                                     <p>{union.description}</p>
@@ -183,4 +157,3 @@ const Results = () => {
 };
 
 export default Results;
-
