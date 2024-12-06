@@ -141,10 +141,10 @@ export function AppSidebar({
             <div className="union-title">
               <h1 className="union-name">{unionName} Union</h1>
               <button
-                 className="dropdown-toggle-button"
-                 ref={toggleButtonRef} // Attach the ref to the button
-                 onClick={toggleUnionDropdown} // Toggle dropdown on button click
-                 aria-label="Union Menu"
+                className="dropdown-toggle-button"
+                ref={toggleButtonRef} // Attach the ref to the button
+                onClick={toggleUnionDropdown} // Toggle dropdown on button click
+                aria-label="Union Menu"
               >
                 <img
                   src="/images/hamburger.png" // Replace with your actual image path
@@ -267,28 +267,21 @@ export function AppSidebar({
                 {openDropdowns.includes(workplace.id) && (
                   <SidebarMenu>
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
-                        <div
-                          className="dropdown-item"
-                          onClick={() =>
-                            router.push(`/workplace/${workplace.id}/announcements`)
-                          }
-                        >
-                          Announcements
-                        </div>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
-                        <div
-                          className="dropdown-item"
-                          onClick={() =>
-                            router.push(`/workplace/${workplace.id}/schedule`)
-                          }
-                        >
-                          Schedule
-                        </div>
-                      </SidebarMenuButton>
+                      {workplace.chats &&
+                        workplace.chats.map((chat, i) => (
+                          <SidebarMenuItem key={i}>
+                            <SidebarMenuButton asChild>
+                              <div
+                                className="chat-item"
+                                onClick={() =>
+                                  router.push(`/unions/${chat.unionId}/chat/${chat.id}`)
+                                }
+                              >
+                                <span>{chat.name}</span>
+                              </div>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        ))}
                     </SidebarMenuItem>
                   </SidebarMenu>
                 )}
