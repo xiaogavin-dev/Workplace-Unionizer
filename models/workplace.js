@@ -60,7 +60,22 @@ module.exports = (sequelize, DataTypes) => {
     unionId: {
       type: DataTypes.UUID,
       allowNull: false,
-    }
+    },
+    isUnionized: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    employeeCount: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0,
+    },
+    isPublic: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
   }, {
     sequelize,
     modelName: 'workplace',
