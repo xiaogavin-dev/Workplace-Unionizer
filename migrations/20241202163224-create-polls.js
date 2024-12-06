@@ -16,9 +16,10 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: true,
       },
-      options: {
-        type: Sequelize.ARRAY(Sequelize.STRING), 
-        allowNull: false,
+      vote: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: null, 
       },
       isActive: {
         type: Sequelize.BOOLEAN,
