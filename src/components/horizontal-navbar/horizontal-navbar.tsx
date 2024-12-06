@@ -137,11 +137,11 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
                                         {user?.displayName}
                                     </span>
                                 </li>
-                                <li>
+                                <li onClick={() => {router.push('/settings/basic/profile')}}>
                                     <Link href="/settings/basic/profile">Account Settings</Link>
                                 </li>
                                 <hr />
-                                <li>
+                                <li onClick={handleSignOut}>
                                     <button onClick={handleSignOut} className="dropdown-logout-button">
                                         Logout
                                     </button>
