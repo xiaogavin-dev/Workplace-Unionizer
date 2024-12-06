@@ -16,6 +16,7 @@ const chatRouter = require('./route/chatRoute')
 const searchRoute = require('./route/searchRoute');
 const formRoute = require('./route/formRoute');
 const workplaceRoutes = require('./route/workplaceRoute');
+const inviteRoutes = require("./route/inviteRoute");
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -66,6 +67,7 @@ app.use('/chat', chatRouter)
 app.use('/api', searchRoute);
 app.use('/form', formRoute);
 app.use('/workplace', workplaceRoutes);
+app.use("/api/invites", inviteRoutes);
 
 app.use('/uploads', express.static('uploads'));
 
