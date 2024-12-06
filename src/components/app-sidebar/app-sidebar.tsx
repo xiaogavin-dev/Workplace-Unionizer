@@ -179,8 +179,8 @@ export function AppSidebar({
               <h1 className="union-name">{unionName} Union</h1>
               <button
                 className="dropdown-toggle-button"
-                ref={toggleButtonRef}
-                onClick={toggleUnionDropdown}
+                ref={toggleButtonRef} // Attach the ref to the button
+                onClick={toggleUnionDropdown} // Toggle dropdown on button click
                 aria-label="Union Menu"
               >
                 <img
@@ -304,28 +304,21 @@ export function AppSidebar({
                 {openDropdowns.includes(workplace.id) && (
                   <SidebarMenu>
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
-                        <div
-                          className="dropdown-item"
-                          onClick={() =>
-                            router.push(`/workplace/${workplace.id}/announcements`)
-                          }
-                        >
-                          Announcements
-                        </div>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
-                        <div
-                          className="dropdown-item"
-                          onClick={() =>
-                            router.push(`/workplace/${workplace.id}/schedule`)
-                          }
-                        >
-                          Schedule
-                        </div>
-                      </SidebarMenuButton>
+                      {workplace.chats &&
+                        workplace.chats.map((chat, i) => (
+                          <SidebarMenuItem key={i}>
+                            <SidebarMenuButton asChild>
+                              <div
+                                className="chat-item"
+                                onClick={() =>
+                                  router.push(`/unions/${chat.unionId}/chat/${chat.id}`)
+                                }
+                              >
+                                <span>{chat.name}</span>
+                              </div>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        ))}
                     </SidebarMenuItem>
                   </SidebarMenu>
                 )}

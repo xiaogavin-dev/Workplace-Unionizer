@@ -10,7 +10,7 @@ interface roomInfoType {
     unionId: string | null;
     updatedAt: string | null;
 }
-export const handleNewChatMember = async (chat: roomInfoType | null) => {
+export const handleNewChatMember = async (chat: roomInfoType | null, userId = null) => {
     // when someone new joins a chat we need to create a new key 
     const { symmetric_key } = await createSymmetricKey()
     //before we can encrypt this new symmetric_key we need to get everyone's public key from chat_users
@@ -21,6 +21,7 @@ export const handleNewChatMember = async (chat: roomInfoType | null) => {
     const encryptedKeys = await encryptSymmetricKeys(symmetric_key, publicKeys)
     // const encryptSymmetricKeys{}
     const chatId = chat?.id
+    const payload = { newRoomInfo: null, userKeyData: null }
     try {
         console.log("STORING NEW ENCRYPTED KEYS ")
         const response = await fetch(`http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/chat/storeEncryptedKeys`, {
@@ -34,10 +35,24 @@ export const handleNewChatMember = async (chat: roomInfoType | null) => {
             throw new Error("There was an error with response to store keys")
         }
         const data = await response.json()
-        return data.data
+        payload.newRoomInfo = data.data
     } catch (error) {
         console.log(error, 'could not store symmetric key')
     }
+    try {
+        if (userId) {
+            // grab the encrypted key
+            const response = await fetch(`http://localhost:5000/chat/getEncryptedKey?userId=${userId}&chatKeyVersion=${payload.newRoomInfo?.chatKeyVersion}`)
+            if (!response.ok) {
+                throw new Error("There was an error with grabbing users encrypted key")
+            }
+            const encryptedKeyData = await response.json()
+            payload.userKeyData = encryptedKeyData;
+        }
+    } catch (error) {
+        console.log(error, 'Could not grab users key')
+    }
+    return payload;
 }
 export const handleMemberJoin = async (unionId: string | undefined, userId: string) => {
     try {

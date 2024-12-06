@@ -44,6 +44,7 @@ interface roomInfoType {
     isDefault: boolean,
     unionId: string | null;
     updatedAt: string | null;
+    workplaceId: string | null;
 }
 
 export interface RoomType {
@@ -85,33 +86,45 @@ const Chat: FC = () => {
             const createMessage = async (msg_details: messageInfo) => {
                 try {
                     //if there is no keyVersion for the current room create a new encryption key
+                    let encryptedKeyData = null
                     if (roomData.room?.chatKeyVersion == null) {
                         try {
-
-                            const newRoomInfo = await handleNewChatMember(roomData.room)
+                            const { newRoomInfo, userKeyData } = await handleNewChatMember(roomData.room, user?.uid)
+                            encryptedKeyData = userKeyData
+                            const fetchPrivKey = async () => {
+                                const privateKey = await retrievePrivateKey(user!.uid)
+                                console.log(privateKey)
+                                return privateKey
+                            }
+                            const privateKey = await fetchPrivKey()
+                            const encryptedSymmetricKey = encryptedKeyData?.data.encryptedKey
+                            const message = msg_details.content
+                            const { encryptedMessage } = await encryptMessage(message, privateKey, encryptedSymmetricKey)
+                            encryptedMessageDetails = { ...msg_details, content: encryptedMessage, keyVersionId: newRoomInfo?.chatKeyVersion }
                             setRoomData({ room: newRoomInfo })
                         } catch (error) {
                             console.log("WE NEVER GET PAST THIS POINT")
                             return
                         }
                     }
-
-                    // grab the encrypted key
-                    const response = await fetch(`${PATH}/chat/getEncryptedKey?userId=${user?.uid}&chatKeyVersion=${roomData.room?.chatKeyVersion}`)
-                    if (!response.ok) {
-                        throw new Error("There was an error getting your encrypted symmetric key")
+                    else {
+                        // grab the encrypted key
+                        const response = await fetch(`${PATH}/chat/getEncryptedKey?userId=${user?.uid}&chatKeyVersion=${roomData.room?.chatKeyVersion}`)
+                        if (!response.ok) {
+                            throw new Error("There was an error getting your encrypted symmetric key")
+                        }
+                        encryptedKeyData = await response.json()
+                        const fetchPrivKey = async () => {
+                            const privateKey = await retrievePrivateKey(user!.uid)
+                            console.log(privateKey)
+                            return privateKey
+                        }
+                        const privateKey = await fetchPrivKey()
+                        const encryptedSymmetricKey = encryptedKeyData.data.encryptedKey
+                        const message = msg_details.content
+                        const { encryptedMessage } = await encryptMessage(message, privateKey, encryptedSymmetricKey)
+                        encryptedMessageDetails = { ...msg_details, content: encryptedMessage, keyVersionId: roomData.room?.chatKeyVersion }
                     }
-                    const encryptedKeyData = await response.json()
-                    const fetchPrivKey = async () => {
-                        const privateKey = await retrievePrivateKey(user!.uid)
-                        console.log(privateKey)
-                        return privateKey
-                    }
-                    const privateKey = await fetchPrivKey()
-                    const encryptedSymmetricKey = encryptedKeyData.data.encryptedKey
-                    const message = msg_details.content
-                    const { encryptedMessage } = await encryptMessage(message, privateKey, encryptedSymmetricKey)
-                    encryptedMessageDetails = { ...msg_details, content: encryptedMessage, keyVersionId: roomData.room?.chatKeyVersion }
 
                 } catch (error) {
                     console.log("There was an error grabbing public keys", error)
