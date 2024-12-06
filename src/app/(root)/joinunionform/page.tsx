@@ -169,10 +169,10 @@ const JoinUnionForm = () => {
 
                     <div>{message ? message : null}</div>
                     <div className="save-add-button-container">
-                        <button className="save-form-button bottom-[64px] relative" onClick={handleSaveQuestions}>
+                        <button className="save-form-button bottom-[40px] relative" onClick={handleSaveQuestions}>
                             Save
                         </button>
-                        <button className="add-question-button bottom-[64px] relative" onClick={handleAddQuestion}>
+                        <button className="add-question-button bottom-[40px] relative" onClick={handleAddQuestion}>
                             <b>+</b>
                         </button>
                     </div>
