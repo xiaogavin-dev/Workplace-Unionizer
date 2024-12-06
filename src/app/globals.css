@@ -8,13 +8,13 @@
   --navbar-background: #f0f0f0; 
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
       --background: #0d0000;
       --foreground: #ededed;
       --navbar-background: #111111; 
   }
-}
+} */
 
 body {
   color: var(--foreground);
@@ -65,7 +65,7 @@ body {
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
-  .dark {
+  /* .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
@@ -99,6 +99,7 @@ body {
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+  */
 }
 
 @layer base {

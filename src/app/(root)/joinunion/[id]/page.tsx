@@ -5,7 +5,7 @@ import Layout from "@/components/Layout";
 import "./joinunion.css";
 import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks/redux";
 import { setUserUnions } from "@/lib/redux/features/user_unions/userUnionsSlice";
-
+import { handleMemberJoin } from '@/lib/util/handleKeyUpdates';
 interface UnionData {
   id: string;
   name: string;
@@ -25,6 +25,7 @@ const JoinUnion = () => {
   const [answers, setAnswers] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [joined, setJoined] = useState<string>("");
   const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -114,7 +115,7 @@ const JoinUnion = () => {
       if (!joinResponse.ok) {
         throw new Error("Failed to join the union");
       }
-
+      await handleMemberJoin(unionId, user?.uid)
       const userUnionsRes = await fetch(
         `http://localhost:5000/union/getUserUnions?userId=${user?.uid}`
       );
@@ -126,11 +127,11 @@ const JoinUnion = () => {
       const userUnionsData = await userUnionsRes.json();
       dispatch(setUserUnions({ unions: userUnionsData.data }));
 
-      alert("Survey submitted and union joined successfully!");
+      setJoined("Survey submitted and union joined successfully!");
       router.push(`/search`);
     } catch (error) {
       console.error("Error submitting survey or joining union:", error);
-      alert("An error occurred while processing your request.");
+      setError("Please fill out all questions provided.");
     }
   };
 
@@ -161,7 +162,6 @@ const JoinUnion = () => {
   };
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
 
   return (
     <Layout>
@@ -199,8 +199,8 @@ const JoinUnion = () => {
                     }
                     onInput={(e) => {
                       const textarea = e.target;
-                      textarea.style.height = "auto"; 
-                      textarea.style.height = `${textarea.scrollHeight}px`; 
+                      textarea.style.height = "auto";
+                      textarea.style.height = `${textarea.scrollHeight}px`;
                     }}
                   />
                 </div>
@@ -208,6 +208,8 @@ const JoinUnion = () => {
               <button className="submit-form-button" onClick={onSubmit}>
                 Submit
               </button>
+              {error ? error : null}
+              {joined ? joined : null}
             </div>
           </>
         ) : (

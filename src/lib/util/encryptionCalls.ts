@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { storePrivateKey } from './IndexedDBCalls'
 // Generate RSA Key Pair
-export const generateKeyPair = async () => {
+export const generateKeyPair = async (userId: string) => {
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_ENCRYPTION_PORT}/generate-rsa-key-pair`)
         if (!response.ok) {
@@ -10,7 +10,7 @@ export const generateKeyPair = async () => {
         const { publicKey, privateKey } = await response.json();
 
         // Store the private key in IndexedDB
-        await storePrivateKey(privateKey);
+        await storePrivateKey(userId, privateKey);
 
         return { publicKey, privateKey };
     } catch (error) {

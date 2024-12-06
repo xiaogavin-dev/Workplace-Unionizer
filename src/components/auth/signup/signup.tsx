@@ -38,7 +38,7 @@ const signup = () => {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const [loading, setLoading] = useState<boolean>(false);
-    const [passwordError, setPasswordError] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     const form = useForm<z.infer<typeof SignUpSchema>>({
         resolver: zodResolver(SignUpSchema),
@@ -52,13 +52,12 @@ const signup = () => {
 
     async function onSubmit(values: z.infer<typeof SignUpSchema>) {
         if (values.password !== values.confirmPassword) {
-            setPasswordError("Passwords do not match.");
+            setError("Passwords do not match.");
             return;
         }
 
         setLoading(true);
         try {
-            const data = await generateKeyPair();
             await createUserWithEmailAndPassword(auth, values.email, values.password);
             if (auth.currentUser) {
                 await updateProfile(auth.currentUser, {
@@ -74,6 +73,7 @@ const signup = () => {
                     },
                 }));
 
+                const data = await generateKeyPair(auth.currentUser.uid);
                 if (data) {
                     const { publicKey, privateKey } = data;
                     await storePrivateKey(auth.currentUser.uid, privateKey);
@@ -90,12 +90,13 @@ const signup = () => {
                 router.push('/search');
             }
         } catch (error: any) {
+            console.log(error);
             setLoading(false);
 
             if (error.code === 'auth/email-already-in-use') {
-                alert("The email address is already in use by another account.");
+                setError("The email address is already in use by another account.");
             } else {
-                alert(error.message);
+                setError(error.message);
             }
         }
     }
@@ -104,9 +105,9 @@ const signup = () => {
         <div className="signup-container">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="signup-form">
-                <div className="signup-header">
-                    <h1 className="signup-title">Create an Account</h1>
-                </div>
+                    <div className="signup-header">
+                        <h1 className="signup-title">Create an Account</h1>
+                    </div>
                     <FormField
                         control={form.control}
                         name="username"
@@ -126,8 +127,9 @@ const signup = () => {
                             <FormItem className="form-item">
                                 <FormLabel className="form-label">Email</FormLabel>
                                 <FormControl className="form-control">
-                                    <Input placeholder="Enter your email" className="form-input" {...field} />
+                                    <Input placeholder="Enter your email" className="form-input" {...form.register('email')} />
                                 </FormControl>
+                                <FormMessage className="form-message" />
                             </FormItem>
                         )}
                     />
@@ -149,15 +151,19 @@ const signup = () => {
                         <FormControl className="form-control">
                             <Input placeholder="Confirm your password" type="password" className="form-input" {...form.register('confirmPassword')} />
                         </FormControl>
-                        {passwordError && <p className="error-message">{passwordError}</p>}
                         <FormMessage className="form-message" />
                     </FormItem>
 
                     <div className="button-container">
                         {loading ? (
-                            <PropagateLoader />
+                            <div className='submit-button'>
+                                <PropagateLoader className='relative right-2 bottom-2' />
+                            </div>
                         ) : (
-                            <Button type="submit" className="submit-button">Sign Up</Button>
+                            <div>
+                                {error && <p className="error-message">{error}</p>}
+                                <Button type="submit" className="submit-button">Sign Up</Button>
+                            </div>
                         )}
                     </div>
                     <h3 className="signup-login-link">

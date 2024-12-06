@@ -6,21 +6,21 @@ import "./results.css";
 
 const Results = () => {
     const router = useRouter();
-    const [error, setError] = useState(null);
+    const [error, setError] = useState("");
     const searchParams = useSearchParams();
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const [unionName, setUnionName] = useState("");
-    const [location, setLocation] = useState("");
-    const [organization, setOrganization] = useState("");
+    const [unionName, setUnionName] = useState<string>(searchParams.get("unionname") || "");
+    const [location, setLocation] = useState(searchParams.get("location") || "");
+    const [organization, setOrganization] = useState(searchParams.get("organization") || "");
 
     const defaultImage = "/images/Unionizer_Logo.png";
 
     const handleSearch = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError(null);
+        setError("");
         setResults([]);
 
         try {
@@ -148,7 +148,7 @@ const Results = () => {
                             </div>
                         ))
                     ) : (
-                        <p>No unions found.</p>
+                        <></>
                     )}
                 </div>
             </div>

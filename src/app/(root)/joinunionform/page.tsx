@@ -19,6 +19,7 @@ const JoinUnionForm = () => {
     const [defaultImage, setDefaultImage] = useState<JSX.Element | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [message, setMessage] = useState<string>("");
     const [questions, setQuestions] = useState([
         "Which location do you work at?",
         "What is your job title?",
@@ -87,7 +88,7 @@ const JoinUnionForm = () => {
 
     const handleSaveQuestions = async () => {
         if (!unionId) {
-            alert("Union ID is missing.");
+            setMessage("Union ID is missing.");
             return;
         }
 
@@ -107,11 +108,11 @@ const JoinUnionForm = () => {
                 throw new Error("Failed to save questions");
             }
 
-            alert("Questions saved successfully!");
+            setMessage("Questions saved successfully!");
             router.push(`/search`);
         } catch (error) {
             console.error("Error saving questions:", error);
-            alert("An error occurred while saving questions.");
+            setMessage("An error occurred while saving questions.");
         }
     };
 
@@ -166,11 +167,12 @@ const JoinUnionForm = () => {
                         </div>
                     ))}
 
+                    <div>{message ? message : null}</div>
                     <div className="save-add-button-container">
-                        <button className="save-form-button" onClick={handleSaveQuestions}>
+                        <button className="save-form-button bottom-[40px] relative" onClick={handleSaveQuestions}>
                             Save
                         </button>
-                        <button className="add-question-button" onClick={handleAddQuestion}>
+                        <button className="add-question-button bottom-[40px] relative" onClick={handleAddQuestion}>
                             <b>+</b>
                         </button>
                     </div>
