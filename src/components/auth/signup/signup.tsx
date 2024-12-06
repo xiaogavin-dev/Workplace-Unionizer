@@ -156,7 +156,9 @@ const signup = () => {
 
                     <div className="button-container">
                         {loading ? (
-                            <PropagateLoader />
+                            <div className='submit-button'>
+                                <PropagateLoader className='relative right-2 bottom-2' />
+                            </div>
                         ) : (
                             <div>
                                 {error && <p className="error-message">{error}</p>}

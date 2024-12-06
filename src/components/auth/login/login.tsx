@@ -155,7 +155,9 @@ const login = () => {
                     </h3>
                     <div className="button-container">
                         {loading ? (
-                            <PropagateLoader />
+                            <div className='submit-button'>
+                                <PropagateLoader className='relative right-2 bottom-2' />
+                            </div>
                         ) : (
                             <div className='text-red-600 font-semibold mb-4'>
                                 {error ? "Incorrect Email or Password" : null}
