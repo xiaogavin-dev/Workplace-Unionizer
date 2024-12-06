@@ -58,7 +58,6 @@ const signup = () => {
 
         setLoading(true);
         try {
-            const data = await generateKeyPair();
             await createUserWithEmailAndPassword(auth, values.email, values.password);
             if (auth.currentUser) {
                 await updateProfile(auth.currentUser, {
@@ -74,6 +73,7 @@ const signup = () => {
                     },
                 }));
 
+                const data = await generateKeyPair(auth.currentUser.uid);
                 if (data) {
                     const { publicKey, privateKey } = data;
                     await storePrivateKey(auth.currentUser.uid, privateKey);
@@ -104,9 +104,9 @@ const signup = () => {
         <div className="signup-container">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="signup-form">
-                <div className="signup-header">
-                    <h1 className="signup-title">Create an Account</h1>
-                </div>
+                    <div className="signup-header">
+                        <h1 className="signup-title">Create an Account</h1>
+                    </div>
                     <FormField
                         control={form.control}
                         name="username"

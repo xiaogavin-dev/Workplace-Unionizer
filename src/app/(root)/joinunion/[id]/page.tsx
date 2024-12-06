@@ -5,7 +5,7 @@ import Layout from "@/components/Layout";
 import "./joinunion.css";
 import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks/redux";
 import { setUserUnions } from "@/lib/redux/features/user_unions/userUnionsSlice";
-
+import { handleMemberJoin } from '@/lib/util/handleKeyUpdates';
 interface UnionData {
   id: string;
   name: string;
@@ -114,7 +114,7 @@ const JoinUnion = () => {
       if (!joinResponse.ok) {
         throw new Error("Failed to join the union");
       }
-
+      await handleMemberJoin(unionId, user?.uid)
       const userUnionsRes = await fetch(
         `http://localhost:5000/union/getUserUnions?userId=${user?.uid}`
       );
@@ -199,8 +199,8 @@ const JoinUnion = () => {
                     }
                     onInput={(e) => {
                       const textarea = e.target;
-                      textarea.style.height = "auto"; 
-                      textarea.style.height = `${textarea.scrollHeight}px`; 
+                      textarea.style.height = "auto";
+                      textarea.style.height = `${textarea.scrollHeight}px`;
                     }}
                   />
                 </div>
