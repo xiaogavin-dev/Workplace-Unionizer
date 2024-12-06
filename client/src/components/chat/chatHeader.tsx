@@ -71,6 +71,14 @@ const ChatInput: FC<chatInputProps> = ({ form, onSubmit }) => {
             message: "", // Reset 'message' field to an empty string
         });
     };
+
+    const handleOnKeyDown = (e) => {
+        // If the Enter key is pressed without the Shift key or Ctrl key
+        if (e.key === "Enter" && (!e.shiftKey && !e.ctrlKey)) {
+            e.preventDefault(); 
+            form.handleSubmit(handleSubmit)();
+        }
+    };
     return (
         <>
             <Form {...form}>
@@ -88,6 +96,7 @@ const ChatInput: FC<chatInputProps> = ({ form, onSubmit }) => {
                                         placeholder="Message"
                                         className="resize-none"
                                         {...field}
+                                        onKeyDown={handleOnKeyDown}
                                     />
                                 </FormControl>
                                 <FormMessage />

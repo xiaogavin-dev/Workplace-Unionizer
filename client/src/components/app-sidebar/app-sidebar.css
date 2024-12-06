@@ -1,3 +1,142 @@
+.app-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 300px;
+  background-color: #f9f9f9;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0px;
+  left: 90px;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+/*--------------------------------------------------------------*/
+.union-title {
+  display: flex;
+  align-items: center; /* Align items vertically in the center */
+  justify-content: space-between; /* Space between the name and button */
+  padding: 10px; /* Optional padding */
+}
+
+.union-name {
+  margin-top: 12px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-left: 15px;
+  margin-bottom: 10px;
+}
+
+.hamburger-icon {
+  width: 30px; /* Adjust the size */
+  height: 30px; /* Adjust the size */
+  object-fit: contain; /* Ensures the image maintains its aspect ratio */
+  cursor: pointer;
+}
+.hamburger-icon:hover{
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Dropdown Modal Style */
+.union-dropdown-menu {
+  position: fixed; /* Change from absolute to fixed */
+  bottom: auto;
+  top: 80px; /* Position it properly relative to the viewport */
+  left: 180px; /* Adjust the left position */
+  width: 200px; /* Set the width */
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  padding: 10px;
+}
+
+/* Dropdown Items */
+.union-dropdown-item {
+  padding: 2px 15px;
+  font-size: 1rem;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.union-dropdown-item + .union-dropdown-item {
+  margin-top: 5px; /* Add a smaller margin between items */
+}
+
+.union-dropdown-item:hover {
+  background-color: #61a653;
+  color: white;
+}
+
+/* Separator Line */
+.union-dropdown-menu hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 5px 0;
+}
+
+/* Dropdown Toggle Button */
+.dropdown-toggle-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #333;
+  cursor: pointer;
+  margin-left: 10px;
+  padding: 5px;
+}
+
+.dropdown-toggle-button:hover {
+  color: #61a653;
+}
+
+/*-----------------------------------------------------------------*/
+.sidebar-group-label {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #2d2e2d;
+  padding: 10px;
+}
+
+.poll-button, .chat-item, .workplace-title{
+  font-size: 1.1rem;
+  color: #666b62;
+  padding: 10px;
+  margin-left: 10px;
+}
+
+.poll-button:hover, .chat-item:hover, .workplace-title:hover{
+  background-color: rgba(185, 185, 185, 0.3);
+}
+
+.dropdown-toggle{
+  font-size: 12px;
+  color: #aaaaa9;
+}
+
+.dropdown-item{
+  font-size: 1.0rem;
+  color: #666b62;
+  margin-left: 20px;
+}
+
+.sidebar-footer{
+  margin-top: 40px;
+}
+
+.sidebar-footer .find-workplaces-link{
+  font-size: 1.1rem;
+  margin-left: 20px;
+  color: #61a653;
+}
+
+.sidebar-footer .find-workplaces-link:hover{
+  text-decoration: underline;
+}
+/*---------------------------------------------------------------*/
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -32,19 +171,19 @@
 .employee-input {
   display: flex;
   align-items: center;
-  justify-content: space-between; 
+  justify-content: space-between;
   gap: 5px;
-  width: 100%; 
+  width: 100%;
 }
 
 .employee-input label {
   font-weight: bold;
-  white-space: nowrap; 
-  flex-shrink: 0; 
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .employee-input input {
-  flex: 1; 
+  flex: 1;
   max-width: 100px;
   padding: 5px;
   border: 1px solid #ccc;
@@ -85,9 +224,9 @@
   border-radius: 5px;
   margin-bottom: 10px;
   cursor: pointer;
-  background-color: #c0c0c0; 
+  background-color: #c0c0c0;
   color: white;
-  transition: background-color 0.3s ease, color 0.3s ease; 
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .poll-option.selected {
@@ -173,5 +312,5 @@
 }
 
 .close-button:hover {
-  color: #f44336; 
+  color: #f44336;
 }

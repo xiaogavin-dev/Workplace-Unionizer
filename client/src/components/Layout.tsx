@@ -37,6 +37,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     const handleUnionClick = (e: React.MouseEvent, union: object) => {
         e.stopPropagation();
         console.log(union.chats)
+        console.log("Selected Union:", union);
         setCurrUnion(union)
     };
     const getDynamicPageName = () => {
@@ -150,7 +151,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 </div>
                 {currUnion ?
                     <SidebarProvider>
-                        <AppSidebar chats={currUnion?.chats} />
+                        <AppSidebar 
+                        chats={currUnion?.chats || []} 
+                        unionName={currUnion?.name || ''} 
+                        unionId={currUnion?.id || ''}
+                         />
                         <div className="page-content">
                             {children}
                         </div>
