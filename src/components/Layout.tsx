@@ -36,7 +36,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     };
     const handleUnionClick = (e: React.MouseEvent, union: object) => {
         e.stopPropagation();
-        console.log(union.chats)
         console.log("Selected Union:", union);
         setCurrUnion(union)
     };

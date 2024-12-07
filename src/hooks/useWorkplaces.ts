@@ -18,8 +18,8 @@ const useWorkplaces = (unionId: string) => {
         const data = await response.json();
 
         if (response.ok) {
-          console.log(data.workplaces)
-          setWorkplaces(data.workplaces || []);
+          console.log(data.data)
+          setWorkplaces(data.data || []);
         } else {
           setError(data.message || "Failed to fetch workplaces.");
         }
