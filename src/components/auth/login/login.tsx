@@ -1,12 +1,12 @@
-"use client"
-import React, { useEffect } from 'react'
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { SignInValidation } from '@/lib/validate'
-import { Button } from "@/components/ui/button"
-import { useState } from "react"
-import PropagateLoader from "react-spinners/PropagateLoader"
+"use client";
+import React, { useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { SignInValidation } from "@/lib/validate";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import PropagateLoader from "react-spinners/PropagateLoader";
 import {
     Form,
     FormControl,
@@ -14,38 +14,41 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { useRouter } from 'next/navigation'
-import { setPersistence, browserLocalPersistence } from 'firebase/auth';
-import { auth } from '../../../firebase/firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import Link from 'next/link'
-import { useAppDispatch } from '@/lib/redux/hooks/redux';
-import { setAuthState } from '@/lib/redux/features/auth/authSlice';
-import { setUserUnions } from '@/lib/redux/features/user_unions/userUnionsSlice';
-import './signin.css'
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useRouter, useSearchParams } from "next/navigation";
+import { setPersistence, browserLocalPersistence } from "firebase/auth";
+import { auth } from "../../../firebase/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import Link from "next/link";
+import { useAppDispatch } from "@/lib/redux/hooks/redux";
+import { setAuthState } from "@/lib/redux/features/auth/authSlice";
+import { setUserUnions } from "@/lib/redux/features/user_unions/userUnionsSlice";
+import "./signin.css";
 
-const login = () => {
-    const router = useRouter()
+const Login = () => {
+    const router = useRouter();
+    const searchParams = useSearchParams(); // To get query parameters
     const dispatch = useAppDispatch();
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<boolean>(false);
+    const redirectUri = searchParams?.get("redirect_uri") || "/search"; // Default redirect to /search if none provided
+
     const form = useForm<z.infer<typeof SignInValidation>>({
         resolver: zodResolver(SignInValidation),
         defaultValues: {
             email: "",
             password: "",
         },
-    })
+    });
 
     useEffect(() => {
         setPersistence(auth, browserLocalPersistence)
             .then(() => {
-                console.log('Persistence set successfully');
+                console.log("Persistence set successfully");
             })
             .catch((error) => {
-                console.error('Error setting persistence:', error);
+                console.error("Error setting persistence:", error);
             });
     }, []);
 
@@ -53,58 +56,71 @@ const login = () => {
         setLoading(true);
         setError(false);
         try {
-            await signInWithEmailAndPassword(auth, values.email, values.password)
-            .catch(e => {
+            await signInWithEmailAndPassword(auth, values.email, values.password).catch((e) => {
                 console.log(e);
                 setError(true);
             });
+
             if (auth.currentUser) {
                 try {
                     const token = await auth.currentUser.getIdToken();
-                    const verifyRes = await fetch('http://localhost:5000/users/login', {
-                        method: 'POST',
+                    await fetch("http://localhost:5000/users/login", {
+                        method: "POST",
                         headers: {
-                            'Content-Type': 'application/json',
+                            "Content-Type": "application/json",
                         },
-                        body: JSON.stringify({ token })
-                    })
-                    console.log(verifyRes)
-                    dispatch(setAuthState({
-                        isAuthenticated: true,
-                        user: {
-                            displayName: auth.currentUser.displayName,
-                            uid: auth.currentUser.uid,
-                            email: values.email,
-                        },
-                    }));
+                        body: JSON.stringify({ token }),
+                    });
+
+                    dispatch(
+                        setAuthState({
+                            isAuthenticated: true,
+                            user: {
+                                displayName: auth.currentUser.displayName,
+                                uid: auth.currentUser.uid,
+                                email: values.email,
+                            },
+                        })
+                    );
                 } catch (error) {
-                    console.log("error logging in", error)
+                    console.log("Error logging in", error);
                 }
+
                 try {
-                    const userUnionsRes = await fetch(`http://localhost:5000/union/getUserUnions?userId=${auth.currentUser.uid}`, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
+                    const userUnionsRes = await fetch(
+                        `http://localhost:5000/union/getUserUnions?userId=${auth.currentUser.uid}`,
+                        {
+                            method: "GET",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
                         }
-                    })
+                    );
+
                     if (!userUnionsRes.ok) {
-                        throw new Error('Response error')
+                        throw new Error("Response error");
                     }
-                    const data = await userUnionsRes.json()
-                    dispatch(setUserUnions({
-                        unions: data.data
-                    }))
+
+                    const data = await userUnionsRes.json();
+                    dispatch(
+                        setUserUnions({
+                            unions: data.data,
+                        })
+                    );
                 } catch (e) {
-                    console.error('There was an error receiving user unions', e)
+                    console.error("There was an error receiving user unions", e);
                 }
             }
+
+            // Redirect to the redirectUri after login
+            if (auth.currentUser) {
+                router.push(redirectUri);
+            }
         } catch (e) {
-            console.error('There was an error with logging in: ', e)
+            console.error("There was an error with logging in: ", e);
         }
 
-        if(auth.currentUser)
-            router.push('/search')
-        setLoading(false)
+        setLoading(false);
     }
 
     return (
@@ -155,23 +171,35 @@ const login = () => {
                     </h3>
                     <div className="button-container">
                         {loading ? (
-                            <div className='submit-button'>
-                                <PropagateLoader className='relative right-2 bottom-2' />
+                            <div className="submit-button">
+                                <PropagateLoader className="relative right-2 bottom-2" />
                             </div>
                         ) : (
-                            <div className='text-red-600 font-semibold mb-4'>
+                            <div className="text-red-600 font-semibold mb-4">
                                 {error ? "Incorrect Email or Password" : null}
-                                <Button className="submit-button" type="submit">Login</Button>
+                                <Button className="submit-button" type="submit">
+                                    Login
+                                </Button>
                             </div>
                         )}
                     </div>
                     <h3 className="signup-link">
-                        New to Unionizer? <Link href="/auth/signup">Join now</Link>
+                        New to Unionizer?{" "}
+                        <Link
+                            href={{
+                                pathname: "/auth/signup",
+                                query: { redirect_uri: searchParams?.get("redirect_uri") || "/search" },
+                            }}
+                        >
+                            Join now
+                        </Link>
                     </h3>
+
                 </form>
             </Form>
         </div>
     );
-}
+};
 
-export default login;
+export default Login;
+

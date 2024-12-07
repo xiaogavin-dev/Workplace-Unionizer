@@ -9,7 +9,7 @@
   top: 0px;
   left: 90px;
   overflow-y: auto;
-  z-index: 100;
+  z-index: 1;
 }
 
 /*--------------------------------------------------------------*/
@@ -37,7 +37,7 @@
 .hamburger-icon:hover{
   background-color: rgba(0, 0, 0, 0.1);
 }
-/*-----------------------------------------------------*/
+
 /* Dropdown Modal Style */
 .union-dropdown-menu {
   position: fixed; 

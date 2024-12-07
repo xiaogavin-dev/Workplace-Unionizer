@@ -11,6 +11,11 @@ interface UnionData {
     image?: string;
 }
 
+interface Question {
+    id?: string; // Optional because new questions won't have an ID
+    questionText: string;
+}
+
 const JoinUnionForm = () => {
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -20,32 +25,43 @@ const JoinUnionForm = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [message, setMessage] = useState<string>("");
-    const [questions, setQuestions] = useState([
-        "Which location do you work at?",
-        "What is your job title?",
-        "Who is your manager?",
-        "How else can we contact you?",
-    ]);
+    const [questions, setQuestions] = useState<Question[]>([]);
 
+    // Fetch union data and questions
     useEffect(() => {
-        if (unionId) {
-            const fetchUnionData = async () => {
-                try {
-                    const response = await fetch(
-                        `http://localhost:5000/union/getUnion/${unionId}`
-                    );
-                    if (!response.ok) throw new Error("Failed to fetch union data");
+        const fetchUnionData = async () => {
+            try {
+                const response = await fetch(
+                    `http://localhost:5000/union/getUnion/${unionId}`
+                );
+                if (!response.ok) throw new Error("Failed to fetch union data");
 
-                    const data = await response.json();
-                    setUnionData(data.data);
-                } catch (err) {
-                    const error = err as Error;
-                    setError(error.message);
-                } finally {
-                    setLoading(false);
-                }
-            };
+                const data = await response.json();
+                setUnionData(data.data);
+            } catch (err) {
+                setError((err as Error).message);
+            }
+        };
+
+        const fetchQuestions = async () => {
+            try {
+                const response = await fetch(
+                    `http://localhost:5000/form/questions/${unionId}`
+                );
+                if (!response.ok) throw new Error("Failed to fetch questions");
+
+                const data = await response.json();
+                setQuestions(data.data?.length ? data.data : []); 
+            } catch (err) {
+                setError((err as Error).message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (unionId) {
             fetchUnionData();
+            fetchQuestions();
         }
     }, [unionId]);
 
@@ -77,12 +93,18 @@ const JoinUnionForm = () => {
         }
     }, [unionData]);
 
-    const handleAddQuestion = () => setQuestions([...questions, ""]);
-    const handleRemoveQuestion = (index: number) =>
-        setQuestions(questions.filter((_, i) => i !== index));
+    const handleAddQuestion = () =>
+        setQuestions([...questions, { questionText: "" }]);
+
+    const handleRemoveQuestion = (index: number) => {
+        const updatedQuestions = [...questions];
+        updatedQuestions.splice(index, 1);
+        setQuestions(updatedQuestions);
+    };
+
     const handleQuestionChange = (index: number, value: string) => {
         const updatedQuestions = [...questions];
-        updatedQuestions[index] = value;
+        updatedQuestions[index].questionText = value;
         setQuestions(updatedQuestions);
     };
 
@@ -91,7 +113,7 @@ const JoinUnionForm = () => {
             setMessage("Union ID is missing.");
             return;
         }
-
+    
         try {
             const response = await fetch("http://localhost:5000/form/questions", {
                 method: "POST",
@@ -100,14 +122,16 @@ const JoinUnionForm = () => {
                 },
                 body: JSON.stringify({
                     unionId,
-                    questions,
+                    questions: questions.map((q) => ({
+                        questionText: q.questionText,
+                    })),
                 }),
             });
-
+    
             if (!response.ok) {
                 throw new Error("Failed to save questions");
             }
-
+    
             setMessage("Questions saved successfully!");
             router.push(`/search`);
         } catch (error) {
@@ -115,6 +139,8 @@ const JoinUnionForm = () => {
             setMessage("An error occurred while saving questions.");
         }
     };
+    
+      
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
@@ -130,7 +156,8 @@ const JoinUnionForm = () => {
                                 alt={`${unionData.name} Logo`}
                                 className="result-image"
                                 onError={(e) => {
-                                    (e.target as HTMLImageElement).src = "/images/Unionizer_Logo.png";
+                                    (e.target as HTMLImageElement).src =
+                                        "/images/Unionizer_Logo.png";
                                 }}
                             />
                         ) : (
@@ -148,8 +175,10 @@ const JoinUnionForm = () => {
                         <div className="question-remove-container" key={index}>
                             <div className="question-input">
                                 <textarea
-                                    value={question}
-                                    onChange={(e) => handleQuestionChange(index, e.target.value)}
+                                    value={question.questionText}
+                                    onChange={(e) =>
+                                        handleQuestionChange(index, e.target.value)
+                                    }
                                     placeholder={`Question ${index + 1}`}
                                     onInput={(e) => {
                                         const textarea = e.target as HTMLTextAreaElement;
@@ -169,10 +198,16 @@ const JoinUnionForm = () => {
 
                     <div>{message ? message : null}</div>
                     <div className="save-add-button-container">
-                        <button className="save-form-button bottom-[40px] relative" onClick={handleSaveQuestions}>
+                        <button
+                            className="save-form-button bottom-[40px] relative"
+                            onClick={handleSaveQuestions}
+                        >
                             Save
                         </button>
-                        <button className="add-question-button bottom-[40px] relative" onClick={handleAddQuestion}>
+                        <button
+                            className="add-question-button bottom-[40px] relative"
+                            onClick={handleAddQuestion}
+                        >
                             <b>+</b>
                         </button>
                     </div>
