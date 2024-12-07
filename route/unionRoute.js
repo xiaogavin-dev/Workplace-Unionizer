@@ -18,8 +18,6 @@ router.route('/joinUnion').post(joinUnion)
 
 router.post('/create', upload.single('image'), createUnion);
 
-router.get("/getWorkplaces", getWorkplacesByUnionId);
-
 router.post('/leaveUnion', leaveUnion)
 
 router.post('/deleteUnion', deleteUnion)

@@ -74,7 +74,7 @@ module.exports = (sequelize, DataTypes) => {
         } = sequelize.models;
 
         try {
-          const transaction = options.transaction || (await sequelize.transaction());
+          const transaction = options.transaction;
 
           if (!options.userId) {
             throw new Error("User ID not provided in afterCreate hook options");
@@ -87,66 +87,68 @@ module.exports = (sequelize, DataTypes) => {
             where: {
               userId
             },
-            transaction
-          });
+          }, { transaction });
           if (!adminPubkey) {
             throw new Error("Admin public key not found");
           }
           const pubkeyValue = adminPubkey.dataValues.value;
 
-          // Create general chats for the union
-          await Chat.create({
-            id: uuidv4(),
-            name: `${union.name} general chat`,
-            unionId: union.id,
-            isDefault: true,
-            isPublic: true,
-          }, {
-            transaction,
-            userId,
-            pubkeyValue
-          });
+          try {
+            // Create general chats for the union
+            await Chat.create({
+              id: uuidv4(),
+              name: `${union.name} general chat`,
+              unionId: union.id,
+              isDefault: true,
+              isPublic: true,
+            }, {
+              transaction,
+              userId,
+              pubkeyValue
+            });
 
-          console.log(`General chat created for union: ${union.name}`);
-
-          // Create a default poll for the union
-          await Poll.create({
-            id: uuidv4(),
-            name: `Poll for ${union.name}`,
-            unionId: union.id,
-            description: "Poll to unionize.",
-            isActive: true,
-            isDefault: true,
-            workplaceId: null,
-          }, {
-            transaction
-          });
-
-          console.log(`Poll created for union: ${union.name}`);
-
-          // Associate the user with the union as admin
-          await UserUnion.create({
-            id: uuidv4(),
-            userId,
-            role: "admin",
-            unionId: union.id,
-          }, {
-            transaction
-          });
-
-          console.log(`Admin user associated with union: ${union.name}`);
-
-          // Commit transaction if it was created in the hook
-          if (!options.transaction) {
-            await transaction.commit();
+            console.log(`General chat created for union: ${union.name}`);
+          } catch (error) {
+            console.error("there was an error creating the general chat for Union...", error)
           }
+
+          try {
+            // Create a default poll for the union
+            await Poll.create({
+              id: uuidv4(),
+              name: `Poll for ${union.name}`,
+              unionId: union.id,
+              description: "Poll to unionize.",
+              isActive: true,
+              isDefault: true,
+              workplaceId: null,
+            }, {
+              transaction
+            });
+
+            console.log(`Poll created for union: ${union.name}`);
+          } catch (error) {
+            console.error("There was an error creating default poll for Union", error)
+          }
+          try {
+            // Associate the user with the union as admin
+            await UserUnion.create({
+              id: uuidv4(),
+              userId,
+              role: "admin",
+              unionId: union.id,
+            }, {
+              transaction
+            });
+
+            console.log(`Admin user associated with union: ${union.name}`);
+          } catch (error) {
+            console.error("There was an error creating user Union (associating admin with union)", error)
+          }
+
+
         } catch (error) {
-          console.error("Error in afterCreate hook:", error);
-
-          if (!options.transaction) {
-            await transaction.rollback();
-          }
-
+          console.error("Error in Union afterCreate hook:", error);
           throw error;
         }
       },

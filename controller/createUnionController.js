@@ -31,11 +31,11 @@ const createUnion = async (req, res) => {
         } else {
             parsedWorkplaces = workplaces;
         }
-
+        const unionId = uuidv4()
         // Create the union record
         const newUnion = await union.create(
             {
-                id: uuidv4(),
+                id: unionId,
                 name,
                 description,
                 visibility,
@@ -43,16 +43,16 @@ const createUnion = async (req, res) => {
             },
             { transaction, userId } // Pass transaction and userId to the hook
         );
-
-        // Create workplaces associated with the union
-        if (Array.isArray(parsedWorkplaces) && parsedWorkplaces.length > 0) {
-            const workplacesData = parsedWorkplaces.map((wp) => ({
+        // Loop through each workplace and insert individually
+        for (const wp of parsedWorkplaces) {
+            const workplaceData = {
                 ...wp,
                 id: uuidv4(), // Generate a unique ID for each workplace
                 unionId: newUnion.id, // Associate with the new union
-            }));
+            };
 
-            await workplace.bulkCreate(workplacesData, { transaction });
+            // Insert the workplace record into the database
+            await workplace.create(workplaceData, { transaction, userId, unionId });
         }
 
         // Add default questions to the new union

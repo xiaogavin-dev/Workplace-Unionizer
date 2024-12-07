@@ -26,6 +26,11 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE'
       })
+      chat.belongsTo(models.workplace, {
+        foreignKey: 'workplaceId',
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+      })
     }
   }
   chat.init(
@@ -54,6 +59,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: 1
+      },
+      workplaceId: {
+        type: DataTypes.UUID,
+        allowNull: true,
       }
     },
     {
