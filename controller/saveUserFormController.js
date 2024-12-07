@@ -1,4 +1,4 @@
-const { formAnswer } = require('../models');
+const { formAnswer, formQuestion } = require('../models');
 
 const storeAnswers = async (req, res) => {
   try {
@@ -8,7 +8,7 @@ const storeAnswers = async (req, res) => {
       return res.status(400).json({ error: 'Invalid formAnswers format' });
     }
 
-    console.log("FormAnswers received:", formAnswers); 
+    console.log("FormAnswers received:", formAnswers);
 
     const createdAnswers = await Promise.all(
       formAnswers.map(async (answer) => {
@@ -18,11 +18,18 @@ const storeAnswers = async (req, res) => {
           throw new Error('All fields are required for each answer');
         }
 
+        const question = await formQuestion.findByPk(questionId);
+
+        if (!question) {
+          throw new Error(`Question with ID ${questionId} not found`);
+        }
+
         return await formAnswer.create({
           questionId,
           unionId,
           userId,
           answerText,
+          questionText: question.questionText,
         });
       })
     );
