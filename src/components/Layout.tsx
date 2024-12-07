@@ -151,11 +151,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 </div>
                 {currUnion ?
                     <SidebarProvider>
-                        <AppSidebar 
-                        chats={currUnion?.chats || []} 
-                        unionName={currUnion?.name || ''} 
-                        unionId={currUnion?.id || ''}
-                         />
+                        <AppSidebar
+                            chats={currUnion?.chats || []}
+                            unionName={currUnion?.name || ''}
+                            unionId={currUnion?.id || ''}
+                            role={currUnion?.role || ''}
+                            userId={user?.uid}
+                        />
                         <div className="page-content">
                             {children}
                         </div>
