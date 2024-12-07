@@ -1,11 +1,14 @@
 "use client";
+
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Layout from "@/components/Layout";
 import "./joinunion.css";
 import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks/redux";
+import { listenToAuthChanges } from "@/lib/redux/features/auth/authSlice";
 import { setUserUnions } from "@/lib/redux/features/user_unions/userUnionsSlice";
-import { handleMemberJoin } from '@/lib/util/handleKeyUpdates';
+import { handleMemberJoin } from "@/lib/util/handleKeyUpdates";
+
 interface UnionData {
   id: string;
   name: string;
@@ -20,56 +23,74 @@ interface Question {
 
 const JoinUnion = () => {
   const { id: unionId } = useParams();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  const { isAuthenticated, isLoading: authLoading, user } = useAppSelector(
+    (state) => state.auth
+  );
+
+  // Local state to track if authentication listener has fully initialized
+  const [authInitialized, setAuthInitialized] = useState(false);
+
   const [unionData, setUnionData] = useState<UnionData | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [dataLoading, setDataLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [joined, setJoined] = useState<string>("");
-  const { user } = useAppSelector((state) => state.auth);
-  const dispatch = useAppDispatch();
-  const router = useRouter();
 
+  // Start listening to auth changes on component mount
   useEffect(() => {
-    const fetchUnionData = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/union/getUnion/${unionId}`
-        );
-        if (!response.ok) throw new Error("Failed to fetch union data");
+    dispatch(listenToAuthChanges()).finally(() => {
+      setAuthInitialized(true); // Set authInitialized to true after listener completes
+    });
+  }, [dispatch]);
 
-        const data = await response.json();
-        setUnionData(data.data);
-      } catch (err) {
-        setError((err as Error).message);
+  // Redirect to login if not authenticated after authInitialized is true
+  useEffect(() => {
+    if (authInitialized && !authLoading) {
+      if (!isAuthenticated) {
+        const redirectUri = `/joinunion/${unionId}`;
+        router.push(`/auth/login?redirect_uri=${encodeURIComponent(redirectUri)}`);
       }
-    };
+    }
+  }, [isAuthenticated, authLoading, authInitialized, router, unionId]);
 
-    const fetchQuestions = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/form/questions/${unionId}`
-        );
-        if (!response.ok) throw new Error("Failed to fetch questions");
+  // Fetch union data and questions when authenticated
+  useEffect(() => {
+    if (authInitialized && isAuthenticated && unionId) {
+      const fetchUnionData = async () => {
+        try {
+          const response = await fetch(`http://localhost:5000/union/getUnion/${unionId}`);
+          if (!response.ok) throw new Error("Failed to fetch union data");
 
-        const data = await response.json();
-        setQuestions(data.data);
-        setAnswers(new Array(data.data.length).fill(""));
-      } catch (err) {
-        setError((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
+          const data = await response.json();
+          setUnionData(data.data);
+        } catch (err) {
+          setError((err as Error).message);
+        }
+      };
 
-    if (unionId) {
+      const fetchQuestions = async () => {
+        try {
+          const response = await fetch(`http://localhost:5000/form/questions/${unionId}`);
+          if (!response.ok) throw new Error("Failed to fetch questions");
+
+          const data = await response.json();
+          setQuestions(data.data);
+          setAnswers(new Array(data.data.length).fill(""));
+        } catch (err) {
+          setError((err as Error).message);
+        } finally {
+          setDataLoading(false);
+        }
+      };
+
       fetchUnionData();
       fetchQuestions();
-    } else {
-      setError("Union ID not found in URL.");
-      setLoading(false);
     }
-  }, [unionId]);
+  }, [isAuthenticated, authInitialized, unionId]);
 
   const handleAnswerChange = (index: number, value: string) => {
     const updatedAnswers = [...answers];
@@ -115,7 +136,8 @@ const JoinUnion = () => {
       if (!joinResponse.ok) {
         throw new Error("Failed to join the union");
       }
-      await handleMemberJoin(unionId, user?.uid)
+      await handleMemberJoin(unionId, user?.uid);
+
       const userUnionsRes = await fetch(
         `http://localhost:5000/union/getUserUnions?userId=${user?.uid}`
       );
@@ -136,9 +158,7 @@ const JoinUnion = () => {
   };
 
   const getDefaultImage = () => {
-    const savedColors = JSON.parse(
-      localStorage.getItem("unionColors") || "{}"
-    );
+    const savedColors = JSON.parse(localStorage.getItem("unionColors") || "{}");
     const backgroundColor = savedColors[unionData?.id] || "#ccc";
 
     return (
@@ -161,7 +181,8 @@ const JoinUnion = () => {
     );
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (authLoading || !authInitialized || dataLoading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <Layout>
@@ -174,9 +195,6 @@ const JoinUnion = () => {
                   src={`http://localhost:5000${unionData.image}`}
                   alt={`${unionData.name} Logo`}
                   className="union-logo"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/images/Unionizer_Logo.png";
-                  }}
                 />
               ) : (
                 getDefaultImage()
@@ -191,25 +209,16 @@ const JoinUnion = () => {
                 <div key={question.id} className="form-field">
                   <label>{question.questionText}</label>
                   <textarea
-                    type="text"
-                    placeholder="Aa"
                     value={answers[index]}
-                    onChange={(e) =>
-                      handleAnswerChange(index, e.target.value)
-                    }
-                    onInput={(e) => {
-                      const textarea = e.target;
-                      textarea.style.height = "auto";
-                      textarea.style.height = `${textarea.scrollHeight}px`;
-                    }}
+                    onChange={(e) => handleAnswerChange(index, e.target.value)}
                   />
                 </div>
               ))}
               <button className="submit-form-button" onClick={onSubmit}>
                 Submit
               </button>
-              {error ? error : null}
-              {joined ? joined : null}
+              {error && <p className="error-message">{error}</p>}
+              {joined && <p className="success-message">{joined}</p>}
             </div>
           </>
         ) : (
@@ -221,3 +230,4 @@ const JoinUnion = () => {
 };
 
 export default JoinUnion;
+

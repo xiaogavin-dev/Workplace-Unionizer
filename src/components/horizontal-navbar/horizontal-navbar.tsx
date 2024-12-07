@@ -58,12 +58,8 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
 
     const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
         e.preventDefault(); 
-        if (isAuthenticated) {
-            router.push("/search"); 
-        } else {
-            router.push("/"); 
-        }
-    };
+        router.push(isAuthenticated ? "/search" : "/"); 
+    };    
 
     const getDynamicPageName = () => {
         if (pathname.startsWith("/joinunion")) {

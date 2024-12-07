@@ -60,48 +60,48 @@ const CreateUnion = () => {
             fileInputRef.current.value = ''; 
         }
     };
+    
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setMessage('');
         setLoading(true);
-    
+      
         try {
-            const formData = new FormData();
-            formData.append('name', name);
-            formData.append('description', description);
-            formData.append('visibility', visibility);
-            formData.append('userId', user?.uid || '');
-            formData.append('workplaces', JSON.stringify(workplaces)); 
-            if (image) {
-                formData.append('image', image); 
-            }
-    
-            const response = await fetch('http://localhost:5000/union/create', {
-                method: 'POST',
-                body: formData,
-            });
-    
-            const data = await response.json();
-            console.log(data.id)
-            console.log(data.data)
-            if (response.ok) {
-                setToggle(true);
-                setMessage('Union successfully added to the database!');
-                if (data.data.id) {
-                    setTimeout(() => {
-                        router.push(`/joinunionform?unionId=${data.data.id}`);
-                    }, 3000);
-                }
-            } else {
-                setMessage(`Error: ${data.message}`);
-            }
+          const formData = new FormData();
+          formData.append('name', name);
+          formData.append('description', description);
+          formData.append('visibility', visibility);
+          formData.append('userId', user?.uid || '');
+          formData.append('workplaces', JSON.stringify(workplaces)); 
+          if (image) {
+            formData.append('image', image); 
+          }
+      
+          const response = await fetch('http://localhost:5000/union/create', {
+            method: 'POST',
+            body: formData,
+          });
+      
+          const data = await response.json();
+      
+          if (response.ok && data.data?.id) {
+            setToggle(true);
+            setMessage('Union successfully added to the database!');
+            setTimeout(() => {
+              router.push(`/joinunionform?unionId=${data.data.id}`);
+            }, 3000);
+          } else {
+            setMessage(`Error: ${data.message || 'Failed to create union.'}`);
+          }
         } catch (error) {
-            console.error('An error occurred:', error);
-            setMessage('An error occurred while submitting the form.');
+          console.error('An error occurred:', error);
+          setMessage('An error occurred while submitting the form.');
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
-    };
+      };
+      
+
     return (
         <Layout>
             <div className="create-union-page">

@@ -1,6 +1,6 @@
 import { auth } from "./firebase";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
-import { updateProfile, setPersistence, browserSessionPersistence } from 'firebase/auth'
+import { updateProfile, setPersistence, browserLocalPersistence } from 'firebase/auth'
 
 export const doCreateUserWithEmailAndPassword = async (email, password) => {
     return createUserWithEmailAndPassword(auth, email, password)
@@ -8,7 +8,7 @@ export const doCreateUserWithEmailAndPassword = async (email, password) => {
 }
 export const doSignInWithEmailAndPassword = (email, password) => {
     // Set persistence (local by default)
-    setPersistence(auth, browserSessionPersistence)
+    setPersistence(auth, browserLocalPersistence)
         .then(() => {
             // Now you can use signInWithEmailAndPassword() or any other auth method
             return signInWithEmailAndPassword(auth, email, password)

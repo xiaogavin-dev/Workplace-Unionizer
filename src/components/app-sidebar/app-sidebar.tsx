@@ -74,9 +74,14 @@ export function AppSidebar({
     };
   }, []);
 
-  const handleOptionClick = (path: string) => {
+  const handleOptionClick = (path: string, query?: Record<string, string>) => {
     setUnionDropdownOpen(false);
-    router.push(path);
+    if (query) {
+      const queryString = new URLSearchParams(query).toString();
+      router.push(`${path}?${queryString}`);
+    } else {
+      router.push(path);
+    }
   };
 
   // Use the custom hook to fetch workplaces
@@ -201,10 +206,11 @@ export function AppSidebar({
                 </div>
                 <div
                   className="union-dropdown-item"
-                  onClick={() => handleOptionClick("/union/edit-invitation-form")}
+                  onClick={() => handleOptionClick("/joinunionform", { unionId })}
                 >
                   Edit Invitation Form
                 </div>
+
                 <div
                   className="union-dropdown-item"
                   onClick={() => handleOptionClick("/union/manage-members")}
@@ -243,7 +249,13 @@ export function AppSidebar({
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <div className="poll-button" onClick={() => setPollModalOpen(true)}>
+                    <div
+                      className="poll-button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPollModalOpen(true);
+                      }}
+                    >
                       Unionize Poll
                     </div>
                   </SidebarMenuButton>
