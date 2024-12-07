@@ -1,6 +1,5 @@
 const pool = require('../db');
-const { user_union, union, chat } = require('../models');
-const userUnion = require('../models/user-union');
+const { user_union, union, chat, sequelize } = require('../models');
 const { v4: uuidv4 } = require('uuid')
 const getUnions = async (req, res) => {
   try {
@@ -81,6 +80,7 @@ const getUserUnions = async (req, res) => {
       }
     })
     curr.dataValues.chats = chats.map((chat) => chat.dataValues)
+    curr.dataValues.role = userUnion.dataValues.role
     if (curr) {
       unions.push(curr.dataValues);
     }
@@ -105,7 +105,44 @@ const joinUnion = async (req, res) => {
   }
 }
 const leaveUnion = async (req, res) => {
+  const { unionId, userId } = req.body;
+  const transaction = await sequelize.transaction()
+  try {
+    await user_union.destroy({ where: { unionId, userId } }, transaction)
+    await transaction.commit()
+    res.status(200).json({ message: "successfully left union" })
+  }
+  catch (error) {
+    await transaction.rollback()
+    console.error("There was an error leaving Union.", error)
+    res.status(400).json({ message: "Could not leave union" })
+  }
+}
+const deleteUnion = async (req, res) => {
+  const { unionId, userId } = req.body;
+  const transaction = await sequelize.transaction()
+  try {
+    const user_union_response = await user_union.findOne({
+      where: {
+        unionId,
+        userId
+      }
+    })
+    if (user_union_response.dataValues.role == 'admin') {
+      await union.destroy({ where: { id: unionId } }, transaction)
+      await transaction.commit()
+      res.status(200).json({ message: "successfully deleted" })
+    }
+    else {
+      res.staus(200).json({ message: "user does not have permissions to delete the union" })
+    }
+  }
+  catch (error) {
+    await transaction.rollback()
+    console.error("There was an error deleting Union.", error)
+    res.status(400).json({ message: "Could not delete union" })
 
+  }
 }
 const getUnionPublicChats = async (req, res) => {
   const { unionId } = req.query
@@ -127,9 +164,12 @@ const getUnionPublicChats = async (req, res) => {
   }
 }
 
+
 module.exports = {
   getUnions,
   getUserUnions,
   joinUnion,
-  getUnionPublicChats
-};
+  getUnionPublicChats,
+  leaveUnion,
+  deleteUnion
+}

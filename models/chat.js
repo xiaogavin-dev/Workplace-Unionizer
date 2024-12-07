@@ -17,7 +17,9 @@ module.exports = (sequelize, DataTypes) => {
       });
       // Current key version
       chat.hasOne(models.keyVersion, {
-        sourceKey: 'chatKeyVersion'
+        sourceKey: 'chatKeyVersion',
+        onDelete: 'CASCADE',
+        onUpdate: "CASCADE"
       });
       chat.hasMany(models.encryptedKey, {
         foreignKey: 'chatId',
@@ -69,7 +71,7 @@ module.exports = (sequelize, DataTypes) => {
               pubkeyValue: options.pubkeyValue,
             }, { transaction });
 
-            console.log(`User-Chat association created:`, newUserChat);
+            console.log(`User-Chat association created:`);
           } catch (error) {
             console.error('Error in Chat afterCreate hook:', error);
             if (options.transaction) {

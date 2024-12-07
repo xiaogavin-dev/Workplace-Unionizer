@@ -10,7 +10,9 @@ module.exports = (sequelize, DataTypes) => {
   class union extends Model {
     static associate(models) {
       union.hasMany(models.chat, {
-        foreignKey: 'unionId'
+        foreignKey: 'unionId',
+        onDelete: 'CASCADE',
+        onUpdate: "CASCADE"
       });
       union.belongsToMany(models.user, {
         through: 'user_unions',
@@ -20,14 +22,20 @@ module.exports = (sequelize, DataTypes) => {
       union.hasMany(models.workplace, {
         foreignKey: 'unionId',
         as: 'associatedWorkplaces',
+        onDelete: 'CASCADE',
+        onUpdate: "CASCADE"
       });
       union.hasMany(models.formQuestion, {
         foreignKey: 'unionId',
         as: 'formQuestions',
+        onDelete: 'CASCADE',
+        onUpdate: "CASCADE"
       });
       union.hasMany(models.poll, {
         foreignKey: 'unionId',
         as: 'polls',
+        onDelete: 'CASCADE',
+        onUpdate: "CASCADE"
       });
     }
   }
