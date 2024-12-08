@@ -464,7 +464,7 @@ export function AppSidebar({
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                         ))}
-                        
+
                       {!workplace.isUnionized && (
                         <SidebarMenuItem>
                           <SidebarMenuButton asChild>
@@ -472,6 +472,7 @@ export function AppSidebar({
                               className="poll-button"
                               onClick={(e) => {
                                 e.stopPropagation();
+                                setTotalEmployees(workplace.employeeCount || 0);
                                 setPollModalOpen(true);
                               }}
                             >
@@ -514,20 +515,21 @@ export function AppSidebar({
               ×
             </button>
             <h1 className="poll-question">Should we apply for unionization now?</h1>
-            <div className="employee-input">
-              <label htmlFor="employee-count">Total Number of Employees:</label>
-              <input
-                id="employee-count"
-                type="number"
-                value={totalEmployees || ""}
-                onChange={(e) => setTotalEmployees(Number(e.target.value))}
-                placeholder="total"
-                disabled={voted}
-                style={{
-                  backgroundColor: voted ? "#e0e0e0" : "white",
-                }}
-              />
-            </div>
+              {/* Automatically fetch and display total employees */}
+      <div className="employee-input">
+        <label htmlFor="employee-count">Total Number of Employees:</label>
+        <input
+          id="employee-count"
+          type="number"
+          value={totalEmployees || ""}
+          readOnly
+          placeholder="Fetching employee count..."
+          style={{
+            backgroundColor: "#e0e0e0",
+            cursor: "not-allowed",
+          }}
+        />
+      </div>
             <ul className="poll-options">
               {["yes", "no"].map((option) => (
                 <li
