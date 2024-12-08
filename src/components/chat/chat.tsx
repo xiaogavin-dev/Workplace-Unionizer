@@ -13,7 +13,7 @@ import { usePathname } from "next/navigation";
 import { encryptMessage, encryptSymmetricKeys, createSymmetricKey, decryptMessage } from "../../lib/util/encryptionCalls"
 import { retrievePrivateKey } from '@/lib/util/IndexedDBCalls';
 import { handleNewChatMember } from "@/lib/util/handleKeyUpdates";
-
+import { useSocket } from "../socket/SocketProvider";
 const PATH = "http://localhost:5000";
 
 const FormSchema = z.object({
@@ -55,19 +55,46 @@ export interface RoomType {
 
 const Chat: FC = () => {
     const { user } = useAppSelector((state): { user: userType | null } => state.auth);
+    const socket = useSocket()
     const pathname = usePathname();
     const chunks = pathname.split("/");
-    const socketRef = useRef<Socket | null>(null);
-    const [isConnected, setIsConnected] = useState<boolean>(false)
+    const socketRef = useRef<Socket | null>();
+    const [isConnected, setIsConnected] = useState<boolean>(true)
     const [roomData, setRoomData] = useState<RoomType>({ room: null });
     const [messages, setMessages] = useState<messageType>({ messages: [] });
     const [init, setInit] = useState<boolean>(false)
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
     });
+    useEffect(() => {
+        if (socket) {
+            socketRef.current = socket;
 
+            // Check if the socket is connected
+            setIsConnected(socket.connected);
+
+            // Listen to the 'connect' and 'disconnect' events
+            socket.on("connect", () => {
+                console.log("Socket connected");
+                setIsConnected(true);
+            });
+
+            socket.on("disconnect", () => {
+                console.log("Socket disconnected");
+                setIsConnected(false);
+            });
+
+            // Clean up listeners
+            return () => {
+                socket.off("connect");
+                socket.off("disconnect");
+            };
+        }
+    }, [socket]);
     const onSubmit = (data: z.infer<typeof FormSchema>) => {
+        console.log(socketRef.current?.connected)
         if (socketRef.current?.connected) {
+            console.log("hit after")
             const msg_details: messageInfo = {
                 id: crypto.randomUUID(),
                 content: data.message,
@@ -93,7 +120,6 @@ const Chat: FC = () => {
                             encryptedKeyData = userKeyData
                             const fetchPrivKey = async () => {
                                 const privateKey = await retrievePrivateKey(user!.uid)
-                                console.log(privateKey)
                                 return privateKey
                             }
                             const privateKey = await fetchPrivKey()
@@ -116,7 +142,6 @@ const Chat: FC = () => {
                         encryptedKeyData = await response.json()
                         const fetchPrivKey = async () => {
                             const privateKey = await retrievePrivateKey(user!.uid)
-                            console.log(privateKey)
                             return privateKey
                         }
                         const privateKey = await fetchPrivKey()
@@ -164,7 +189,6 @@ const Chat: FC = () => {
         };
         const fetchPrivKey = async () => {
             const privateKey = await retrievePrivateKey(user!.uid)
-            console.log(privateKey)
             return privateKey
         }
 
@@ -197,16 +221,7 @@ const Chat: FC = () => {
     }, [user]);
     useEffect(() => {
         if (user) {
-            socketRef.current = io(PATH, {
-                reconnection: true,
-                reconnectionAttempts: 5,
-                reconnectionDelay: 1000,
-            });
-            socketRef.current.on("connect", () => {
-                console.log("Socket connected");
-                setIsConnected(true);
-            });
-            socketRef.current.on("RECEIVED_MSG", (data: messageInfo) => {
+            socketRef.current?.on("RECEIVED_MSG", (data: messageInfo) => {
                 if (data.userId != user.uid) {
                     console.log("MESSAGE IS BEING CALLED")
                     setMessages((old) => ({
@@ -217,7 +232,7 @@ const Chat: FC = () => {
         }
     }, [user])
     useEffect(() => {
-        if (!user || !isConnected || !roomData.room) return;
+        if (!user || !socketRef.current || !roomData.room) return;
         socketRef.current?.emit("join_room", user, roomData);
 
         socketRef.current?.on("USER_ADDED", (data) => {
@@ -228,7 +243,7 @@ const Chat: FC = () => {
         return () => {
             socketRef.current?.off("USER_ADDED");
         };
-    }, [isConnected, user, roomData.room]);
+    }, [socketRef, isConnected, user, roomData.room]);
 
     return (
         <div className="flex grow">

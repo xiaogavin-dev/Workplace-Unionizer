@@ -6,10 +6,10 @@ import { setUserUnions } from '@/lib/redux/features/user_unions/userUnionsSlice'
 import VerticalNavbar from '@/components/vertical-navbar/vertical-navbar';
 import HorizontalNavbar from '@/components/horizontal-navbar/horizontal-navbar';
 import './resource-popup.css';
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar/app-sidebar"
+import { useSocket } from './socket/SocketProvider';
 import DynamicSidebar from './dynamic-navbar';
-
+import { listenToAuthChanges } from '@/lib/redux/features/auth/authSlice';
+import { SocketProvider } from './socket/SocketProvider'
 const Layout = ({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname();
     const router = useRouter();
@@ -20,7 +20,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     const dispatch = useAppDispatch()
     const popupRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLDivElement>(null);
-
+    const socket = useSocket()
+    const socketRef = useRef(socket)
+    const [isConnected, setIsConnected] = useState<boolean>(false)
     const togglePopup = () => {
         setIsPopupOpen((prev) => !prev);
     };
@@ -85,9 +87,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         }
     }
     useEffect(() => {
+        dispatch(listenToAuthChanges());
+    }, [dispatch])
+    useEffect(() => {
         if (pathname === '/resources') {
             setIsPopupOpen(true);
         }
+
         const getUserUnions = async () => {
             try {
                 const userUnionsRes = await fetch(`http://localhost:5000/union/getUserUnions?userId=${user?.uid}`, {
@@ -108,14 +114,23 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 console.error('There was an error receiving user unions', e)
             }
         }
-        getUserUnions()
+        if (user) {
+            getUserUnions()
+        }
     }, [user])
     useEffect(() => {
         if (pathname === '/resources') {
             setIsPopupOpen(true);
         }
     }, [pathname]);
-
+    useEffect(() => {
+        if (user?.uid && socketRef.current) {
+            socketRef.current.on("connect", () => {
+                console.log("Socket connected");
+                setIsConnected(true);
+            });
+        }
+    }, [user?.uid, socketRef.current])
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -140,97 +155,90 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     };
 
     return (
-        <div className="h-[calc(100vh-80px)] page-wrapper mt-[80px] ml-[90px]">
-            <div className="horizontal-navbar-container">
-                <HorizontalNavbar pageName={getDynamicPageName()} />
-            </div>
-            <div className="h-[calc(100vh-80px)]">
-                <div className="vertical-navbar-container">
-                    <VerticalNavbar togglePopup={togglePopup} buttonRef={buttonRef} unions={unions} handleUnionClick={handleUnionClick} />
+        <SocketProvider>
+            <div className="h-[calc(100vh-80px)] page-wrapper mt-[80px] ml-[90px]">
+                <div className="horizontal-navbar-container">
+                    <HorizontalNavbar pageName={getDynamicPageName()} />
                 </div>
-                {currUnion ?
-                    <SidebarProvider>
-                        <AppSidebar
-                            chats={currUnion?.chats || []}
-                            unionName={currUnion?.name || ''}
-                            unionId={currUnion?.id || ''}
-                            role={currUnion?.role || ''}
-                            userId={user?.uid}
-                        />
-                        <div className="page-content">
+                <div className="h-[calc(100vh-80px)]">
+                    <div className="vertical-navbar-container">
+                        <VerticalNavbar togglePopup={togglePopup} buttonRef={buttonRef} unions={unions} handleUnionClick={handleUnionClick} currUnion={currUnion} user={user}>
                             {children}
-                        </div>
-                    </SidebarProvider> : <div>{children}</div>}
-            </div>
-
-            {pathname.includes("settings") ?
-                <DynamicSidebar /> : ""
-            }
-
-            {/* Resource Guide Pop-up */}
-            {isPopupOpen && (
-                <div className="resource-popup" ref={popupRef} onClick={(e) => e.stopPropagation()}>
-                    <h1 className="popup-title">Resource Guide</h1>
-                    <hr />
-                    <br />
-                    <ul className="resource-list">
-                        {/* Resource 1 Dropdown */}
-                        <li
-                            onClick={() => toggleDropdown(1)}
-                            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                            className={`resources-title ${openDropdowns.includes(1) ? 'active' : ''}`}
-                        >
-                            <span className={`arrow ${openDropdowns.includes(1) ? 'down' : ''}`} />
-                            Resources 1
-                        </li>
-                        {openDropdowns.includes(1) && (
-                            <ul className="nested-resources">
-                                <li onClick={() => router.push('/resources')}># Links to External resources</li>
-                            </ul>
-                        )}
-                        {/* Resource 2 Dropdown */}
-                        <li
-                            onClick={() => toggleDropdown(2)}
-                            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                            className={`resources-title ${openDropdowns.includes(2) ? 'active' : ''}`}
-                        >
-                            <span className={`arrow ${openDropdowns.includes(2) ? 'down' : ''}`} />
-                            Resources 2
-                        </li>
-                        {openDropdowns.includes(2) && (
-                            <ul className="nested-resources">
-                                <li onClick={() => router.push('/resources/forming-a-union')}># Forming a Union</li>
-                                <li onClick={() => router.push('/resources/knowing-your-rights')}># Knowing Your Rights</li>
-                            </ul>
-                        )}
-
-                        {/* Resource 3 Dropdown */}
-                        <li
-                            onClick={() => toggleDropdown(3)}
-                            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                            className={`resources-title ${openDropdowns.includes(3) ? 'active' : ''}`}
-                        >
-                            <span className={`arrow ${openDropdowns.includes(3) ? 'down' : ''}`} />
-                            Resources 3
-                        </li>
-                        {openDropdowns.includes(3) && (
-                            <ul className="nested-resources">
-                                <li onClick={() => router.push('/resources/organizing-a-strike')}># Organizing a Strike</li>
-                                <li onClick={() => router.push('/resources/negotiating-a-contract')}># Negotiating a Contract</li>
-                            </ul>
-                        )}
-                    </ul>
-                    <li
-                        onClick={() => router.push('/resources/find-an-employment-lawyer')}
-                        className="find-lawyer-link"
-                    >
-                        Find a Lawyer
-                    </li>
+                        </VerticalNavbar>
+                    </div>
 
                 </div>
-            )}
 
-        </div>
+                {pathname.includes("settings") ?
+                    <DynamicSidebar /> : ""
+                }
+
+                {/* Resource Guide Pop-up */}
+                {isPopupOpen && (
+                    <div className="resource-popup" ref={popupRef} onClick={(e) => e.stopPropagation()}>
+                        <h1 className="popup-title">Resource Guide</h1>
+                        <hr />
+                        <br />
+                        <ul className="resource-list">
+                            {/* Resource 1 Dropdown */}
+                            <li
+                                onClick={() => toggleDropdown(1)}
+                                style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                                className={`resources-title ${openDropdowns.includes(1) ? 'active' : ''}`}
+                            >
+                                <span className={`arrow ${openDropdowns.includes(1) ? 'down' : ''}`} />
+                                Resources 1
+                            </li>
+                            {openDropdowns.includes(1) && (
+                                <ul className="nested-resources">
+                                    <li onClick={() => router.push('/resources')}># Links to External resources</li>
+                                </ul>
+                            )}
+                            {/* Resource 2 Dropdown */}
+                            <li
+                                onClick={() => toggleDropdown(2)}
+                                style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                                className={`resources-title ${openDropdowns.includes(2) ? 'active' : ''}`}
+                            >
+                                <span className={`arrow ${openDropdowns.includes(2) ? 'down' : ''}`} />
+                                Resources 2
+                            </li>
+                            {openDropdowns.includes(2) && (
+                                <ul className="nested-resources">
+                                    <li onClick={() => router.push('/resources/forming-a-union')}># Forming a Union</li>
+                                    <li onClick={() => router.push('/resources/knowing-your-rights')}># Knowing Your Rights</li>
+                                </ul>
+                            )}
+
+                            {/* Resource 3 Dropdown */}
+                            <li
+                                onClick={() => toggleDropdown(3)}
+                                style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                                className={`resources-title ${openDropdowns.includes(3) ? 'active' : ''}`}
+                            >
+                                <span className={`arrow ${openDropdowns.includes(3) ? 'down' : ''}`} />
+                                Resources 3
+                            </li>
+                            {openDropdowns.includes(3) && (
+                                <ul className="nested-resources">
+                                    <li onClick={() => router.push('/resources/organizing-a-strike')}># Organizing a Strike</li>
+                                    <li onClick={() => router.push('/resources/negotiating-a-contract')}># Negotiating a Contract</li>
+                                </ul>
+                            )}
+                        </ul>
+                        <li
+                            onClick={() => router.push('/resources/find-an-employment-lawyer')}
+                            className="find-lawyer-link"
+                        >
+                            Find a Lawyer
+                        </li>
+
+                    </div>
+                )}
+
+            </div>
+
+        </SocketProvider>
     );
 };
 

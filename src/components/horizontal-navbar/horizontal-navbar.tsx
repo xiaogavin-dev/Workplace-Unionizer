@@ -33,7 +33,7 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
     };
 
     useEffect(() => {
-        dispatch(listenToAuthChanges());
+
 
         if (isDropdownOpen) {
             document.addEventListener('mousedown', handleClickOutside);
@@ -57,9 +57,9 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
     };
 
     const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-        e.preventDefault(); 
-        router.push(isAuthenticated ? "/search" : "/"); 
-    };    
+        e.preventDefault();
+        router.push(isAuthenticated ? "/search" : "/");
+    };
 
     const getDynamicPageName = () => {
         if (pathname.startsWith("/joinunion")) {
@@ -133,7 +133,7 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
                                         {user?.displayName}
                                     </span>
                                 </li>
-                                <li onClick={() => {router.push('/settings/basic/profile')}}>
+                                <li onClick={() => { router.push('/settings/basic/profile') }}>
                                     <Link href="/settings/basic/profile">Account Settings</Link>
                                 </li>
                                 <hr />
