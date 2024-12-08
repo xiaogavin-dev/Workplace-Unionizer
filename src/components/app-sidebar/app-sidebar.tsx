@@ -429,9 +429,20 @@ export function AppSidebar({
                     justifyContent: "space-between",
                     alignItems: "center",
                   }}
-                  onClick={() => toggleDropdown(workplace.id)}
                 >
-                  <span className="workplace-name">{workplace.workplaceName}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span className="workplace-name">{workplace.workplaceName}</span>
+                    {workplace.isUnionized && (
+                      <div className="checkmark-container">
+                        <img
+                          className="checkmark-image"
+                          src="/images/check-mark.png"
+                          alt="Unionized"
+                        />
+                        <span className="tooltip-text">Is unionized</span>
+                      </div>
+                    )}
+                  </div>
                   <span className="dropdown-toggle">{openDropdowns.includes(workplace.id) ? "▼" : "▶"}</span>
                 </div>
 
@@ -453,6 +464,22 @@ export function AppSidebar({
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                         ))}
+                        
+                      {!workplace.isUnionized && (
+                        <SidebarMenuItem>
+                          <SidebarMenuButton asChild>
+                            <div
+                              className="poll-button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setPollModalOpen(true);
+                              }}
+                            >
+                              Unionize Poll
+                            </div>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      )}
                     </SidebarMenuItem>
                   </SidebarMenu>
                 )}
@@ -562,36 +589,41 @@ export function AppSidebar({
 
       {isInviteModalOpen && (
         <Modal isOpen={isInviteModalOpen} onClose={() => setInviteModalOpen(false)}>
-          <div className="invite-modal" ref={modalRef}>
-            {!inviteLink ? (
-              <div className="invite-workers-header">
-                <h2>Invite Workers</h2>
-                <button
-                  className="invite-button"
-                  onClick={handleInviteWorkers}
-                  disabled={isGeneratingLink}
-                >
-                  {isGeneratingLink ? "Generating..." : "Generate Invite Link"}
-                </button>
-              </div>
-            ) : (
-              <div className="invite-link-header">
-                <h2>Generated Link</h2>
-                <p className="invite-link-label">Invitation Link:</p>
-                <div className="invite-link-container">
-                  <input
-                    type="text"
-                    value={inviteLink}
-                    readOnly
-                    className="invite-link-input"
-                  />
-                  <button className="copy-link-button" onClick={handleCopyLink}>
-                    Copy
+          <div
+            className="invite-modal-overlay"
+            onClick={() => setInviteModalOpen(false)}
+          >
+            <div className="invite-modal" ref={modalRef} onClick={(e) => e.stopPropagation()}>
+              {!inviteLink ? (
+                <div className="invite-workers-header">
+                  <h2>Invite Workers</h2>
+                  <button
+                    className="invite-button"
+                    onClick={handleInviteWorkers}
+                    disabled={isGeneratingLink}
+                  >
+                    {isGeneratingLink ? "Generating..." : "Generate Invite Link"}
                   </button>
                 </div>
-                {copyMessage && <p className="copy-success-message">{copyMessage}</p>}
-              </div>
-            )}
+              ) : (
+                <div className="invite-link-header">
+                  <h2>Generated Link</h2>
+                  <p className="invite-link-label">Invitation Link:</p>
+                  <div className="invite-link-container">
+                    <input
+                      type="text"
+                      value={inviteLink}
+                      readOnly
+                      className="invite-link-input"
+                    />
+                    <button className="copy-link-button" onClick={handleCopyLink}>
+                      Copy
+                    </button>
+                  </div>
+                  {copyMessage && <p className="copy-success-message">{copyMessage}</p>}
+                </div>
+              )}
+            </div>
           </div>
         </Modal>
       )}
