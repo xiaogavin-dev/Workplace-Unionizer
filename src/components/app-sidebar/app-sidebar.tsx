@@ -364,31 +364,9 @@ export function AppSidebar({
           </div>
           <div className="sidebar-divider"></div>
 
-          {/* Polls Section */}
+          {/* General Section */}
           <SidebarGroup>
-            <SidebarGroupLabel className="sidebar-group-label">Polls</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <div
-                      className="poll-button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPollModalOpen(true);
-                      }}
-                    >
-                      Unionize Poll
-                    </div>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-
-          {/* Chats Section */}
-          <SidebarGroup>
-            <SidebarGroupLabel className="sidebar-group-label">Chats</SidebarGroupLabel>
+            <SidebarGroupLabel className="sidebar-group-label">General</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {chats &&
@@ -406,6 +384,23 @@ export function AppSidebar({
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <div
+                      className="poll-button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPollModalOpen(true);
+                      }}
+                    >
+                      Unionize Poll
+                    </div>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -476,7 +471,7 @@ export function AppSidebar({
                                 setPollModalOpen(true);
                               }}
                             >
-                              Unionize Poll
+                              {workplace.workplaceName} Unionize Poll
                             </div>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
