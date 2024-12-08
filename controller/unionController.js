@@ -76,7 +76,7 @@ const getUserUnions = async (req, res) => {
     const chats = await chat.findAll({
       where: {
         unionId: userUnion.dataValues.unionId,
-        isPublic: true
+        workplaceId: null
       }
     })
     curr.dataValues.chats = chats.map((chat) => chat.dataValues)
