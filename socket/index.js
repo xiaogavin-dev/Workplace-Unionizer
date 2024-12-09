@@ -75,8 +75,8 @@ const socketInit = (server) => {
             console.log("Message received:", msg);
             io.in(room.room.id).emit("RECEIVED_MSG", msg);
         });
-        socket.on("union_join_notification", () => {
-
+        socket.on("union_join_notification", (unionId) => {
+            socket.emit()
         })
         socket.on("disconnect", () => {
             console.log("A user disconnected:", socket.id);
