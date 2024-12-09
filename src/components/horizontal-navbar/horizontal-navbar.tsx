@@ -33,8 +33,6 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
     };
 
     useEffect(() => {
-
-
         if (isDropdownOpen) {
             document.addEventListener('mousedown', handleClickOutside);
         } else {
@@ -133,9 +131,9 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
                                         {user?.displayName}
                                     </span>
                                 </li>
-                                <li onClick={() => { router.push('/settings/basic/profile') }}>
+                                {/* <li onClick={() => { router.push('/settings/basic/profile') }}>
                                     <Link href="/settings/basic/profile">Account Settings</Link>
-                                </li>
+                                </li> */}
                                 <hr />
                                 <li onClick={handleSignOut}>
                                     <button onClick={handleSignOut} className="dropdown-logout-button">

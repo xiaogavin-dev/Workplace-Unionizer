@@ -202,9 +202,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 </VerticalNavbar>
             </div>
 
-            {pathname.includes("settings") ?
+            {/* {pathname.includes("settings") ?
                 <DynamicSidebar /> : ""
-            }
+            } */}
 
             {/* Resource Guide Pop-up */}
             {isPopupOpen && (
