@@ -46,6 +46,11 @@ export function AppSidebar({
   const [inviteLink, setInviteLink] = useState<string>("");
   const [copyMessage, setCopyMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [selectedWorkplace, setSelectedWorkplace] = useState<{
+    id: string;
+    employeeCount: number;
+    name: string;
+  } | null>(null);
 
   const dispatch = useAppDispatch()
   const router = useRouter();
@@ -94,32 +99,73 @@ export function AppSidebar({
   // Use the custom hook to fetch workplaces
   const { workplaces, loading, error } = useWorkplaces(unionId);
 
-  const handleVote = () => {
-    if (selectedOption && totalEmployees) {
-      const newVotes = { ...votes };
-      newVotes[selectedOption] += 1;
-      const newTotalVotes = totalVotes + 1;
-      const yesVotes = newVotes["yes"];
-      const requiredVotes = Math.ceil(totalEmployees * 0.3 - yesVotes);
+  const fetchVotes = async (workplaceId: string) => {
+    try {
+      const response = await fetch(
+        `http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/polls/votes?workplaceId=${workplaceId}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch votes");
+      }
+      const data = await response.json();
+      setVotes({ yes: data.yesCount, no: data.noCount });
+      setTotalVotes(data.yesCount + data.noCount);
+    } catch (error) {
+      console.error("Error fetching votes:", error);
+    }
+  };
 
-      setVotes(newVotes);
-      setTotalVotes(newTotalVotes);
-      setVoted(true);
-      setPreviousVote(selectedOption);
+  const openPollModal = (workplace: { id: string; employeeCount: number; name: string }) => {
+    console.log("Opening poll for workplace:", workplace);
+    if (workplace && workplace.id && workplace.employeeCount) {
+      setSelectedWorkplace(workplace);
+      setTotalEmployees(workplace.employeeCount);
+      setPollModalOpen(true);
+      fetchVotes(workplace.id);
+    } else {
+      console.error("Invalid workplace object passed to openPollModal:", workplace);
+    }
+  };
 
-      if (yesVotes / totalEmployees >= 0.3) {
-        setMessage(
-          `${Math.round(
-            (yesVotes / totalEmployees) * 100
-          )}% of employees have voted 'Yes'. You can start the unionization process!`
+  const handleVote = async () => {
+    if (selectedWorkplace && selectedOption) {
+      try {
+        console.log("Submitting vote for:", selectedWorkplace);
+        const response = await fetch(
+          `http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/polls/vote`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              workplaceId: selectedWorkplace.id,
+              userId,
+              vote: selectedOption,
+              action: previousVote ? "update" : "increment",
+            }),
+          }
         );
-      } else {
-        setMessage(
-          `You need ${requiredVotes} more vote${requiredVotes > 1 ? "s" : ""} to start the unionization process.`
-        );
+
+        if (!response.ok) {
+          throw new Error("Failed to submit vote.");
+        }
+
+        const data = await response.json();
+
+        setVotes({ yes: data.yesCount, no: data.noCount });
+        setTotalVotes(data.totalVotes);
+        setPreviousVote(selectedOption);
+        setVoted(true);
+
+        setMessage("Your vote has been successfully submitted!");
+      } catch (error) {
+        console.error("Error submitting vote:", error);
+        setMessage("Failed to submit your vote. Please try again.");
       }
     }
   };
+
   //helper function for updating userUnions
   const updateUnion = async () => {
     try {
@@ -190,20 +236,45 @@ export function AppSidebar({
       console.error("There was an error leaving union. ", error)
     }
   }
-  const handleChangeVote = () => {
+  const handleChangeVote = async (workplaceId: string) => {
     if (previousVote) {
-      const newVotes = { ...votes };
+      try {
+        // Step 1: Decrement the previous vote on the backend
+        const response = await fetch(
+          `http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/polls/vote`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              workplaceId,
+              userId, // Include userId for tracking the voter
+              vote: previousVote,
+              action: "decrement", // Decrement the previous vote
+            }),
+          }
+        );
 
-      newVotes[previousVote] -= 1;
+        if (!response.ok) {
+          throw new Error("Failed to change vote.");
+        }
 
-      const newTotalVotes = totalVotes - 1;
+        const data = await response.json();
 
-      setVotes(newVotes);
-      setTotalVotes(newTotalVotes);
-      setSelectedOption(null);
-      setPreviousVote(null);
-      setVoted(false);
-      setMessage("");
+        // Step 2: Update the state with new vote counts after decrement
+        setVotes({ yes: data.yesCount, no: data.noCount });
+        setTotalVotes(data.totalVotes);
+
+        // Step 3: Reset state for new vote
+        setSelectedOption(null);
+        setPreviousVote(null);
+        setVoted(false);
+        setMessage("Your previous vote has been removed. Please cast a new vote.");
+      } catch (error) {
+        console.error("Error changing vote:", error);
+        setMessage("Failed to change your vote. Please try again.");
+      }
     }
   };
 
@@ -364,31 +435,9 @@ export function AppSidebar({
           </div>
           <div className="sidebar-divider"></div>
 
-          {/* Polls Section */}
+          {/* General Section */}
           <SidebarGroup>
-            <SidebarGroupLabel className="sidebar-group-label">Polls</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <div
-                      className="poll-button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPollModalOpen(true);
-                      }}
-                    >
-                      Unionize Poll
-                    </div>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-
-          {/* Chats Section */}
-          <SidebarGroup>
-            <SidebarGroupLabel className="sidebar-group-label">Chats</SidebarGroupLabel>
+            <SidebarGroupLabel className="sidebar-group-label">General</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {chats &&
@@ -422,16 +471,27 @@ export function AppSidebar({
               <div key={workplace.id}>
                 <div
                   className="workplace-title"
-                  onClick={() => toggleDropdown(workplace.id)}
                   style={{
                     cursor: "pointer",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
                   }}
-                  onClick={() => toggleDropdown(workplace.id)}
+                  onClick={() => { toggleDropdown(workplace.id) }}
                 >
-                  <span className="workplace-name">{workplace.workplaceName}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span className="workplace-name">{workplace.workplaceName}</span>
+                    {workplace.isUnionized && (
+                      <div className="checkmark-container">
+                        <img
+                          className="checkmark-image"
+                          src="/images/check-mark.png"
+                          alt="Unionized"
+                        />
+                        <span className="tooltip-text">Is unionized</span>
+                      </div>
+                    )}
+                  </div>
                   <span className="dropdown-toggle">{openDropdowns.includes(workplace.id) ? "▼" : "▶"}</span>
                 </div>
 
@@ -453,6 +513,24 @@ export function AppSidebar({
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                         ))}
+
+                      {!workplace.isUnionized && (
+                        <SidebarMenuItem>
+                          <SidebarMenuButton asChild>
+                            <div
+                              className="poll-button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setTotalEmployees(workplace.employeeCount || 0);
+                                setPollModalOpen(true);
+                                openPollModal(workplace.id);
+                              }}
+                            >
+                              {workplace.workplaceName} Unionize Poll
+                            </div>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      )}
                     </SidebarMenuItem>
                   </SidebarMenu>
                 )}
@@ -467,10 +545,11 @@ export function AppSidebar({
             </a>
           </div>
         </SidebarContent>
-      </Sidebar>
+      </Sidebar >
 
       {/* Poll Modal */}
-      <Modal isOpen={isPollModalOpen} onClose={() => setPollModalOpen(false)}>
+      <Modal Modal isOpen={isPollModalOpen} onClose={() => setPollModalOpen(false)
+      }>
         <div
           className="modal-overlay"
           onClick={() => setPollModalOpen(false)}
@@ -487,17 +566,18 @@ export function AppSidebar({
               ×
             </button>
             <h1 className="poll-question">Should we apply for unionization now?</h1>
+            {/* Automatically fetch and display total employees */}
             <div className="employee-input">
               <label htmlFor="employee-count">Total Number of Employees:</label>
               <input
                 id="employee-count"
                 type="number"
                 value={totalEmployees || ""}
-                onChange={(e) => setTotalEmployees(Number(e.target.value))}
-                placeholder="total"
-                disabled={voted}
+                readOnly
+                placeholder="Fetching employee count..."
                 style={{
-                  backgroundColor: voted ? "#e0e0e0" : "white",
+                  backgroundColor: "#e0e0e0",
+                  cursor: "not-allowed",
                 }}
               />
             </div>
@@ -542,7 +622,12 @@ export function AppSidebar({
                 )}
                 <button
                   className="change-vote-button"
-                  onClick={handleChangeVote}
+                  onClick={() => {
+                    if (selectedWorkplace) {
+                      console.log("Changing vote for:", selectedWorkplace.id);
+                      handleChangeVote(selectedWorkplace.id);
+                    }
+                  }}
                 >
                   Change Vote
                 </button>
@@ -550,7 +635,12 @@ export function AppSidebar({
             ) : (
               <button
                 className="vote-button"
-                onClick={handleVote}
+                onClick={() => {
+                  if (selectedWorkplace) {
+                    console.log("Voting for:", selectedWorkplace.id);
+                    handleVote();
+                  }
+                }}
                 disabled={!selectedOption || !totalEmployees}
               >
                 Vote
@@ -558,43 +648,48 @@ export function AppSidebar({
             )}
           </div>
         </div>
-      </Modal>
+      </Modal >
 
       {isInviteModalOpen && (
         <Modal isOpen={isInviteModalOpen} onClose={() => setInviteModalOpen(false)}>
-          <div className="invite-modal" ref={modalRef}>
-            {!inviteLink ? (
-              <div className="invite-workers-header">
-                <h2>Invite Workers</h2>
-                <button
-                  className="invite-button"
-                  onClick={handleInviteWorkers}
-                  disabled={isGeneratingLink}
-                >
-                  {isGeneratingLink ? "Generating..." : "Generate Invite Link"}
-                </button>
-              </div>
-            ) : (
-              <div className="invite-link-header">
-                <h2>Generated Link</h2>
-                <p className="invite-link-label">Invitation Link:</p>
-                <div className="invite-link-container">
-                  <input
-                    type="text"
-                    value={inviteLink}
-                    readOnly
-                    className="invite-link-input"
-                  />
-                  <button className="copy-link-button" onClick={handleCopyLink}>
-                    Copy
+          <div
+            className="invite-modal-overlay"
+            onClick={() => setInviteModalOpen(false)}
+          >
+            <div className="invite-modal" ref={modalRef} onClick={(e) => e.stopPropagation()}>
+              {!inviteLink ? (
+                <div className="invite-workers-header">
+                  <h2>Invite Workers</h2>
+                  <button
+                    className="invite-button"
+                    onClick={handleInviteWorkers}
+                    disabled={isGeneratingLink}
+                  >
+                    {isGeneratingLink ? "Generating..." : "Generate Invite Link"}
                   </button>
                 </div>
-                {copyMessage && <p className="copy-success-message">{copyMessage}</p>}
-              </div>
-            )}
+              ) : (
+                <div className="invite-link-header">
+                  <h2>Generated Link</h2>
+                  <p className="invite-link-label">Invitation Link:</p>
+                  <div className="invite-link-container">
+                    <input
+                      type="text"
+                      value={inviteLink}
+                      readOnly
+                      className="invite-link-input"
+                    />
+                    <button className="copy-link-button" onClick={handleCopyLink}>
+                      Copy
+                    </button>
+                  </div>
+                  {copyMessage && <p className="copy-success-message">{copyMessage}</p>}
+                </div>
+              )}
+            </div>
           </div>
         </Modal>
       )}
-    </div>
+    </div >
   );
 }
