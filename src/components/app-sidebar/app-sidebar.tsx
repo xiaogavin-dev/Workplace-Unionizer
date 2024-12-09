@@ -94,6 +94,27 @@ export function AppSidebar({
   // Use the custom hook to fetch workplaces
   const { workplaces, loading, error } = useWorkplaces(unionId);
 
+  const fetchVotes = async (workplaceId: string) => {
+    try {
+      const response = await fetch(
+        `http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/polls/votes?workplaceId=${workplaceId}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch votes");
+      }
+      const data = await response.json();
+      setVotes({ yes: data.yesCount, no: data.noCount });
+      setTotalVotes(data.yesCount + data.noCount);
+    } catch (error) {
+      console.error("Error fetching votes:", error);
+    }
+  };
+  
+  const openPollModal = (workplaceId: string) => {
+    setPollModalOpen(true);
+    fetchVotes(workplaceId);
+  };
+  
   const handleVote = () => {
     if (selectedOption && totalEmployees) {
       const newVotes = { ...votes };
@@ -395,6 +416,7 @@ export function AppSidebar({
                       onClick={(e) => {
                         e.stopPropagation();
                         setPollModalOpen(true);
+                        openPollModal(workplace.id);
                       }}
                     >
                       Unionize Poll
@@ -469,6 +491,7 @@ export function AppSidebar({
                                 e.stopPropagation();
                                 setTotalEmployees(workplace.employeeCount || 0);
                                 setPollModalOpen(true);
+                                openPollModal(workplace.id);
                               }}
                             >
                               {workplace.workplaceName} Unionize Poll
