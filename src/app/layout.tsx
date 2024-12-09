@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Head from "next/head";
 import localFont from "next/font/local";
 import "./globals.css";
 import Application from "./app"
@@ -17,6 +16,7 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "Unionizer",
   description: "Capstone Project",
+  icons: "/images/Unionizer_Logo.ico"
 };
 
 export default function RootLayout({
@@ -26,10 +26,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Head>
-        <link rel="icon" href="/images/Unionizer_Logo.ico" />
-        <title>Unionizer</title>
-      </Head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-[calc(100vh-80px)] `}
       >
