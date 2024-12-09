@@ -1,4 +1,4 @@
-const { workplace, chat } = require('../models');
+const { workplace, chat, poll } = require('../models');
 const { v4: uuidv4 } = require('uuid');
 
 // Get all workplaces
@@ -12,10 +12,15 @@ const getWorkplaces = async (req, res) => {
   try {
     const workplaces = await workplace.findAll({
       where: { unionId },
-      include: {
+      include: [{
         model: chat,
         as: 'chats'
+      },
+      {
+        model: poll,
+        as: 'polls'
       }
+      ]
     });
 
     if (workplaces.length === 0) {

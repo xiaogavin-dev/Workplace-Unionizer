@@ -6,7 +6,7 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
         primaryKey: true,
-        defaultValue: Sequelize.UUIDV4, 
+        defaultValue: Sequelize.UUIDV4,
       },
       name: {
         type: Sequelize.STRING,
@@ -17,14 +17,14 @@ module.exports = {
         allowNull: true,
       },
       vote: {
-        type: DataTypes.BOOLEAN,
+        type: Sequelize.BOOLEAN,
         allowNull: true,
-        defaultValue: null, 
+        defaultValue: null,
       },
       isActive: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
-        defaultValue: true, 
+        defaultValue: true,
       },
       unionId: {
         type: Sequelize.UUID,

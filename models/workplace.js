@@ -16,7 +16,12 @@ module.exports = (sequelize, DataTypes) => {
         otherKey: 'userId'
       });
       Workplace.hasMany(models.chat, {
-        foreignKey: 'workplaceId'
+        foreignKey: 'workplaceId',
+        as: 'chats'
+      })
+      Workplace.hasMany(models.poll, {
+        foreignKey: 'workplaceId',
+        as: 'polls'
       })
     }
   }
@@ -101,7 +106,7 @@ module.exports = (sequelize, DataTypes) => {
               chatKeyVersion: null,
               workplaceId,
               isDefault: true,
-              isPublic: false
+              isPublic: true
             }, { transaction, userId, pubkeyValue })
 
           } catch (error) {
@@ -114,7 +119,7 @@ module.exports = (sequelize, DataTypes) => {
               chatKeyVersion: null,
               workplaceId,
               isDefault: true,
-              isPublic: false
+              isPublic: true
             }, { transaction, userId, pubkeyValue })
 
           } catch (error) {
