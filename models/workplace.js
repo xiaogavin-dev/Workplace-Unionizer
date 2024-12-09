@@ -101,7 +101,7 @@ module.exports = (sequelize, DataTypes) => {
           try {
             const newWorkplaceChat = await chat.create({
               id: uuidv4(),
-              name: Workplace.workplaceName + ' general chat',
+              name: Workplace.workplaceName + ' chat',
               unionId: options.unionId,
               chatKeyVersion: null,
               workplaceId,
