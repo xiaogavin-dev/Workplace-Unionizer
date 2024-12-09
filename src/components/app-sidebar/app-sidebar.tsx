@@ -115,32 +115,51 @@ export function AppSidebar({
     fetchVotes(workplaceId);
   };
   
-  const handleVote = () => {
-    if (selectedOption && totalEmployees) {
-      const newVotes = { ...votes };
-      newVotes[selectedOption] += 1;
-      const newTotalVotes = totalVotes + 1;
-      const yesVotes = newVotes["yes"];
-      const requiredVotes = Math.ceil(totalEmployees * 0.3 - yesVotes);
-
-      setVotes(newVotes);
-      setTotalVotes(newTotalVotes);
-      setVoted(true);
-      setPreviousVote(selectedOption);
-
-      if (yesVotes / totalEmployees >= 0.3) {
-        setMessage(
-          `${Math.round(
-            (yesVotes / totalEmployees) * 100
-          )}% of employees have voted 'Yes'. You can start the unionization process!`
+  const handleVote = async (workplaceId: string) => {
+    if (selectedOption) {
+      console.log("Submitting vote:", {
+        workplaceId,
+        userId,
+        vote: selectedOption,
+        action: previousVote ? "update" : "increment",
+      });
+  
+      try {
+        const response = await fetch(
+          `http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/polls/vote`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              workplaceId,
+              userId, // Include userId to track the voter
+              vote: selectedOption,
+              action: previousVote ? "update" : "increment", // Use "update" if changing vote
+            }),
+          }
         );
-      } else {
-        setMessage(
-          `You need ${requiredVotes} more vote${requiredVotes > 1 ? "s" : ""} to start the unionization process.`
-        );
+  
+        if (!response.ok) {
+          throw new Error("Failed to submit vote.");
+        }
+  
+        const data = await response.json();
+  
+        setVotes({ yes: data.yesCount, no: data.noCount });
+        setTotalVotes(data.totalVotes);
+        setPreviousVote(selectedOption);
+        setVoted(true);
+  
+        setMessage("Your vote has been successfully submitted!");
+      } catch (error) {
+        console.error("Error submitting vote:", error);
+        setMessage("Failed to submit your vote. Please try again.");
       }
     }
   };
+  
   //helper function for updating userUnions
   const updateUnion = async () => {
     try {
@@ -211,20 +230,45 @@ export function AppSidebar({
       console.error("There was an error leaving union. ", error)
     }
   }
-  const handleChangeVote = () => {
+  const handleChangeVote = async (workplaceId: string) => {
     if (previousVote) {
-      const newVotes = { ...votes };
-
-      newVotes[previousVote] -= 1;
-
-      const newTotalVotes = totalVotes - 1;
-
-      setVotes(newVotes);
-      setTotalVotes(newTotalVotes);
-      setSelectedOption(null);
-      setPreviousVote(null);
-      setVoted(false);
-      setMessage("");
+      try {
+        // Step 1: Decrement the previous vote on the backend
+        const response = await fetch(
+          `http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/polls/vote`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              workplaceId,
+              userId, // Include userId for tracking the voter
+              vote: previousVote,
+              action: "decrement", // Decrement the previous vote
+            }),
+          }
+        );
+  
+        if (!response.ok) {
+          throw new Error("Failed to change vote.");
+        }
+  
+        const data = await response.json();
+  
+        // Step 2: Update the state with new vote counts after decrement
+        setVotes({ yes: data.yesCount, no: data.noCount });
+        setTotalVotes(data.totalVotes);
+  
+        // Step 3: Reset state for new vote
+        setSelectedOption(null);
+        setPreviousVote(null);
+        setVoted(false);
+        setMessage("Your previous vote has been removed. Please cast a new vote.");
+      } catch (error) {
+        console.error("Error changing vote:", error);
+        setMessage("Failed to change your vote. Please try again.");
+      }
     }
   };
 
@@ -407,24 +451,6 @@ export function AppSidebar({
                   ))}
               </SidebarMenu>
             </SidebarGroupContent>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <div
-                      className="poll-button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPollModalOpen(true);
-                        openPollModal(workplace.id);
-                      }}
-                    >
-                      Unionize Poll
-                    </div>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarGroupContent>
           </SidebarGroup>
 
           {/* Workplaces Section */}
@@ -589,7 +615,10 @@ export function AppSidebar({
                 )}
                 <button
                   className="change-vote-button"
-                  onClick={handleChangeVote}
+                  onClick={() => {
+                    console.log("workplaceId being passed to handleChangeVote:", workplaces.id);
+                    handleChangeVote(workplaces[1].id);
+                  }}
                 >
                   Change Vote
                 </button>
@@ -597,8 +626,11 @@ export function AppSidebar({
             ) : (
               <button
                 className="vote-button"
-                onClick={handleVote}
-                disabled={!selectedOption || !totalEmployees}
+                onClick={() => {
+                  console.log("workplaceId being passed to handleVote:", workplaces.id);
+                  handleVote(workplaces[1].id);
+                }}
+                disabled={!selectedOption || !totalEmployees} 
               >
                 Vote
               </button>
