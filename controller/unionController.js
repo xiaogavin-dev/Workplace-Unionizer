@@ -66,29 +66,33 @@ async function getUnions(req, res) {
 
 const getUserUnions = async (req, res) => {
   const { userId } = req.query
-  const userUnions = await user_union.findAll({
-    where: {
-      userId: `${userId}`
-    }
-  })
-  const unions = []
-  for (const userUnion of userUnions) {
-    const curr = await union.findByPk(userUnion.dataValues.unionId);
-    const chats = await chat.findAll({
+  try {
+    const userUnions = await user_union.findAll({
       where: {
-        unionId: userUnion.dataValues.unionId,
-        workplaceId: null
+        userId: `${userId}`
       }
     })
-    curr.dataValues.chats = chats.map((chat) => chat.dataValues)
-    curr.dataValues.role = userUnion.dataValues.role
-    if (curr) {
-      unions.push(curr.dataValues);
+    const unions = []
+    for (const userUnion of userUnions) {
+      const curr = await union.findByPk(userUnion.dataValues.unionId);
+      const chats = await chat.findAll({
+        where: {
+          unionId: userUnion.dataValues.unionId,
+          workplaceId: null
+        }
+      })
+      curr.dataValues.chats = chats.map((chat) => chat.dataValues)
+      curr.dataValues.role = userUnion.dataValues.role
+      if (curr) {
+        unions.push(curr.dataValues);
+      }
     }
+    res.status(200).json({ message: `unions for ${userId} received`, data: unions })
   }
-
-
-  res.status(200).json({ message: `unions for ${userId} received`, data: unions })
+  catch (error) {
+    console.log("there was an error getting user-unions: ", error)
+    res.status(400).json({ message: "There was an error getting user unions" })
+  }
 }
 const joinUnion = async (req, res) => {
   const { userUnionInfo } = req.body

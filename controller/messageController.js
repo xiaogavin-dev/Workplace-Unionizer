@@ -35,11 +35,12 @@ const getChatMessages = async (req, res) => {
         if (chatMessages[0]) {
             for (const message of chatMessages) {
                 if (message.keyVersionId == prevKeyVersion) {
+
                     messages.push({
                         id: message.dataValues.id,
                         content: message.dataValues.content,
                         userId: message.dataValues.userId,
-                        userDn: message.dataValues.displayName,
+                        userDn: message.dataValues.user.displayName,
                         chatId: message.dataValues.chatId,
                         createdAt: message.dataValues.createdAt,
                         updatedAt: message.dataValues.updatedAt,
@@ -61,19 +62,22 @@ const getChatMessages = async (req, res) => {
                             id: message.dataValues.id,
                             content: message.dataValues.content,
                             userId: message.dataValues.userId,
-                            userDn: message.dataValues.displayName,
+                            userDn: message.dataValues.user.displayName,
                             chatId: message.dataValues.chatId,
                             createdAt: message.dataValues.createdAt,
                             updatedAt: message.dataValues.updatedAt,
                             keyVersionId: message.dataValues.keyVersionId,
                         })
+
                         keys.push(encryptedSymmetricKey)
                         prevKeyVersion = message.keyVersionId
                     }
 
 
                 }
+
             }
+            console.log(messages)
         }
         res.status(200).json({ message: "messages received successfully", data: { messages, keys } })
 
