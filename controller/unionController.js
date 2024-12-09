@@ -1,48 +1,49 @@
 const pool = require('../db');
-const { user_union, union, chat, sequelize } = require('../models');
+const { Op } = require('sequelize');
+const { user_union, workplace, union, chat, sequelize } = require('../models');
 const { v4: uuidv4 } = require('uuid')
-const getUnions = async (req, res) => {
+async function getUnions(req, res) {
   try {
     const { unionname, location, organization } = req.query;
 
-    // SQL query to join unions with workplaces and filter based on query parameters
-    let query = `
-      SELECT 
-        unions.id, 
-        unions.name, 
-        unions.description,
-        unions.visibility,
-        unions.image,
-        workplaces.organization, 
-        workplaces.state AS location 
-      FROM unions
-      LEFT JOIN workplaces 
-        ON unions.id = workplaces."unionId"
-      WHERE unions.visibility = 'public'
-    `;
-
-    const queryParams = [];
+    // Define the where clauses dynamically
+    const unionWhere = {
+      visibility: 'public', // Matches the `WHERE unions.visibility = 'public'`
+    };
 
     if (unionname) {
-      queryParams.push(`%${unionname}%`);
-      query += ` AND unions.name ILIKE $${queryParams.length}`;
+      unionWhere.name = { [Op.iLike]: `%${unionname}%` }; // ILIKE equivalent
     }
 
+    const workplaceWhere = {};
     if (location) {
-      queryParams.push(`%${location}%`);
-      query += ` AND workplaces.state ILIKE $${queryParams.length}`;
+      workplaceWhere.state = { [Op.iLike]: `%${location}%` }; // ILIKE equivalent
     }
-
     if (organization) {
-      queryParams.push(`%${organization}%`);
-      query += ` AND workplaces.organization ILIKE $${queryParams.length}`;
+      workplaceWhere.organization = { [Op.iLike]: `%${organization}%` }; // ILIKE equivalent
     }
 
-    console.log('Query:', query, 'Params:', queryParams);
+    // Perform the query with associations
+    const unions = await union.findAll({
+      where: unionWhere,
+      include: [
+        {
+          model: workplace,
+          as: 'associatedWorkplaces', // Ensure this matches your association alias
+          where: Object.keys(workplaceWhere).length ? workplaceWhere : undefined,
+          required: false, // Equivalent to LEFT JOIN
+        },
+      ],
+      attributes: [
+        'id',
+        'name',
+        'description',
+        'visibility',
+        'image',
+      ],
+    });
 
-    const result = await pool.query(query, queryParams);
-
-    if (result.rows.length === 0) {
+    if (unions.length === 0) {
       return res.status(200).json({
         status: 'success',
         data: [],
@@ -52,16 +53,16 @@ const getUnions = async (req, res) => {
 
     return res.status(200).json({
       status: 'success',
-      data: result.rows,
+      data: unions,
     });
   } catch (error) {
-    console.error('Error fetching unions: ', error);
+    console.error('Error fetching unions:', error);
     return res.status(500).json({
       status: 'error',
-      message: 'An error occurred while fetching unions.',
+      message: 'An error occurred while fetching unions',
     });
   }
-};
+}
 
 const getUserUnions = async (req, res) => {
   const { userId } = req.query
