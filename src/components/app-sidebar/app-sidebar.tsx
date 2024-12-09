@@ -203,6 +203,7 @@ export function AppSidebar({
         }
         const data = await response.json()
         await updateUnion()
+        router.push('/search')
       }
     } catch (error) {
       console.error("There was an error leaving union. ", error)
@@ -230,6 +231,7 @@ export function AppSidebar({
           const data = await response.json()
           window.alert(data.message)
           await updateUnion()
+          router.push('/search')
         }
       }
     } catch (error) {

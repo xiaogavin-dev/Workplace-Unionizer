@@ -1,6 +1,6 @@
 "use client";
 import { FC, useRef, useState, useEffect } from "react";
-import PropagateLoader from "react-spinners/PropagateLoader";
+import HashLoader from "react-spinners/HashLoader";
 import { userType } from "../../lib/redux/features/auth/authSlice";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChatHeader, ChatBody, ChatInput } from "./chatHeader";
@@ -63,6 +63,7 @@ const Chat: FC = () => {
     const [roomData, setRoomData] = useState<RoomType>({ room: null });
     const [messages, setMessages] = useState<messageType>({ messages: [] });
     const [init, setInit] = useState<boolean>(false)
+    const [loadingMessages, setLoadingMessages] = useState<boolean>(true)
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
     });
@@ -105,6 +106,7 @@ const Chat: FC = () => {
                 updatedAt: new Date(),
                 keyVersionId: roomData.room?.chatKeyVersion
             };
+
             setMessages((old) => ({
                 messages: [msg_details, ...(old.messages ?? [])],
             }));
@@ -204,8 +206,9 @@ const Chat: FC = () => {
                 const messages = encryptedMessages.map((message: messageInfo, index: number) => ({
                     ...message, content: decrypted_messages[index].decryptedContent
                 }))
+                console.log(messages)
                 setMessages({ messages });
-
+                setLoadingMessages(false);
             } catch (error) {
                 console.error(error);
             }
@@ -244,22 +247,26 @@ const Chat: FC = () => {
     }, [socketRef, isConnected, user, roomData.room]);
 
     return (
-        <div className="flex grow">
-            {user ?
-                <Card className='h-[calc(100vh-80px)] flex flex-col w-[calc(100vw-375px)]'>
-                    <CardHeader className='flex-none'>
-                        <CardTitle><ChatHeader roomName={roomData.room?.name ?? ""} /></CardTitle>
+        <div className="flex h-[calc(100vh-80px)] w-3/5">
+            {(!loadingMessages) ? (
+                <Card className="flex flex-col w-full">
+                    <CardHeader className="flex-none">
+                        <CardTitle>
+                            <ChatHeader roomName={roomData.room?.name ?? ""} />
+                        </CardTitle>
                     </CardHeader>
-                    <CardContent className='flex-grow flex flex-col-reverse overflow-y overflow-y-auto p-4'>
+                    <CardContent className="flex-grow flex flex-col-reverse overflow-y-auto p-4">
                         <ChatBody messages={messages.messages ?? []} currentUserId={user?.uid} />
                     </CardContent>
-                    <CardFooter className='flex-none space-y-4'>
+                    <CardFooter className="flex-none space-y-4">
                         <ChatInput form={form} onSubmit={onSubmit} />
                     </CardFooter>
-                </Card> :
-                <PropagateLoader className='' />
-            }
-
+                </Card>
+            ) : (
+                <div className="flex justify-center items-center w-full h-full">
+                    <HashLoader color={"#61A653"} />
+                </div>
+            )}
         </div>
     )
 }

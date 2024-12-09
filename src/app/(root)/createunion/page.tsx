@@ -205,7 +205,6 @@ const CreateUnion = () => {
                                                 placeholder="Street"
                                                 value={workplace.street}
                                                 onChange={(e) => handleWorkplaceChange(index, 'street', e.target.value)}
-                                                required
                                             />
                                         </div>
                                         <div className="workplace-input">

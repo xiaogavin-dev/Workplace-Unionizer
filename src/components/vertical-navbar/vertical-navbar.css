@@ -1,5 +1,6 @@
 .main-container {
     display: flex;
+
 }
 
 .vertical-navbar {
@@ -111,8 +112,8 @@
 .union-image {
     height: 50px;
     width: 50px;
-    object-fit: cover; 
-    border-radius: 10%; 
+    object-fit: cover;
+    border-radius: 10%;
 }
 
 .union-initial {

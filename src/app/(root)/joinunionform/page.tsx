@@ -51,7 +51,7 @@ const JoinUnionForm = () => {
                 if (!response.ok) throw new Error("Failed to fetch questions");
 
                 const data = await response.json();
-                setQuestions(data.data?.length ? data.data : []); 
+                setQuestions(data.data?.length ? data.data : []);
             } catch (err) {
                 setError((err as Error).message);
             } finally {
@@ -113,7 +113,7 @@ const JoinUnionForm = () => {
             setMessage("Union ID is missing.");
             return;
         }
-    
+
         try {
             const response = await fetch("http://localhost:5000/form/questions", {
                 method: "POST",
@@ -127,11 +127,11 @@ const JoinUnionForm = () => {
                     })),
                 }),
             });
-    
+
             if (!response.ok) {
                 throw new Error("Failed to save questions");
             }
-    
+
             setMessage("Questions saved successfully!");
             router.push(`/search`);
         } catch (error) {
@@ -139,8 +139,8 @@ const JoinUnionForm = () => {
             setMessage("An error occurred while saving questions.");
         }
     };
-    
-      
+
+
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
@@ -149,7 +149,7 @@ const JoinUnionForm = () => {
         <Layout>
             <div className="join-unionform-page">
                 {unionData && (
-                    <div className="union-info">
+                    <div className="union-info mr-14">
                         {unionData.image ? (
                             <img
                                 src={`http://localhost:5000${unionData.image}`}
@@ -173,7 +173,7 @@ const JoinUnionForm = () => {
                 <div className="questions-section">
                     {questions.map((question, index) => (
                         <div className="question-remove-container" key={index}>
-                            <div className="question-input">
+                            <div className="question-input grow">
                                 <textarea
                                     value={question.questionText}
                                     onChange={(e) =>

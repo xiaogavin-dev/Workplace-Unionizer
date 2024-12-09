@@ -55,7 +55,7 @@ const items: ISideBarItem[] = [
 
 const DynamicSidebar = () => {
     return (
-        <div className='h-[calc(100vh-80px)] w-64 bg-white shadow-lg flex justify-start fixed top-20 p-4 left-20'>
+        <div className=' w-64 bg-white shadow-lg flex justify-start fixed top-20 p-4 left-20'>
             <div className='flex flex-col w-full'>
                 {items.map(item => (
                     <SideBarItem key={item.path} item={item} />
