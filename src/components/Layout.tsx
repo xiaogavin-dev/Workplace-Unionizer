@@ -21,12 +21,37 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     const popupRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLDivElement>(null);
     const socket = useSocket()
-    const socketRef = useRef(socket)
+    const socketRef = useRef(null)
     const [isConnected, setIsConnected] = useState<boolean>(false)
     const togglePopup = () => {
         setIsPopupOpen((prev) => !prev);
     };
 
+    useEffect(() => {
+        if (socket) {
+            socketRef.current = socket;
+
+            // Check if the socket is connected
+            setIsConnected(socket.connected);
+
+            // Listen to the 'connect' and 'disconnect' events
+            socket.on("connect", () => {
+                console.log("Socket connected");
+                setIsConnected(true);
+            });
+
+            socket.on("disconnect", () => {
+                console.log("Socket disconnected");
+                setIsConnected(false);
+            });
+
+            // Clean up listeners
+            return () => {
+                socket.off("connect");
+                socket.off("disconnect");
+            };
+        }
+    }, [socket]);
     const [openDropdowns, setOpenDropdowns] = useState<number[]>([]);
 
     const toggleDropdown = (dropdownIndex: number) => {
@@ -86,6 +111,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 return null;
         }
     }
+
     useEffect(() => {
         dispatch(listenToAuthChanges());
     }, [dispatch])
@@ -116,7 +142,17 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         }
         if (user) {
             getUserUnions()
+            if (socketRef.current) {
+                socketRef.current?.on("received_join_request", (data) => {
+                    if (data.userId != user.uid) {
+                        console.log("Notification IS BEING CALLED")
+
+                    }
+                });
+            }
         }
+
+
     }, [user])
     useEffect(() => {
         if (pathname === '/resources') {

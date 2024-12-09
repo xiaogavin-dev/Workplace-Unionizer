@@ -215,11 +215,6 @@ const Chat: FC = () => {
             fetchMessages()
             setInit(true)
         }
-
-
-
-    }, [user]);
-    useEffect(() => {
         if (user) {
             socketRef.current?.on("RECEIVED_MSG", (data: messageInfo) => {
                 if (data.userId != user.uid) {
@@ -230,7 +225,10 @@ const Chat: FC = () => {
                 }
             });
         }
-    }, [user])
+
+
+    }, [user]);
+
     useEffect(() => {
         if (!user || !socketRef.current || !roomData.room) return;
         socketRef.current?.emit("join_room", user, roomData);
