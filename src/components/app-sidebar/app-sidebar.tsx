@@ -46,6 +46,11 @@ export function AppSidebar({
   const [inviteLink, setInviteLink] = useState<string>("");
   const [copyMessage, setCopyMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [selectedWorkplace, setSelectedWorkplace] = useState<{
+    id: string;
+    employeeCount: number;
+    name: string;
+  } | null>(null);
 
   const dispatch = useAppDispatch()
   const router = useRouter();
@@ -109,22 +114,23 @@ export function AppSidebar({
       console.error("Error fetching votes:", error);
     }
   };
-  
-  const openPollModal = (workplaceId: string) => {
-    setPollModalOpen(true);
-    fetchVotes(workplaceId);
+
+  const openPollModal = (workplace: { id: string; employeeCount: number; name: string }) => {
+    console.log("Opening poll for workplace:", workplace);
+    if (workplace && workplace.id && workplace.employeeCount) {
+      setSelectedWorkplace(workplace);
+      setTotalEmployees(workplace.employeeCount);
+      setPollModalOpen(true);
+      fetchVotes(workplace.id);
+    } else {
+      console.error("Invalid workplace object passed to openPollModal:", workplace);
+    }
   };
-  
-  const handleVote = async (workplaceId: string) => {
-    if (selectedOption) {
-      console.log("Submitting vote:", {
-        workplaceId,
-        userId,
-        vote: selectedOption,
-        action: previousVote ? "update" : "increment",
-      });
-  
+
+  const handleVote = async () => {
+    if (selectedWorkplace && selectedOption) {
       try {
+        console.log("Submitting vote for:", selectedWorkplace);
         const response = await fetch(
           `http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/polls/vote`,
           {
@@ -133,25 +139,25 @@ export function AppSidebar({
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              workplaceId,
-              userId, // Include userId to track the voter
+              workplaceId: selectedWorkplace.id,
+              userId,
               vote: selectedOption,
-              action: previousVote ? "update" : "increment", // Use "update" if changing vote
+              action: previousVote ? "update" : "increment",
             }),
           }
         );
-  
+
         if (!response.ok) {
           throw new Error("Failed to submit vote.");
         }
-  
+
         const data = await response.json();
-  
+
         setVotes({ yes: data.yesCount, no: data.noCount });
         setTotalVotes(data.totalVotes);
         setPreviousVote(selectedOption);
         setVoted(true);
-  
+
         setMessage("Your vote has been successfully submitted!");
       } catch (error) {
         console.error("Error submitting vote:", error);
@@ -159,7 +165,7 @@ export function AppSidebar({
       }
     }
   };
-  
+
   //helper function for updating userUnions
   const updateUnion = async () => {
     try {
@@ -249,17 +255,17 @@ export function AppSidebar({
             }),
           }
         );
-  
+
         if (!response.ok) {
           throw new Error("Failed to change vote.");
         }
-  
+
         const data = await response.json();
-  
+
         // Step 2: Update the state with new vote counts after decrement
         setVotes({ yes: data.yesCount, no: data.noCount });
         setTotalVotes(data.totalVotes);
-  
+
         // Step 3: Reset state for new vote
         setSelectedOption(null);
         setPreviousVote(null);
@@ -465,7 +471,7 @@ export function AppSidebar({
               <div key={workplace.id}>
                 <div
                   className="workplace-title"
-                  onClick={() => toggleDropdown(workplace.id)}
+                  onClick={() => openPollModal(workplace)}
                   style={{
                     cursor: "pointer",
                     display: "flex",
@@ -473,93 +479,94 @@ export function AppSidebar({
                     alignItems: "center",
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <span className="workplace-name">{workplace.workplaceName}</span>
-                    {workplace.isUnionized && (
-                      <div className="checkmark-container">
-                        <img
-                          className="checkmark-image"
-                          src="/images/check-mark.png"
-                          alt="Unionized"
-                        />
-                        <span className="tooltip-text">Is unionized</span>
-                      </div>
-                    )}
-                  </div>
-                  <span className="dropdown-toggle">{openDropdowns.includes(workplace.id) ? "▼" : "▶"}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span className="workplace-name">{workplace.workplaceName}</span>
+              {workplace.isUnionized && (
+                <div className="checkmark-container">
+                  <img
+                    className="checkmark-image"
+                    src="/images/check-mark.png"
+                    alt="Unionized"
+                  />
+                  <span className="tooltip-text">Is unionized</span>
                 </div>
-
-                {openDropdowns.includes(workplace.id) && (
-                  <SidebarMenu>
-                    <SidebarMenuItem>
-                      {workplace.chats &&
-                        workplace.chats.map((chat, i) => (
-                          <SidebarMenuItem key={i}>
-                            <SidebarMenuButton asChild>
-                              <div
-                                className="chat-item"
-                                onClick={() =>
-                                  router.push(`/unions/${chat.unionId}/chat/${chat.id}`)
-                                }
-                              >
-                                <span>{chat.name}</span>
-                              </div>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        ))}
-
-                      {!workplace.isUnionized && (
-                        <SidebarMenuItem>
-                          <SidebarMenuButton asChild>
-                            <div
-                              className="poll-button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setTotalEmployees(workplace.employeeCount || 0);
-                                setPollModalOpen(true);
-                                openPollModal(workplace.id);
-                              }}
-                            >
-                              {workplace.workplaceName} Unionize Poll
-                            </div>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      )}
-                    </SidebarMenuItem>
-                  </SidebarMenu>
-                )}
-              </div>
-            ))}
-          </SidebarGroup>
-
-          {/* Find More Workplaces */}
-          <div className="sidebar-footer">
-            <a href="/find-workplaces" className="find-workplaces-link">
-              Find More Workplaces
-            </a>
+              )}
+            </div>
+            <span className="dropdown-toggle">{openDropdowns.includes(workplace.id) ? "▼" : "▶"}</span>
           </div>
-        </SidebarContent>
-      </Sidebar>
 
-      {/* Poll Modal */}
-      <Modal isOpen={isPollModalOpen} onClose={() => setPollModalOpen(false)}>
-        <div
-          className="modal-overlay"
-          onClick={() => setPollModalOpen(false)}
-        >
-          <div
-            className="modal-container"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="close-button"
-              onClick={() => setPollModalOpen(false)}
-              aria-label="Close modal"
-            >
-              ×
-            </button>
-            <h1 className="poll-question">Should we apply for unionization now?</h1>
-              {/* Automatically fetch and display total employees */}
+          {openDropdowns.includes(workplace.id) && (
+            <SidebarMenu>
+              <SidebarMenuItem>
+                {workplace.chats &&
+                  workplace.chats.map((chat, i) => (
+                    <SidebarMenuItem key={i}>
+                      <SidebarMenuButton asChild>
+                        <div
+                          className="chat-item"
+                          onClick={() =>
+                            router.push(`/unions/${chat.unionId}/chat/${chat.id}`)
+                          }
+                        >
+                          <span>{chat.name}</span>
+                        </div>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+
+                {!workplace.isUnionized && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <div
+                        className="poll-button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setTotalEmployees(workplace.employeeCount || 0);
+                          setPollModalOpen(true);
+                          openPollModal(workplace.id);
+                        }}
+                      >
+                        {workplace.workplaceName} Unionize Poll
+                      </div>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
+              </SidebarMenuItem>
+            </SidebarMenu>
+          )}
+        </div>
+            ))}
+      </SidebarGroup>
+
+      {/* Find More Workplaces */}
+      <div className="sidebar-footer">
+        <a href="/find-workplaces" className="find-workplaces-link">
+          Find More Workplaces
+        </a>
+      </div>
+    </SidebarContent>
+      </Sidebar >
+
+    {/* Poll Modal */ }
+    <Modal Modal isOpen = { isPollModalOpen } onClose = {() => setPollModalOpen(false)
+}>
+  <div
+    className="modal-overlay"
+    onClick={() => setPollModalOpen(false)}
+  >
+    <div
+      className="modal-container"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <button
+        className="close-button"
+        onClick={() => setPollModalOpen(false)}
+        aria-label="Close modal"
+      >
+        ×
+      </button>
+      <h1 className="poll-question">Should we apply for unionization now?</h1>
+      {/* Automatically fetch and display total employees */}
       <div className="employee-input">
         <label htmlFor="employee-count">Total Number of Employees:</label>
         <input
@@ -574,111 +581,115 @@ export function AppSidebar({
           }}
         />
       </div>
-            <ul className="poll-options">
-              {["yes", "no"].map((option) => (
-                <li
-                  key={option}
-                  className={`poll-option ${selectedOption === option ? "selected" : ""}`}
-                  onClick={() => !voted && setSelectedOption(option)}
-                  style={{
-                    pointerEvents: voted ? "none" : "auto",
-                    backgroundColor: voted
-                      ? option === selectedOption
-                        ? "#61a653"
-                        : "#2d2e2d"
-                      : "#f5f5f5",
-                    color: voted ? "#fff" : "#666b62",
-                    fontWeight: "bold",
-                    padding: "10px 15px",
-                    borderRadius: "5px",
-                    margin: "10px 0",
-                    cursor: !voted ? "pointer" : "default",
-                  }}
-                >
-                  <span>{option.toUpperCase()}</span>
-                  {voted ? (
-                    <span className="percentage">
-                      {votes[option as "yes" | "no"]} Votes ({getPercentage(option as "yes" | "no")}%)
-                    </span>
-                  ) : (
-                    <div className={`radio-button ${selectedOption === option ? "checked" : ""}`}></div>
-                  )}
-                </li>
-              ))}
-            </ul>
-            {voted ? (
-              <div className="poll-results">
-                {message && (
-                  <p className={message.includes("need") ? "error-message" : "success-message"}>
-                    {message}
-                  </p>
-                )}
-                <button
-                  className="change-vote-button"
-                  onClick={() => {
-                    console.log("workplaceId being passed to handleChangeVote:", workplaces.id);
-                    handleChangeVote(workplaces[1].id);
-                  }}
-                >
-                  Change Vote
-                </button>
-              </div>
-            ) : (
-              <button
-                className="vote-button"
-                onClick={() => {
-                  console.log("workplaceId being passed to handleVote:", workplaces.id);
-                  handleVote(workplaces[1].id);
-                }}
-                disabled={!selectedOption || !totalEmployees} 
-              >
-                Vote
-              </button>
-            )}
-          </div>
-        </div>
-      </Modal>
-
-      {isInviteModalOpen && (
-        <Modal isOpen={isInviteModalOpen} onClose={() => setInviteModalOpen(false)}>
-          <div
-            className="invite-modal-overlay"
-            onClick={() => setInviteModalOpen(false)}
+      <ul className="poll-options">
+        {["yes", "no"].map((option) => (
+          <li
+            key={option}
+            className={`poll-option ${selectedOption === option ? "selected" : ""}`}
+            onClick={() => !voted && setSelectedOption(option)}
+            style={{
+              pointerEvents: voted ? "none" : "auto",
+              backgroundColor: voted
+                ? option === selectedOption
+                  ? "#61a653"
+                  : "#2d2e2d"
+                : "#f5f5f5",
+              color: voted ? "#fff" : "#666b62",
+              fontWeight: "bold",
+              padding: "10px 15px",
+              borderRadius: "5px",
+              margin: "10px 0",
+              cursor: !voted ? "pointer" : "default",
+            }}
           >
-            <div className="invite-modal" ref={modalRef} onClick={(e) => e.stopPropagation()}>
-              {!inviteLink ? (
-                <div className="invite-workers-header">
-                  <h2>Invite Workers</h2>
-                  <button
-                    className="invite-button"
-                    onClick={handleInviteWorkers}
-                    disabled={isGeneratingLink}
-                  >
-                    {isGeneratingLink ? "Generating..." : "Generate Invite Link"}
-                  </button>
-                </div>
-              ) : (
-                <div className="invite-link-header">
-                  <h2>Generated Link</h2>
-                  <p className="invite-link-label">Invitation Link:</p>
-                  <div className="invite-link-container">
-                    <input
-                      type="text"
-                      value={inviteLink}
-                      readOnly
-                      className="invite-link-input"
-                    />
-                    <button className="copy-link-button" onClick={handleCopyLink}>
-                      Copy
-                    </button>
-                  </div>
-                  {copyMessage && <p className="copy-success-message">{copyMessage}</p>}
-                </div>
-              )}
-            </div>
-          </div>
-        </Modal>
+            <span>{option.toUpperCase()}</span>
+            {voted ? (
+              <span className="percentage">
+                {votes[option as "yes" | "no"]} Votes ({getPercentage(option as "yes" | "no")}%)
+              </span>
+            ) : (
+              <div className={`radio-button ${selectedOption === option ? "checked" : ""}`}></div>
+            )}
+          </li>
+        ))}
+      </ul>
+      {voted ? (
+        <div className="poll-results">
+          {message && (
+            <p className={message.includes("need") ? "error-message" : "success-message"}>
+              {message}
+            </p>
+          )}
+          <button
+            className="change-vote-button"
+            onClick={() => {
+              if (selectedWorkplace) {
+                console.log("Changing vote for:", selectedWorkplace.id);
+                handleChangeVote(selectedWorkplace.id);
+              }
+            }}
+          >
+            Change Vote
+          </button>
+        </div>
+      ) : (
+        <button
+          className="vote-button"
+          onClick={() => {
+            if (selectedWorkplace) {
+              console.log("Voting for:", selectedWorkplace.id);
+              handleVote();
+            }
+          }}
+          disabled={!selectedOption || !totalEmployees}
+        >
+          Vote
+        </button>
       )}
     </div>
+  </div>
+      </Modal >
+
+  { isInviteModalOpen && (
+    <Modal isOpen={isInviteModalOpen} onClose={() => setInviteModalOpen(false)}>
+      <div
+        className="invite-modal-overlay"
+        onClick={() => setInviteModalOpen(false)}
+      >
+        <div className="invite-modal" ref={modalRef} onClick={(e) => e.stopPropagation()}>
+          {!inviteLink ? (
+            <div className="invite-workers-header">
+              <h2>Invite Workers</h2>
+              <button
+                className="invite-button"
+                onClick={handleInviteWorkers}
+                disabled={isGeneratingLink}
+              >
+                {isGeneratingLink ? "Generating..." : "Generate Invite Link"}
+              </button>
+            </div>
+          ) : (
+            <div className="invite-link-header">
+              <h2>Generated Link</h2>
+              <p className="invite-link-label">Invitation Link:</p>
+              <div className="invite-link-container">
+                <input
+                  type="text"
+                  value={inviteLink}
+                  readOnly
+                  className="invite-link-input"
+                />
+                <button className="copy-link-button" onClick={handleCopyLink}>
+                  Copy
+                </button>
+              </div>
+              {copyMessage && <p className="copy-success-message">{copyMessage}</p>}
+            </div>
+          )}
+        </div>
+      </div>
+    </Modal>
+  )}
+    </div >
   );
 }
