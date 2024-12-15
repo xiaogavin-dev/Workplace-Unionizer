@@ -247,26 +247,29 @@ const Chat: FC = () => {
     }, [socketRef, isConnected, user, roomData.room]);
 
     return (
-        <div className="flex h-[calc(100vh-80px)] w-3/5">
-            {(!loadingMessages) ? (
-                <Card className="flex flex-col w-full">
-                    <CardHeader className="flex-none">
-                        <CardTitle>
-                            <ChatHeader roomName={roomData.room?.name ?? ""} />
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex-grow flex flex-col-reverse overflow-y-auto p-4">
-                        <ChatBody messages={messages.messages ?? []} currentUserId={user?.uid} />
-                    </CardContent>
-                    <CardFooter className="flex-none space-y-4">
-                        <ChatInput form={form} onSubmit={onSubmit} />
-                    </CardFooter>
-                </Card>
-            ) : (
-                <div className="flex justify-center items-center w-full h-full">
-                    <HashLoader color={"#61A653"} />
-                </div>
-            )}
+        <div className="flex w-full items-center justify-center">
+
+            <div className="flex h-[calc(100vh-80px)] w-4/5">
+                {(!loadingMessages) ? (
+                    <Card className="flex flex-col w-full">
+                        <CardHeader className="flex-none">
+                            <CardTitle>
+                                <ChatHeader roomName={roomData.room?.name ?? ""} />
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex-grow flex flex-col-reverse overflow-y-auto p-4">
+                            <ChatBody messages={messages.messages ?? []} currentUserId={user?.uid} />
+                        </CardContent>
+                        <CardFooter className="flex-none space-y-4">
+                            <ChatInput form={form} onSubmit={onSubmit} />
+                        </CardFooter>
+                    </Card>
+                ) : (
+                    <div className="flex justify-center items-center w-full h-full">
+                        <HashLoader color={"#61A653"} />
+                    </div>
+                )}
+            </div>
         </div>
     )
 }

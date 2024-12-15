@@ -18,7 +18,8 @@ interface VerticalNavbarProps {
   currUnion: object | null,
   user: object | null,
   children: React.ReactNode
-
+  setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  sidebarOpen: boolean
 }
 
 const VerticalNavbar: React.FC<VerticalNavbarProps> = ({
@@ -28,14 +29,14 @@ const VerticalNavbar: React.FC<VerticalNavbarProps> = ({
   handleUnionClick,
   currUnion,
   user,
-  children
+  setSidebarOpen,
+  sidebarOpen
 }) => {
   const router = useRouter();
   const pathname = usePathname();
   const [unionColors, setUnionColors] = useState<Map<string, string>>(
     new Map()
   );
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true)
   const handleBookButtonClick = (e: React.MouseEvent) => {
     e.stopPropagation();
 
@@ -50,9 +51,7 @@ const VerticalNavbar: React.FC<VerticalNavbarProps> = ({
       }, 200);
     }
   };
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen)
-  }
+
   const getRandomColor = (): string => {
     const letters = '0123456789ABCDEF';
     let color = '#';
@@ -99,72 +98,72 @@ const VerticalNavbar: React.FC<VerticalNavbarProps> = ({
 
       {currUnion ?
         <>
-          <SidebarProvider>
-            <div className="main-container h-[calc(100vh-80px)]">
-              <div className="vertical-navbar">
-                <div className="navbar-items">
-                  {unions?.length ? (
-                    unions.map((union) => (
-                      <div
-                        key={union.id}
-                        className="navbar-item"
-                        onClick={(e) => {
-                          handleUnionClick(e, union)
-                          setSidebarOpen(true)
+          <div className="vertical-navbar">
+            <div className="navbar-items">
+              {unions?.length ? (
+                unions.map((union) => (
+                  <div
+                    key={union.id}
+                    className="navbar-item"
+                    onClick={(e) => {
+                      handleUnionClick(e, union)
+                      setSidebarOpen(true)
+                    }}
+                    style={{ display: 'flex', justifyContent: 'center' }}
+                  >
+                    {union.image ? (
+                      <img
+                        src={`http://localhost:5000${union.image}`}
+                        alt={`${union.name} Logo`}
+                        className="union-image"
+                        style={{ maxHeight: '50px' }}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement);
                         }}
-                        style={{ display: 'flex', justifyContent: 'center' }}
+                      />
+                    ) : (
+                      <div
+                        className="union-initial"
+                        style={{
+                          backgroundColor: unionColors.get(union.id),
+                        }}
                       >
-                        {union.image ? (
-                          <img
-                            src={`http://localhost:5000${union.image}`}
-                            alt={`${union.name} Logo`}
-                            className="union-image"
-                            style={{ maxHeight: '50px' }}
-                            onError={(e) => {
-                              (e.target as HTMLImageElement);
-                            }}
-                          />
-                        ) : (
-                          <div
-                            className="union-initial"
-                            style={{
-                              backgroundColor: unionColors.get(union.id),
-                            }}
-                          >
-                            {union.name?.[0]?.toUpperCase()}
-                          </div>
-                        )}
+                        {union.name?.[0]?.toUpperCase()}
                       </div>
-                    ))
-                  ) : (
-                    <></>
-                  )}
+                    )}
+                  </div>
+                ))
+              ) : (
+                <></>
+              )}
 
-                  <a href="/search">
-                    <div className="add-button">+</div>
-                  </a>
-                </div>
-
-                <img
-                  src="/images/resource-guide-icon.png"
-                  alt="books"
-                  className="book-button"
-                  ref={buttonRef}
-                  onClick={handleBookButtonClick}
-                  style={{ cursor: 'pointer' }}
-                />
-              </div>
+              <a href="/search">
+                <div className="add-button">+</div>
+              </a>
             </div>
-            {sidebarOpen ?
-              <AppSidebar
-                chats={currUnion?.chats || []}
-                unionName={currUnion?.name || ''}
-                unionId={currUnion?.id || ''}
-                role={currUnion?.role || ''}
-                userId={user?.uid}
-              /> : <></>
-            }
-          </SidebarProvider>
+
+            <img
+              src="/images/resource-guide-icon.png"
+              alt="books"
+              className="book-button"
+              ref={buttonRef}
+              onClick={handleBookButtonClick}
+              style={{ cursor: 'pointer' }}
+            />
+          </div>
+          <div className='absolute'>
+            <SidebarProvider>
+              {sidebarOpen ?
+                <AppSidebar
+                  chats={currUnion?.chats || []}
+                  unionName={currUnion?.name || ''}
+                  unionId={currUnion?.id || ''}
+                  role={currUnion?.role || ''}
+                  userId={user?.uid}
+                /> : <></>
+              }
+            </SidebarProvider>
+          </div>
         </> :
         <>
           <div className="main-container ">
@@ -219,9 +218,7 @@ const VerticalNavbar: React.FC<VerticalNavbarProps> = ({
               />
             </div>
           </div></>}
-      <div className='flex items-center  justify-center grow' onClick={() => { setSidebarOpen(false) }} >
-        {children}
-      </div>
+
     </>
   );
 };

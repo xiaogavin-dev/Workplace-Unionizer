@@ -17,6 +17,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     const { user } = useAppSelector(state => state.auth)
     const { unions } = useAppSelector(state => state.userUnion)
     const [currUnion, setCurrUnion] = useState<object | null>(null)
+    const [sidebarOpen, setSidebarOpen] = useState<boolean>(true)
     const dispatch = useAppDispatch()
     const popupRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLDivElement>(null);
@@ -111,7 +112,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 return null;
         }
     }
-
+    const toggleSidebar = () => {
+        setSidebarOpen(!sidebarOpen)
+    }
     useEffect(() => {
         dispatch(listenToAuthChanges());
     }, [dispatch])
@@ -196,10 +199,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             <div className="horizontal-navbar-container">
                 <HorizontalNavbar pageName={getDynamicPageName()} />
             </div>
-            <div className="flex items-center h-[calc(100vh-80px)] justify-center">
-                <VerticalNavbar togglePopup={togglePopup} buttonRef={buttonRef} unions={unions} handleUnionClick={handleUnionClick} currUnion={currUnion} user={user}>
+            <VerticalNavbar togglePopup={togglePopup} buttonRef={buttonRef} unions={unions} handleUnionClick={handleUnionClick} currUnion={currUnion} user={user} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}>
+                {children}
+            </VerticalNavbar>
+            <div className="h-[calc(100vh-80px)] justify-center w-full">
+                <div className='' onClick={() => { setSidebarOpen(false) }} >
                     {children}
-                </VerticalNavbar>
+                </div>
             </div>
 
             {/* {pathname.includes("settings") ?
