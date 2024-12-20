@@ -17,10 +17,17 @@ module.exports = (sequelize, DataTypes) => {
       });
       // Current key version
       chat.hasOne(models.keyVersion, {
-        sourceKey: 'chatKeyVersion'
+        sourceKey: 'chatKeyVersion',
+        onDelete: 'CASCADE',
+        onUpdate: "CASCADE"
       });
       chat.hasMany(models.encryptedKey, {
         foreignKey: 'chatId',
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+      })
+      chat.belongsTo(models.workplace, {
+        foreignKey: 'workplaceId',
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE'
       })
@@ -52,6 +59,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: 1
+      },
+      workplaceId: {
+        type: DataTypes.UUID,
+        allowNull: true,
       }
     },
     {
@@ -69,7 +80,7 @@ module.exports = (sequelize, DataTypes) => {
               pubkeyValue: options.pubkeyValue,
             }, { transaction });
 
-            console.log(`User-Chat association created:`, newUserChat);
+            console.log(`User-Chat association created:`);
           } catch (error) {
             console.error('Error in Chat afterCreate hook:', error);
             if (options.transaction) {

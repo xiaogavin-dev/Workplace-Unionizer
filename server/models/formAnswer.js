@@ -7,8 +7,6 @@ module.exports = (sequelize, DataTypes) => {
       FormAnswer.belongsTo(models.formQuestion, {
         foreignKey: 'questionId',
         as: 'question',
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
       });
 
       FormAnswer.belongsTo(models.union, {
@@ -21,8 +19,6 @@ module.exports = (sequelize, DataTypes) => {
       FormAnswer.belongsTo(models.user, {
         foreignKey: 'userId',
         as: 'user',
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
       });
     }
   }
@@ -48,6 +44,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     answerText: {
       type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    questionText: { 
+      type: DataTypes.STRING,
       allowNull: false,
     },
   }, {

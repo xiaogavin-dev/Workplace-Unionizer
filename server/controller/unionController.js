@@ -1,49 +1,49 @@
 const pool = require('../db');
-const { user_union, union, chat } = require('../models');
-const userUnion = require('../models/user-union');
+const { Op } = require('sequelize');
+const { user_union, workplace, union, chat, sequelize } = require('../models');
 const { v4: uuidv4 } = require('uuid')
-const getUnions = async (req, res) => {
+async function getUnions(req, res) {
   try {
     const { unionname, location, organization } = req.query;
 
-    // SQL query to join unions with workplaces and filter based on query parameters
-    let query = `
-      SELECT 
-        unions.id, 
-        unions.name, 
-        unions.description,
-        unions.visibility,
-        unions.image,
-        workplaces.organization, 
-        workplaces.state AS location 
-      FROM unions
-      LEFT JOIN workplaces 
-        ON unions.id = workplaces."unionId"
-      WHERE unions.visibility = 'public'
-    `;
-
-    const queryParams = [];
+    // Define the where clauses dynamically
+    const unionWhere = {
+      visibility: 'public', // Matches the `WHERE unions.visibility = 'public'`
+    };
 
     if (unionname) {
-      queryParams.push(`%${unionname}%`);
-      query += ` AND unions.name ILIKE $${queryParams.length}`;
+      unionWhere.name = { [Op.iLike]: `%${unionname}%` }; // ILIKE equivalent
     }
 
+    const workplaceWhere = {};
     if (location) {
-      queryParams.push(`%${location}%`);
-      query += ` AND workplaces.state ILIKE $${queryParams.length}`;
+      workplaceWhere.state = { [Op.iLike]: `%${location}%` }; // ILIKE equivalent
     }
-
     if (organization) {
-      queryParams.push(`%${organization}%`);
-      query += ` AND workplaces.organization ILIKE $${queryParams.length}`;
+      workplaceWhere.organization = { [Op.iLike]: `%${organization}%` }; // ILIKE equivalent
     }
 
-    console.log('Query:', query, 'Params:', queryParams);
+    // Perform the query with associations
+    const unions = await union.findAll({
+      where: unionWhere,
+      include: [
+        {
+          model: workplace,
+          as: 'associatedWorkplaces', // Ensure this matches your association alias
+          where: Object.keys(workplaceWhere).length ? workplaceWhere : undefined,
+          required: false, // Equivalent to LEFT JOIN
+        },
+      ],
+      attributes: [
+        'id',
+        'name',
+        'description',
+        'visibility',
+        'image',
+      ],
+    });
 
-    const result = await pool.query(query, queryParams);
-
-    if (result.rows.length === 0) {
+    if (unions.length === 0) {
       return res.status(200).json({
         status: 'success',
         data: [],
@@ -53,41 +53,46 @@ const getUnions = async (req, res) => {
 
     return res.status(200).json({
       status: 'success',
-      data: result.rows,
+      data: unions,
     });
   } catch (error) {
-    console.error('Error fetching unions: ', error);
+    console.error('Error fetching unions:', error);
     return res.status(500).json({
       status: 'error',
-      message: 'An error occurred while fetching unions.',
+      message: 'An error occurred while fetching unions',
     });
   }
-};
+}
 
 const getUserUnions = async (req, res) => {
   const { userId } = req.query
-  const userUnions = await user_union.findAll({
-    where: {
-      userId: `${userId}`
-    }
-  })
-  const unions = []
-  console.log(userUnions)
-  for (const userUnion of userUnions) {
-    const curr = await union.findByPk(userUnion.dataValues.unionId);
-    const chats = await chat.findAll({
+  try {
+    const userUnions = await user_union.findAll({
       where: {
-        unionId: userUnion.dataValues.unionId
+        userId: `${userId}`
       }
     })
-    curr.dataValues.chats = chats.map((chat) => chat.dataValues)
-    if (curr) {
-      unions.push(curr.dataValues);
+    const unions = []
+    for (const userUnion of userUnions) {
+      const curr = await union.findByPk(userUnion.dataValues.unionId);
+      const chats = await chat.findAll({
+        where: {
+          unionId: userUnion.dataValues.unionId,
+          workplaceId: null
+        }
+      })
+      curr.dataValues.chats = chats.map((chat) => chat.dataValues)
+      curr.dataValues.role = userUnion.dataValues.role
+      if (curr) {
+        unions.push(curr.dataValues);
+      }
     }
+    res.status(200).json({ message: `unions for ${userId} received`, data: unions })
   }
-
-
-  res.status(200).json({ message: `unions for ${userId} received`, data: unions })
+  catch (error) {
+    console.log("there was an error getting user-unions: ", error)
+    res.status(400).json({ message: "There was an error getting user unions" })
+  }
 }
 const joinUnion = async (req, res) => {
   const { userUnionInfo } = req.body
@@ -105,7 +110,44 @@ const joinUnion = async (req, res) => {
   }
 }
 const leaveUnion = async (req, res) => {
+  const { unionId, userId } = req.body;
+  const transaction = await sequelize.transaction()
+  try {
+    await user_union.destroy({ where: { unionId, userId } }, transaction)
+    await transaction.commit()
+    res.status(200).json({ message: "successfully left union" })
+  }
+  catch (error) {
+    await transaction.rollback()
+    console.error("There was an error leaving Union.", error)
+    res.status(400).json({ message: "Could not leave union" })
+  }
+}
+const deleteUnion = async (req, res) => {
+  const { unionId, userId } = req.body;
+  const transaction = await sequelize.transaction()
+  try {
+    const user_union_response = await user_union.findOne({
+      where: {
+        unionId,
+        userId
+      }
+    })
+    if (user_union_response.dataValues.role == 'admin') {
+      await union.destroy({ where: { id: unionId } }, transaction)
+      await transaction.commit()
+      res.status(200).json({ message: "successfully deleted" })
+    }
+    else {
+      res.staus(200).json({ message: "user does not have permissions to delete the union" })
+    }
+  }
+  catch (error) {
+    await transaction.rollback()
+    console.error("There was an error deleting Union.", error)
+    res.status(400).json({ message: "Could not delete union" })
 
+  }
 }
 const getUnionPublicChats = async (req, res) => {
   const { unionId } = req.query
@@ -127,9 +169,12 @@ const getUnionPublicChats = async (req, res) => {
   }
 }
 
+
 module.exports = {
   getUnions,
   getUserUnions,
   joinUnion,
-  getUnionPublicChats
-};
+  getUnionPublicChats,
+  leaveUnion,
+  deleteUnion
+}

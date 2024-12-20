@@ -1,10 +1,8 @@
 require('dotenv').config({ path: `${process.cwd()}/.env` })
-const { Server } = require('socket.io')
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const pool = require('./db');
-const socketIo = require('socket.io');
 const http = require('http');
 const socketInit = require("./socket/index")
 
@@ -13,9 +11,10 @@ const unionRouter = require('./route/unionRoute')
 const userRouter = require('./route/userRoute')
 const messageRouter = require('./route/messageRoute')
 const chatRouter = require('./route/chatRoute')
-const searchRoute = require('./route/searchRoute');
 const formRoute = require('./route/formRoute');
 const workplaceRoutes = require('./route/workplaceRoute');
+const inviteRoutes = require("./route/inviteRoute");
+const pollRoute = require('./route/pollRoute');
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -63,11 +62,11 @@ app.use('/union', unionRouter);
 app.use('/users', userRouter);
 app.use('/messages', messageRouter)
 app.use('/chat', chatRouter)
-app.use('/api', searchRoute);
 app.use('/form', formRoute);
 app.use('/workplace', workplaceRoutes);
-
+app.use("/api/invites", inviteRoutes);
 app.use('/uploads', express.static('uploads'));
+app.use('/polls', pollRoute);
 
 // Catch-all 404 route
 app.use('*', (req, res, next) => {

@@ -1,7 +1,7 @@
-const { getUnions, getUserUnions, joinUnion, getUnionPublicChats } = require('../controller/unionController')
+const { getUnions, getUserUnions, joinUnion, getUnionPublicChats, leaveUnion, deleteUnion } = require('../controller/unionController')
 const { getUnionById } = require('../controller/unionIdController')
 const { createUnion } = require('../controller/createUnionController');
-const {upload} = require('../controller/uploadController'); 
+const { upload } = require('../controller/uploadController');
 const { getWorkplacesByUnionId } = require("../controller/workplaceController");
 
 const router = require('express').Router()
@@ -18,6 +18,8 @@ router.route('/joinUnion').post(joinUnion)
 
 router.post('/create', upload.single('image'), createUnion);
 
-router.get("/getWorkplaces", getWorkplacesByUnionId);
+router.post('/leaveUnion', leaveUnion)
+
+router.post('/deleteUnion', deleteUnion)
 
 module.exports = router
