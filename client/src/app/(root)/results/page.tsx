@@ -14,11 +14,11 @@ const Results = () => {
     const [unionName, setUnionName] = useState<string>(searchParams.get("unionname") || "");
     const [location, setLocation] = useState(searchParams.get("location") || "");
     const [organization, setOrganization] = useState(searchParams.get("organization") || "");
+    const defaultImage = "/images/Unionizer_Logo.png";
 
     const getDefaultImage = (union) => {
         const savedColors = JSON.parse(localStorage.getItem("unionColors") || "{}");
         const backgroundColor = savedColors[union.id] || "#ccc";
-
         return (
             <div
                 style={{
@@ -85,6 +85,7 @@ const Results = () => {
                 const data = await response.json();
                 if (response.ok) {
                     setResults(data.data || []);
+
                 } else {
                     console.error("Failed to fetch unions:", data.message);
                 }
@@ -163,7 +164,16 @@ const Results = () => {
                                 <div className="result-details">
                                     <h3>{union.name}</h3>
                                     <p>{union.description}</p>
-                                    <p>{union.organization}</p>
+                                    <p>Organizations: {" "}
+                                        {(union.associatedWorkplaces?.length > 0) && union.associatedWorkplaces.map((workplace, index) => {
+                                            return (
+                                                <span key={index}>
+                                                    {workplace.organization}
+                                                    {index < union.associatedWorkplaces.length - 1 ? ', ' : ''}
+                                                </span>
+                                            );
+                                        })}
+                                    </p>
                                 </div>
                                 <button
                                     className="join-button"
@@ -183,4 +193,3 @@ const Results = () => {
 };
 
 export default Results;
-

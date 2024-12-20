@@ -6,10 +6,10 @@ import { setUserUnions } from '@/lib/redux/features/user_unions/userUnionsSlice'
 import VerticalNavbar from '@/components/vertical-navbar/vertical-navbar';
 import HorizontalNavbar from '@/components/horizontal-navbar/horizontal-navbar';
 import './resource-popup.css';
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar/app-sidebar"
+import { useSocket } from './socket/SocketProvider';
 import DynamicSidebar from './dynamic-navbar';
-
+import { listenToAuthChanges } from '@/lib/redux/features/auth/authSlice';
+import { SocketProvider } from './socket/SocketProvider'
 const Layout = ({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname();
     const router = useRouter();
@@ -17,14 +17,42 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     const { user } = useAppSelector(state => state.auth)
     const { unions } = useAppSelector(state => state.userUnion)
     const [currUnion, setCurrUnion] = useState<object | null>(null)
+    const [sidebarOpen, setSidebarOpen] = useState<boolean>(true)
     const dispatch = useAppDispatch()
     const popupRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLDivElement>(null);
-
+    // const socket = useSocket()
+    // const socketRef = useRef(null)
+    const [isConnected, setIsConnected] = useState<boolean>(false)
     const togglePopup = () => {
         setIsPopupOpen((prev) => !prev);
     };
 
+    // useEffect(() => {
+    //     if (socket) {
+    //         socketRef.current = socket;
+
+    //         // Check if the socket is connected
+    //         setIsConnected(socket.connected);
+
+    //         // Listen to the 'connect' and 'disconnect' events
+    //         socket.on("connect", () => {
+    //             console.log("Socket connected");
+    //             setIsConnected(true);
+    //         });
+
+    //         socket.on("disconnect", () => {
+    //             console.log("Socket disconnected");
+    //             setIsConnected(false);
+    //         });
+
+    //         // Clean up listeners
+    //         return () => {
+    //             socket.off("connect");
+    //             socket.off("disconnect");
+    //         };
+    //     }
+    // }, [socket]);
     const [openDropdowns, setOpenDropdowns] = useState<number[]>([]);
 
     const toggleDropdown = (dropdownIndex: number) => {
@@ -36,7 +64,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     };
     const handleUnionClick = (e: React.MouseEvent, union: object) => {
         e.stopPropagation();
-        console.log(union.chats)
         console.log("Selected Union:", union);
         setCurrUnion(union)
     };
@@ -85,10 +112,17 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 return null;
         }
     }
+    const toggleSidebar = () => {
+        setSidebarOpen(!sidebarOpen)
+    }
+    useEffect(() => {
+        dispatch(listenToAuthChanges());
+    }, [dispatch])
     useEffect(() => {
         if (pathname === '/resources') {
             setIsPopupOpen(true);
         }
+
         const getUserUnions = async () => {
             try {
                 const userUnionsRes = await fetch(`http://localhost:5000/union/getUserUnions?userId=${user?.uid}`, {
@@ -109,14 +143,33 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 console.error('There was an error receiving user unions', e)
             }
         }
-        getUserUnions()
+        if (user) {
+            getUserUnions()
+            // if (socketRef.current) {
+            //     socketRef.current?.on("received_join_request", (data) => {
+            //         if (data.userId != user.uid) {
+            //             console.log("Notification IS BEING CALLED")
+
+            //         }
+            //     });
+            // }
+        }
+
+
     }, [user])
     useEffect(() => {
         if (pathname === '/resources') {
             setIsPopupOpen(true);
         }
     }, [pathname]);
-
+    // useEffect(() => {
+    //     if (user?.uid && socketRef.current) {
+    //         socketRef.current.on("connect", () => {
+    //             console.log("Socket connected");
+    //             setIsConnected(true);
+    //         });
+    //     }
+    // }, [user?.uid, socketRef.current])
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -141,30 +194,23 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     };
 
     return (
-        <div className="h-[calc(100vh-80px)] page-wrapper mt-[80px] ml-[90px]">
+
+        <div className=" page-wrapper mt-[85px] grow justify-center ml-[95px] mr-[5px] mb-[5px]">
             <div className="horizontal-navbar-container">
                 <HorizontalNavbar pageName={getDynamicPageName()} />
             </div>
-            <div className="h-[calc(100vh-80px)]">
-                <div className="vertical-navbar-container">
-                    <VerticalNavbar togglePopup={togglePopup} buttonRef={buttonRef} unions={unions} handleUnionClick={handleUnionClick} />
+            <VerticalNavbar togglePopup={togglePopup} buttonRef={buttonRef} unions={unions} handleUnionClick={handleUnionClick} currUnion={currUnion} user={user} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}>
+                {children}
+            </VerticalNavbar>
+            <div className="h-[calc(100vh-80px)] justify-center w-full">
+                <div className='' onClick={() => { setSidebarOpen(false) }} >
+                    {children}
                 </div>
-                {currUnion ?
-                    <SidebarProvider>
-                        <AppSidebar 
-                        chats={currUnion?.chats || []} 
-                        unionName={currUnion?.name || ''} 
-                        unionId={currUnion?.id || ''}
-                         />
-                        <div className="page-content">
-                            {children}
-                        </div>
-                    </SidebarProvider> : <div>{children}</div>}
             </div>
 
-            {pathname.includes("settings") ?
+            {/* {pathname.includes("settings") ?
                 <DynamicSidebar /> : ""
-            }
+            } */}
 
             {/* Resource Guide Pop-up */}
             {isPopupOpen && (
@@ -230,6 +276,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             )}
 
         </div>
+
+
     );
 };
 

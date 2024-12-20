@@ -5,7 +5,7 @@ interface UserUnion {
 export const userUnionSlice = createSlice({
     name: 'user_union',
     initialState: {
-        unions: null
+        unions: null,
     },
     reducers: {
         setUserUnions: (state, action) => {

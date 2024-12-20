@@ -2,6 +2,8 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { Modal } from "@/components/ui/modal";
 import useWorkplaces from "@/hooks/useWorkplaces";
+import { useAppDispatch } from "@/lib/redux/hooks/redux";
+import { setUserUnions } from "@/lib/redux/features/user_unions/userUnionsSlice";
 import {
   Sidebar,
   SidebarContent,
@@ -18,12 +20,16 @@ export function AppSidebar({
   chats,
   unionName,
   unionId,
+  role,
+  userId
 }: {
   chats: object[];
   unionName: string;
   unionId: string;
+  role: string
+  userId: string
 }) {
-  console.log("Union ID:", unionId);
+  console.log("ROle", role);
   const [isPollModalOpen, setPollModalOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [previousVote, setPreviousVote] = useState<string | null>(null);
@@ -33,20 +39,30 @@ export function AppSidebar({
   const [totalEmployees, setTotalEmployees] = useState<number | null>(null);
   const [message, setMessage] = useState("");
   const [openDropdowns, setOpenDropdowns] = useState<string[]>([]);
-  const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isUnionDropdownOpen, setUnionDropdownOpen] = useState(false);
+  const [isInviteModalOpen, setInviteModalOpen] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+  const [inviteLink, setInviteLink] = useState<string>("");
+  const [copyMessage, setCopyMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [selectedWorkplace, setSelectedWorkplace] = useState<{
+    id: string;
+    employeeCount: number;
+    name: string;
+  } | null>(null);
 
+  const dispatch = useAppDispatch()
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const toggleButtonRef = useRef<HTMLButtonElement>(null);
 
   const toggleUnionDropdown = () => {
-    setUnionDropdownOpen((prevState) => !prevState); // Toggle the dropdown state
+    setUnionDropdownOpen((prevState) => !prevState);
   };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // Close dropdown only if the click is outside both the dropdown and the toggle button
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node) &&
@@ -55,66 +71,212 @@ export function AppSidebar({
       ) {
         setUnionDropdownOpen(false);
       }
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        setInviteModalOpen(false);
+      }
     };
 
-    // Attach mousedown listener
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      // Cleanup listener on unmount
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  const handleOptionClick = (path: string) => {
-    setUnionDropdownOpen(false); // Close dropdown after clicking an option
-    router.push(path);
+  const handleOptionClick = (path: string, query?: Record<string, string>) => {
+    setUnionDropdownOpen(false);
+    if (query) {
+      const queryString = new URLSearchParams(query).toString();
+      router.push(`${path}?${queryString}`);
+    } else {
+      router.push(path);
+    }
   };
 
   // Use the custom hook to fetch workplaces
   const { workplaces, loading, error } = useWorkplaces(unionId);
 
-  const handleVote = () => {
-    if (selectedOption && totalEmployees) {
-      const newVotes = { ...votes };
-      newVotes[selectedOption] += 1;
-      const newTotalVotes = totalVotes + 1;
-      const yesVotes = newVotes["yes"];
-      const requiredVotes = Math.ceil(totalEmployees * 0.3 - yesVotes);
+  const fetchVotes = async (workplaceId: string) => {
+    try {
+      const response = await fetch(
+        `http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/polls/votes?workplaceId=${workplaceId}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch votes");
+      }
+      const data = await response.json();
+      setVotes({ yes: data.yesCount, no: data.noCount });
+      setTotalVotes(data.yesCount + data.noCount);
+    } catch (error) {
+      console.error("Error fetching votes:", error);
+    }
+  };
 
-      setVotes(newVotes);
-      setTotalVotes(newTotalVotes);
-      setVoted(true);
-      setPreviousVote(selectedOption);
+  const openPollModal = (workplace: { id: string; employeeCount: number; name: string }) => {
+    console.log("Opening poll for workplace:", workplace);
+    if (workplace && workplace.id && workplace.employeeCount) {
+      setSelectedWorkplace(workplace);
+      setTotalEmployees(workplace.employeeCount);
+      setPollModalOpen(true);
+      fetchVotes(workplace.id);
+    } else {
+      console.error("Invalid workplace object passed to openPollModal:", workplace);
+    }
+  };
 
-      if (yesVotes / totalEmployees >= 0.3) {
-        setMessage(
-          `${Math.round(
-            (yesVotes / totalEmployees) * 100
-          )}% of employees have voted 'Yes'. You can start the unionization process!`
+  const handleVote = async () => {
+    if (selectedWorkplace && selectedOption) {
+      try {
+        console.log("Submitting vote for:", selectedWorkplace);
+        const response = await fetch(
+          `http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/polls/vote`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              workplaceId: selectedWorkplace.id,
+              userId,
+              vote: selectedOption,
+              action: previousVote ? "update" : "increment",
+            }),
+          }
         );
-      } else {
-        setMessage(
-          `You need ${requiredVotes} more vote${requiredVotes > 1 ? "s" : ""} to start the unionization process.`
-        );
+
+        if (!response.ok) {
+          throw new Error("Failed to submit vote.");
+        }
+
+        const data = await response.json();
+
+        setVotes({ yes: data.yesCount, no: data.noCount });
+        setTotalVotes(data.totalVotes);
+        setPreviousVote(selectedOption);
+        setVoted(true);
+
+        setMessage("Your vote has been successfully submitted!");
+      } catch (error) {
+        console.error("Error submitting vote:", error);
+        setMessage("Failed to submit your vote. Please try again.");
       }
     }
   };
 
-  const handleChangeVote = () => {
+  //helper function for updating userUnions
+  const updateUnion = async () => {
+    try {
+      const userUnionsResponse = await fetch(`http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/union/getUserUnions?userId=${userId}`)
+      if (!userUnionsResponse.ok) {
+        throw new Error("Response not okay")
+      }
+      const data = await userUnionsResponse.json()
+      dispatch(setUserUnions({ unions: data.data }));
+
+    } catch (error) {
+      console.error("There was an error getting user unions... ", error)
+    }
+  }
+  //Leave union call to api
+  const leaveUnion = async () => {
+    toggleUnionDropdown()
+    if (role == "admin") {
+      window.alert('You cannot leave the union as admin! More functionality will be added in the future')
+    }
+    try {
+      const confirmed = window.confirm('Warning!!! You are about to leave the union. Press OK to continue')
+      if (confirmed) {
+        const response = await fetch(`http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/union/leaveUnion`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId, unionId })
+          }
+        )
+        if (!response.ok) {
+          throw new Error(`Response came back with status: ${response.status}`)
+        }
+        const data = await response.json()
+        await updateUnion()
+        router.push('/search')
+      }
+    } catch (error) {
+      console.error("There was an error leaving union. ", error)
+    }
+  }
+  //Delete union call to api
+  const deleteUnion = async () => {
+    toggleUnionDropdown()
+    try {
+      if (role == "admin") {
+        const confirmed = window.confirm('Warning!!! You are about to delete the union. Press OK to continue')
+        if (confirmed) {
+          const response = await fetch(`http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/union/deleteUnion`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ userId, unionId })
+            }
+          )
+          if (!response.ok) {
+            throw new Error(`Response came back with status: ${response.status}`)
+          }
+          const data = await response.json()
+          window.alert(data.message)
+          await updateUnion()
+          router.push('/search')
+        }
+      }
+    } catch (error) {
+      console.error("There was an error leaving union. ", error)
+    }
+  }
+  const handleChangeVote = async (workplaceId: string) => {
     if (previousVote) {
-      const newVotes = { ...votes };
+      try {
+        // Step 1: Decrement the previous vote on the backend
+        const response = await fetch(
+          `http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}/polls/vote`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              workplaceId,
+              userId, // Include userId for tracking the voter
+              vote: previousVote,
+              action: "decrement", // Decrement the previous vote
+            }),
+          }
+        );
 
-      newVotes[previousVote] -= 1;
+        if (!response.ok) {
+          throw new Error("Failed to change vote.");
+        }
 
-      const newTotalVotes = totalVotes - 1;
+        const data = await response.json();
 
-      setVotes(newVotes);
-      setTotalVotes(newTotalVotes);
-      setSelectedOption(null);
-      setPreviousVote(null);
-      setVoted(false);
-      setMessage("");
+        // Step 2: Update the state with new vote counts after decrement
+        setVotes({ yes: data.yesCount, no: data.noCount });
+        setTotalVotes(data.totalVotes);
+
+        // Step 3: Reset state for new vote
+        setSelectedOption(null);
+        setPreviousVote(null);
+        setVoted(false);
+        setMessage("Your previous vote has been removed. Please cast a new vote.");
+      } catch (error) {
+        console.error("Error changing vote:", error);
+        setMessage("Failed to change your vote. Please try again.");
+      }
     }
   };
 
@@ -132,6 +294,35 @@ export function AppSidebar({
     );
   };
 
+  const handleInviteWorkers = async () => {
+    try {
+      setIsGeneratingLink(true);
+      const backendUrl = `http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}`;
+      const response = await fetch(`${backendUrl}/api/invites/generateInviteLink?unionId=${unionId}`);
+      if (!response.ok) {
+        throw new Error("Failed to generate invite link.");
+      }
+      const data = await response.json();
+      const inviteLink = data.link;
+
+      setInviteLink(inviteLink);
+      setErrorMessage("");
+    } catch (error) {
+      console.error("Error generating invite link:", error);
+      setErrorMessage("Failed to generate invite link. Please try again.");
+    } finally {
+      setIsGeneratingLink(false);
+    }
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(inviteLink);
+    setCopyMessage("Invite link copied to clipboard!");
+    setTimeout(() => {
+      setCopyMessage("");
+    }, 3000);
+  };
+
   return (
     <div className="app-sidebar-container">
       <Sidebar className="app-sidebar">
@@ -141,83 +332,114 @@ export function AppSidebar({
             <div className="union-title">
               <h1 className="union-name">{unionName} Union</h1>
               <button
-                 className="dropdown-toggle-button"
-                 ref={toggleButtonRef} // Attach the ref to the button
-                 onClick={toggleUnionDropdown} // Toggle dropdown on button click
-                 aria-label="Union Menu"
+                className="dropdown-toggle-button"
+                ref={toggleButtonRef} // Attach the ref to the button
+                onClick={toggleUnionDropdown} // Toggle dropdown on button click
+                aria-label="Union Menu"
               >
                 <img
-                  src="/images/hamburger.png" // Replace with your actual image path
+                  src="/images/hamburger.png"
                   alt="Union Menu"
                   className="hamburger-icon"
                 />
               </button>
             </div>
             <hr />
-            {isUnionDropdownOpen && (
+
+            {(isUnionDropdownOpen) && (
               <div className="union-dropdown-menu" ref={dropdownRef}>
-                <div
-                  className="union-dropdown-item"
-                  onClick={() => handleOptionClick("/union/invite-workers")}
-                >
-                  Invite Workers
-                </div>
-                <div
-                  className="union-dropdown-item"
-                  onClick={() => handleOptionClick("/union/edit-invitation-form")}
-                >
-                  Edit Invitation Form
-                </div>
-                <div
-                  className="union-dropdown-item"
-                  onClick={() => handleOptionClick("/union/manage-members")}
-                >
-                  Manage Members
-                </div>
-                <hr />
-                <div
-                  className="union-dropdown-item"
-                  onClick={() => handleOptionClick("/union/create-poll")}
-                >
-                  Create Poll
-                </div>
-                <div
-                  className="union-dropdown-item"
-                  onClick={() => handleOptionClick("/union/create-workplace")}
-                >
-                  Create Workplace
-                </div>
-                <hr />
-                <div
-                  className="union-dropdown-item"
-                  onClick={() => handleOptionClick("/union/server-settings")}
-                >
-                  Server Settings
-                </div>
+                {
+                  (role == "admin") ? (
+                    <>
+                      <div
+                        className="union-dropdown-item"
+                        onClick={() => setInviteModalOpen(true)}
+                      >
+                        Invite Workers
+                      </div>
+                      <div
+                        className="union-dropdown-item"
+                        onClick={() => handleOptionClick("/joinunionform", { unionId })}
+                      >
+                        Edit Invitation Form
+                      </div>
+
+                      <div
+                        className="union-dropdown-item"
+                        onClick={() => handleOptionClick("/union/manage-members")}
+                      >
+                        Manage Members
+                      </div>
+                      <hr />
+                      <div
+                        className="union-dropdown-item"
+                        onClick={() => handleOptionClick("/union/create-poll")}
+                      >
+                        Create Poll
+                      </div>
+                      <div
+                        className="union-dropdown-item"
+                        onClick={() => handleOptionClick("/union/create-workplace")}
+                      >
+                        Create Workplace
+                      </div>
+                      <hr />
+                      <div
+                        className="union-dropdown-item"
+                        onClick={() => handleOptionClick("/union/server-settings")}
+                      >
+                        Server Settings
+                      </div>
+                      <div
+                        className="union-dropdown-item"
+                        style={{ color: "red" }}
+                        onClick={() => deleteUnion()}
+                      >
+                        Delete Union
+                      </div>
+                    </>)
+                    :
+                    <>
+                      <div className="union-dropdown-menu" ref={dropdownRef}>
+                        <div
+                          className="union-dropdown-item"
+                          onClick={() => setInviteModalOpen(true)}
+                        >
+                          Invite Workers
+                        </div>
+                        <div
+                          className="union-dropdown-item"
+                          onClick={() => handleOptionClick("/union/create-poll")}
+                        >
+                          Create Poll
+                        </div>
+                        <div
+                          className="union-dropdown-item"
+                          onClick={() => handleOptionClick("/union/create-workplace")}
+                        >
+                          Create Workplace
+                        </div>
+                        <hr />
+                        <div
+                          className="union-dropdown-item"
+                          style={{ color: "red" }}
+                          onClick={() => leaveUnion()}
+                        >
+                          Leave Union
+                        </div>
+
+                      </div></>
+                }
+
               </div>
-            )}
+            )
+            }
           </div>
           <div className="sidebar-divider"></div>
 
-          {/* Polls Section */}
+          {/* General Section */}
           <SidebarGroup>
-            <SidebarGroupLabel className="sidebar-group-label">Polls</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <div className="poll-button" onClick={() => setPollModalOpen(true)}>
-                      Unionize Poll
-                    </div>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-
-          {/* Chats Section */}
-          <SidebarGroup>
-            <SidebarGroupLabel className="sidebar-group-label">Chats</SidebarGroupLabel>
+            <SidebarGroupLabel className="sidebar-group-label">General</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {chats &&
@@ -251,44 +473,66 @@ export function AppSidebar({
               <div key={workplace.id}>
                 <div
                   className="workplace-title"
-                  onClick={() => toggleDropdown(workplace.id)}
                   style={{
                     cursor: "pointer",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
                   }}
-                  onClick={() => toggleDropdown(workplace.id)}
+                  onClick={() => { toggleDropdown(workplace.id) }}
                 >
-                  <span className="workplace-name">{workplace.workplaceName}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span className="workplace-name">{workplace.workplaceName}</span>
+                    {workplace.isUnionized && (
+                      <div className="checkmark-container">
+                        <img
+                          className="checkmark-image"
+                          src="/images/check-mark.png"
+                          alt="Unionized"
+                        />
+                        <span className="tooltip-text">Is unionized</span>
+                      </div>
+                    )}
+                  </div>
                   <span className="dropdown-toggle">{openDropdowns.includes(workplace.id) ? "▼" : "▶"}</span>
                 </div>
 
                 {openDropdowns.includes(workplace.id) && (
                   <SidebarMenu>
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
-                        <div
-                          className="dropdown-item"
-                          onClick={() =>
-                            router.push(`/workplace/${workplace.id}/announcements`)
-                          }
-                        >
-                          Announcements
-                        </div>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
-                        <div
-                          className="dropdown-item"
-                          onClick={() =>
-                            router.push(`/workplace/${workplace.id}/schedule`)
-                          }
-                        >
-                          Schedule
-                        </div>
-                      </SidebarMenuButton>
+                      {workplace.chats &&
+                        workplace.chats.map((chat, i) => (
+                          <SidebarMenuItem key={i}>
+                            <SidebarMenuButton asChild>
+                              <div
+                                className="chat-item"
+                                onClick={() =>
+                                  router.push(`/unions/${chat.unionId}/chat/${chat.id}`)
+                                }
+                              >
+                                <span>{chat.name}</span>
+                              </div>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        ))}
+
+                      {!workplace.isUnionized && (
+                        <SidebarMenuItem>
+                          <SidebarMenuButton asChild>
+                            <div
+                              className="poll-button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setTotalEmployees(workplace.employeeCount || 0);
+                                setPollModalOpen(true);
+                                openPollModal(workplace.id);
+                              }}
+                            >
+                              {workplace.workplaceName} Unionize Poll
+                            </div>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      )}
                     </SidebarMenuItem>
                   </SidebarMenu>
                 )}
@@ -303,10 +547,11 @@ export function AppSidebar({
             </a>
           </div>
         </SidebarContent>
-      </Sidebar>
+      </Sidebar >
 
       {/* Poll Modal */}
-      <Modal isOpen={isPollModalOpen} onClose={() => setPollModalOpen(false)}>
+      <Modal Modal isOpen={isPollModalOpen} onClose={() => setPollModalOpen(false)
+      }>
         <div
           className="modal-overlay"
           onClick={() => setPollModalOpen(false)}
@@ -323,17 +568,18 @@ export function AppSidebar({
               ×
             </button>
             <h1 className="poll-question">Should we apply for unionization now?</h1>
+            {/* Automatically fetch and display total employees */}
             <div className="employee-input">
               <label htmlFor="employee-count">Total Number of Employees:</label>
               <input
                 id="employee-count"
                 type="number"
                 value={totalEmployees || ""}
-                onChange={(e) => setTotalEmployees(Number(e.target.value))}
-                placeholder="total"
-                disabled={voted}
+                readOnly
+                placeholder="Fetching employee count..."
                 style={{
-                  backgroundColor: voted ? "#e0e0e0" : "white",
+                  backgroundColor: "#e0e0e0",
+                  cursor: "not-allowed",
                 }}
               />
             </div>
@@ -378,7 +624,12 @@ export function AppSidebar({
                 )}
                 <button
                   className="change-vote-button"
-                  onClick={handleChangeVote}
+                  onClick={() => {
+                    if (selectedWorkplace) {
+                      console.log("Changing vote for:", selectedWorkplace.id);
+                      handleChangeVote(selectedWorkplace.id);
+                    }
+                  }}
                 >
                   Change Vote
                 </button>
@@ -386,7 +637,12 @@ export function AppSidebar({
             ) : (
               <button
                 className="vote-button"
-                onClick={handleVote}
+                onClick={() => {
+                  if (selectedWorkplace) {
+                    console.log("Voting for:", selectedWorkplace.id);
+                    handleVote();
+                  }
+                }}
                 disabled={!selectedOption || !totalEmployees}
               >
                 Vote
@@ -394,7 +650,48 @@ export function AppSidebar({
             )}
           </div>
         </div>
-      </Modal>
-    </div>
+      </Modal >
+
+      {isInviteModalOpen && (
+        <Modal isOpen={isInviteModalOpen} onClose={() => setInviteModalOpen(false)}>
+          <div
+            className="invite-modal-overlay"
+            onClick={() => setInviteModalOpen(false)}
+          >
+            <div className="invite-modal" ref={modalRef} onClick={(e) => e.stopPropagation()}>
+              {!inviteLink ? (
+                <div className="invite-workers-header">
+                  <h2>Invite Workers</h2>
+                  <button
+                    className="invite-button"
+                    onClick={handleInviteWorkers}
+                    disabled={isGeneratingLink}
+                  >
+                    {isGeneratingLink ? "Generating..." : "Generate Invite Link"}
+                  </button>
+                </div>
+              ) : (
+                <div className="invite-link-header">
+                  <h2>Generated Link</h2>
+                  <p className="invite-link-label">Invitation Link:</p>
+                  <div className="invite-link-container">
+                    <input
+                      type="text"
+                      value={inviteLink}
+                      readOnly
+                      className="invite-link-input"
+                    />
+                    <button className="copy-link-button" onClick={handleCopyLink}>
+                      Copy
+                    </button>
+                  </div>
+                  {copyMessage && <p className="copy-success-message">{copyMessage}</p>}
+                </div>
+              )}
+            </div>
+          </div>
+        </Modal>
+      )}
+    </div >
   );
 }

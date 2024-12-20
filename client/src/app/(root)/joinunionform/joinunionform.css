@@ -4,6 +4,7 @@
     padding: 0 20px;
     padding-bottom: 100px;
     box-sizing: border-box;
+
 }
 
 .union-info {
@@ -17,14 +18,14 @@
     min-width: 40vw;
 }
 
-.union-info img{
+.union-info img {
     width: 60px;
     height: 60px;
     border-radius: 50%;
     margin-right: 15px;
 }
 
-.union-info div{
+.union-info div {
     margin-right: 15px;
 }
 
@@ -56,6 +57,7 @@
 
 .question-remove-container {
     display: flex;
+    flex-grow: 1;
 }
 
 .question-input {
@@ -146,6 +148,7 @@
     .join-unionform-page {
         padding: 0 60px;
         padding-bottom: 100px;
+        width: 550px;
     }
 
     .union-info {
@@ -153,7 +156,8 @@
         align-items: flex-start;
     }
 
-    .union-info img, .union-info div {
+    .union-info img,
+    .union-info div {
         margin-bottom: 10px;
     }
 

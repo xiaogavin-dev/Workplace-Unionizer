@@ -9,15 +9,15 @@
   top: 0px;
   left: 90px;
   overflow-y: auto;
-  z-index: 100;
+  z-index: 1;
 }
 
 /*--------------------------------------------------------------*/
 .union-title {
   display: flex;
-  align-items: center; /* Align items vertically in the center */
-  justify-content: space-between; /* Space between the name and button */
-  padding: 10px; /* Optional padding */
+  align-items: center; 
+  justify-content: space-between; 
+  padding: 10px; 
 }
 
 .union-name {
@@ -29,9 +29,9 @@
 }
 
 .hamburger-icon {
-  width: 30px; /* Adjust the size */
-  height: 30px; /* Adjust the size */
-  object-fit: contain; /* Ensures the image maintains its aspect ratio */
+  width: 30px; 
+  height: 30px; 
+  object-fit: contain; 
   cursor: pointer;
 }
 .hamburger-icon:hover{
@@ -40,11 +40,11 @@
 
 /* Dropdown Modal Style */
 .union-dropdown-menu {
-  position: fixed; /* Change from absolute to fixed */
+  position: fixed; 
   bottom: auto;
-  top: 80px; /* Position it properly relative to the viewport */
-  left: 180px; /* Adjust the left position */
-  width: 200px; /* Set the width */
+  top: 80px; 
+  left: 180px; 
+  width: 200px; 
   background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -53,7 +53,6 @@
   padding: 10px;
 }
 
-/* Dropdown Items */
 .union-dropdown-item {
   padding: 2px 15px;
   font-size: 1rem;
@@ -63,7 +62,7 @@
 }
 
 .union-dropdown-item + .union-dropdown-item {
-  margin-top: 5px; /* Add a smaller margin between items */
+  margin-top: 5px; 
 }
 
 .union-dropdown-item:hover {
@@ -71,7 +70,6 @@
   color: white;
 }
 
-/* Separator Line */
 .union-dropdown-menu hr {
   border: none;
   border-top: 1px solid #ddd;
@@ -110,6 +108,54 @@
 
 .poll-button:hover, .chat-item:hover, .workplace-title:hover{
   background-color: rgba(185, 185, 185, 0.3);
+}
+
+.checkmark-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.checkmark-image {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+/* Tooltip styling */
+.tooltip-text {
+  visibility: hidden;
+  font-size: 1rem;
+  width: 150px;
+  background-color: #a7a7a7;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0px;
+  border-radius: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; 
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+
+.tooltip-text::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+}
+
+.checkmark-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
 }
 
 .dropdown-toggle{
@@ -313,4 +359,128 @@
 
 .close-button:hover {
   color: #f44336;
+}
+
+/*-------------------------------------------------------------------*/
+.invite-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.invite-modal {
+  padding: 20px;
+  width: 400px;
+  max-width: 90%;
+  height: 200px;
+  margin: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  background-color: #fff;
+  text-align: center;
+}
+
+.invite-modal h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.invite-link-container {
+  display: flex;
+  align-items: center;
+  gap: 5px; 
+}
+
+.invite-link-container p {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+.invite-button {
+  padding: 10px 20px;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #61a653;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.invite-button:hover {
+  background-color: #294224;
+}
+
+.invite-modal {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.invite-link-header {
+  text-align: left;
+}
+
+.invite-link-label {
+  font-size: 16px;
+  font-weight: bold;
+  color: #666B62;
+}
+
+.invite-link-input {
+  flex: 1;
+  padding: 10px;
+  font-size: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  color: #333;
+  outline: none;
+}
+
+.invite-link-input:focus {
+  border: 2px solid #61a653;
+}
+
+.copy-link-button {
+  padding: 9px 8px;
+  font-size: 15px;
+  font-weight: bold;
+  background-color: #61a653;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.copy-link-button:hover {
+  background-color: #294224;
+}
+
+.copy-success-message {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #4caf50; 
+  text-align: left;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

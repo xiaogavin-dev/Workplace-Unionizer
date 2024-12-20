@@ -33,8 +33,6 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
     };
 
     useEffect(() => {
-        dispatch(listenToAuthChanges());
-
         if (isDropdownOpen) {
             document.addEventListener('mousedown', handleClickOutside);
         } else {
@@ -57,12 +55,8 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
     };
 
     const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-        e.preventDefault(); 
-        if (isAuthenticated) {
-            router.push("/search"); 
-        } else {
-            router.push("/"); 
-        }
+        e.preventDefault();
+        router.push(isAuthenticated ? "/search" : "/");
     };
 
     const getDynamicPageName = () => {
@@ -137,9 +131,9 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({ pageName }) => {
                                         {user?.displayName}
                                     </span>
                                 </li>
-                                <li onClick={() => {router.push('/settings/basic/profile')}}>
+                                {/* <li onClick={() => { router.push('/settings/basic/profile') }}>
                                     <Link href="/settings/basic/profile">Account Settings</Link>
-                                </li>
+                                </li> */}
                                 <hr />
                                 <li onClick={handleSignOut}>
                                     <button onClick={handleSignOut} className="dropdown-logout-button">

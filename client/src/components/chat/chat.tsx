@@ -1,6 +1,6 @@
 "use client";
 import { FC, useRef, useState, useEffect } from "react";
-import PropagateLoader from "react-spinners/PropagateLoader";
+import HashLoader from "react-spinners/HashLoader";
 import { userType } from "../../lib/redux/features/auth/authSlice";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChatHeader, ChatBody, ChatInput } from "./chatHeader";
@@ -13,7 +13,7 @@ import { usePathname } from "next/navigation";
 import { encryptMessage, encryptSymmetricKeys, createSymmetricKey, decryptMessage } from "../../lib/util/encryptionCalls"
 import { retrievePrivateKey } from '@/lib/util/IndexedDBCalls';
 import { handleNewChatMember } from "@/lib/util/handleKeyUpdates";
-
+import { useSocket } from "../socket/SocketProvider";
 const PATH = "http://localhost:5000";
 
 const FormSchema = z.object({
@@ -44,6 +44,7 @@ interface roomInfoType {
     isDefault: boolean,
     unionId: string | null;
     updatedAt: string | null;
+    workplaceId: string | null;
 }
 
 export interface RoomType {
@@ -54,19 +55,47 @@ export interface RoomType {
 
 const Chat: FC = () => {
     const { user } = useAppSelector((state): { user: userType | null } => state.auth);
+    const socket = useSocket()
     const pathname = usePathname();
     const chunks = pathname.split("/");
-    const socketRef = useRef<Socket | null>(null);
-    const [isConnected, setIsConnected] = useState<boolean>(false)
+    const socketRef = useRef<Socket | null>();
+    const [isConnected, setIsConnected] = useState<boolean>(true)
     const [roomData, setRoomData] = useState<RoomType>({ room: null });
     const [messages, setMessages] = useState<messageType>({ messages: [] });
     const [init, setInit] = useState<boolean>(false)
+    const [loadingMessages, setLoadingMessages] = useState<boolean>(true)
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
     });
+    useEffect(() => {
+        if (socket) {
+            socketRef.current = socket;
 
+            // Check if the socket is connected
+            setIsConnected(socket.connected);
+
+            // Listen to the 'connect' and 'disconnect' events
+            socket.on("connect", () => {
+                console.log("Socket connected");
+                setIsConnected(true);
+            });
+
+            socket.on("disconnect", () => {
+                console.log("Socket disconnected");
+                setIsConnected(false);
+            });
+
+            // Clean up listeners
+            return () => {
+                socket.off("connect");
+                socket.off("disconnect");
+            };
+        }
+    }, [socket]);
     const onSubmit = (data: z.infer<typeof FormSchema>) => {
+        console.log(socketRef.current?.connected)
         if (socketRef.current?.connected) {
+            console.log("hit after")
             const msg_details: messageInfo = {
                 id: crypto.randomUUID(),
                 content: data.message,
@@ -77,6 +106,7 @@ const Chat: FC = () => {
                 updatedAt: new Date(),
                 keyVersionId: roomData.room?.chatKeyVersion
             };
+
             setMessages((old) => ({
                 messages: [msg_details, ...(old.messages ?? [])],
             }));
@@ -85,33 +115,43 @@ const Chat: FC = () => {
             const createMessage = async (msg_details: messageInfo) => {
                 try {
                     //if there is no keyVersion for the current room create a new encryption key
+                    let encryptedKeyData = null
                     if (roomData.room?.chatKeyVersion == null) {
                         try {
-
-                            const newRoomInfo = await handleNewChatMember(roomData.room)
+                            const { newRoomInfo, userKeyData } = await handleNewChatMember(roomData.room, user?.uid)
+                            encryptedKeyData = userKeyData
+                            const fetchPrivKey = async () => {
+                                const privateKey = await retrievePrivateKey(user!.uid)
+                                return privateKey
+                            }
+                            const privateKey = await fetchPrivKey()
+                            const encryptedSymmetricKey = encryptedKeyData?.data.encryptedKey
+                            const message = msg_details.content
+                            const { encryptedMessage } = await encryptMessage(message, privateKey, encryptedSymmetricKey)
+                            encryptedMessageDetails = { ...msg_details, content: encryptedMessage, keyVersionId: newRoomInfo?.chatKeyVersion }
                             setRoomData({ room: newRoomInfo })
                         } catch (error) {
                             console.log("WE NEVER GET PAST THIS POINT")
                             return
                         }
                     }
-
-                    // grab the encrypted key
-                    const response = await fetch(`${PATH}/chat/getEncryptedKey?userId=${user?.uid}&chatKeyVersion=${roomData.room?.chatKeyVersion}`)
-                    if (!response.ok) {
-                        throw new Error("There was an error getting your encrypted symmetric key")
+                    else {
+                        // grab the encrypted key
+                        const response = await fetch(`${PATH}/chat/getEncryptedKey?userId=${user?.uid}&chatKeyVersion=${roomData.room?.chatKeyVersion}`)
+                        if (!response.ok) {
+                            throw new Error("There was an error getting your encrypted symmetric key")
+                        }
+                        encryptedKeyData = await response.json()
+                        const fetchPrivKey = async () => {
+                            const privateKey = await retrievePrivateKey(user!.uid)
+                            return privateKey
+                        }
+                        const privateKey = await fetchPrivKey()
+                        const encryptedSymmetricKey = encryptedKeyData.data.encryptedKey
+                        const message = msg_details.content
+                        const { encryptedMessage } = await encryptMessage(message, privateKey, encryptedSymmetricKey)
+                        encryptedMessageDetails = { ...msg_details, content: encryptedMessage, keyVersionId: roomData.room?.chatKeyVersion }
                     }
-                    const encryptedKeyData = await response.json()
-                    const fetchPrivKey = async () => {
-                        const privateKey = await retrievePrivateKey(user!.uid)
-                        console.log(privateKey)
-                        return privateKey
-                    }
-                    const privateKey = await fetchPrivKey()
-                    const encryptedSymmetricKey = encryptedKeyData.data.encryptedKey
-                    const message = msg_details.content
-                    const { encryptedMessage } = await encryptMessage(message, privateKey, encryptedSymmetricKey)
-                    encryptedMessageDetails = { ...msg_details, content: encryptedMessage, keyVersionId: roomData.room?.chatKeyVersion }
 
                 } catch (error) {
                     console.log("There was an error grabbing public keys", error)
@@ -151,7 +191,6 @@ const Chat: FC = () => {
         };
         const fetchPrivKey = async () => {
             const privateKey = await retrievePrivateKey(user!.uid)
-            console.log(privateKey)
             return privateKey
         }
 
@@ -167,8 +206,9 @@ const Chat: FC = () => {
                 const messages = encryptedMessages.map((message: messageInfo, index: number) => ({
                     ...message, content: decrypted_messages[index].decryptedContent
                 }))
+                console.log(messages)
                 setMessages({ messages });
-
+                setLoadingMessages(false);
             } catch (error) {
                 console.error(error);
             }
@@ -178,22 +218,8 @@ const Chat: FC = () => {
             fetchMessages()
             setInit(true)
         }
-
-
-
-    }, [user]);
-    useEffect(() => {
         if (user) {
-            socketRef.current = io(PATH, {
-                reconnection: true,
-                reconnectionAttempts: 5,
-                reconnectionDelay: 1000,
-            });
-            socketRef.current.on("connect", () => {
-                console.log("Socket connected");
-                setIsConnected(true);
-            });
-            socketRef.current.on("RECEIVED_MSG", (data: messageInfo) => {
+            socketRef.current?.on("RECEIVED_MSG", (data: messageInfo) => {
                 if (data.userId != user.uid) {
                     console.log("MESSAGE IS BEING CALLED")
                     setMessages((old) => ({
@@ -202,9 +228,12 @@ const Chat: FC = () => {
                 }
             });
         }
-    }, [user])
+
+
+    }, [user]);
+
     useEffect(() => {
-        if (!user || !isConnected || !roomData.room) return;
+        if (!user || !socketRef.current || !roomData.room) return;
         socketRef.current?.emit("join_room", user, roomData);
 
         socketRef.current?.on("USER_ADDED", (data) => {
@@ -215,25 +244,32 @@ const Chat: FC = () => {
         return () => {
             socketRef.current?.off("USER_ADDED");
         };
-    }, [isConnected, user, roomData.room]);
+    }, [socketRef, isConnected, user, roomData.room]);
 
     return (
-        <div className="flex grow">
-            {user ?
-                <Card className='h-[calc(100vh-80px)] flex flex-col w-[calc(100vw-375px)]'>
-                    <CardHeader className='flex-none'>
-                        <CardTitle><ChatHeader roomName={roomData.room?.name ?? ""} /></CardTitle>
-                    </CardHeader>
-                    <CardContent className='flex-grow flex flex-col-reverse overflow-y overflow-y-auto p-4'>
-                        <ChatBody messages={messages.messages ?? []} currentUserId={user?.uid} />
-                    </CardContent>
-                    <CardFooter className='flex-none space-y-4'>
-                        <ChatInput form={form} onSubmit={onSubmit} />
-                    </CardFooter>
-                </Card> :
-                <PropagateLoader className='' />
-            }
+        <div className="flex w-full items-center justify-center">
 
+            <div className="flex h-[calc(100vh-80px)] w-4/5">
+                {(!loadingMessages) ? (
+                    <Card className="flex flex-col w-full">
+                        <CardHeader className="flex-none">
+                            <CardTitle>
+                                <ChatHeader roomName={roomData.room?.name ?? ""} />
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex-grow flex flex-col-reverse overflow-y-auto p-4">
+                            <ChatBody messages={messages.messages ?? []} currentUserId={user?.uid} />
+                        </CardContent>
+                        <CardFooter className="flex-none space-y-4">
+                            <ChatInput form={form} onSubmit={onSubmit} />
+                        </CardFooter>
+                    </Card>
+                ) : (
+                    <div className="flex justify-center items-center w-full h-full">
+                        <HashLoader color={"#61A653"} />
+                    </div>
+                )}
+            </div>
         </div>
     )
 }

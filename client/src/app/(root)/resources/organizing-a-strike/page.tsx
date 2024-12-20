@@ -9,7 +9,7 @@ const Strike = () => {
       <h1 className="article-title">Organizing a Strike: A Step-by-Step Guide</h1>
       <div className="article-meta">
         <div className="author-info">
-          <span className="author-name">By Jing Jing Xie</span>
+          <span className="author-name">By N/A</span>
         </div>
         <p className="publish-info">11:30 AM EDT on December 4, 2024</p>
       </div>

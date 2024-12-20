@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { notFound } from 'next/navigation'
 import Chat from '@/components/chat/chat'
 import Layout from '@/components/Layout'
-
+import { SocketProvider } from '@/components/socket/SocketProvider'
 
 
 
@@ -27,7 +27,9 @@ const page: FC<pageProps> = ({ params }: pageProps) => {
     }, [])
     return (
         <Layout>
-            <Chat />
+            <SocketProvider>
+                <Chat />
+            </SocketProvider>
         </Layout>
     )
 }
